@@ -138,12 +138,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MultiKeys.h" />
+    <ClInclude Include="Remaps.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiKeys.cpp" />
+    <ClCompile Include="Remaps.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -161,9 +163,6 @@
   <ItemGroup>
     <ProjectReference Include="..\HookRawInput\HookRawInput.vcxproj">
       <Project>{906018c9-41bf-4658-9a3f-55ca9954ad30}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Remaps\Remaps.vcxproj">
-      <Project>{77d20cd7-b853-4403-9a08-2004e4c60af6}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

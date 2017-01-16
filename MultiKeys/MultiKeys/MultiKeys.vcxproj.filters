@@ -30,12 +30,18 @@
     <ClInclude Include="MultiKeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Remaps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MultiKeys.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Remaps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,8 +3,9 @@
 
 #include "stdafx.h"
 #include "MultiKeys.h"
+#include "Remaps.h"
 #include "..\HookRawInput\KeyboardHook.h"
-#include "..\Remaps\Remaps.h"
+
 
 #define MAX_LOADSTRING 100
 

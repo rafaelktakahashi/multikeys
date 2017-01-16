@@ -43,13 +43,14 @@ static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hookHandle, code, wParam, lParam);
 	}
 
-	// Report the event to the main window. Return value of 1 means block the input,
+	// Report the event to the main window.
+	// Return value of 1 means block the input,
 	// return value of 0 means pass it along the hook chain
 	// (sends a nonqueued message to hwndServer)
 	if (SendMessage(hwndServer, WM_HOOK, wParam, lParam))		// <-WndProc in main exe
 	{
 		// Also, we use SendMessage instead of PostMessage (queue) because we want to wait for the decision.
-		return 1;
+		return 1;		// don't pass it along. This will cancel the keystroke.
 	}
 
 	// must call next procedure in the hook chain

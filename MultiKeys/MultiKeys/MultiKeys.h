@@ -7,14 +7,20 @@
 
 #include "resource.h"
 
+// SET THIS TO 0 TO DISABLE ALL DEBUG OUTPUT
+#define DEBUG				1
+#define DEBUG_TEXT_SIZE		128
+
 // Structure of a single record that will be saved in the decisionBuffer
 struct DecisionRecord
 {
-	USHORT virtualKeyCode;
+	RAWKEYBOARD keyboardInput;
 	BOOL decision;
 
-	DecisionRecord(USHORT _virtualKeyCode, BOOL _decision) : virtualKeyCode(_virtualKeyCode), decision(_decision)
+	DecisionRecord(RAWKEYBOARD _keyboardInput, BOOL _decision) : keyboardInput(_keyboardInput), decision(_decision)
 	{
 		// Constructor
 	}
 };
+
+

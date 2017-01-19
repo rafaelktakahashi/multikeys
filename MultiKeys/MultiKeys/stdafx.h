@@ -50,10 +50,10 @@ struct Keystroke
 	{}
 
 	// Constructor for a unicode character (vKey will be 0)
-	Keystroke(UINT32 _codepoint) : codepoint(_codepoint), vKey(0)
+	Keystroke(UINT32 _codepoint) : codepoint(_codepoint), vKey(0), modifiers(0)
 	{}
 
 
-	Keystroke() : vKey(0)
+	Keystroke() : vKey(0), modifiers(0)
 	{}
 };

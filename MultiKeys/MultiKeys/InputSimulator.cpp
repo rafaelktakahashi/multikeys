@@ -51,12 +51,13 @@ UINT Multikeys::InputSimulator::SendVirtualKey(BYTE modifiers, USHORT vKey)
 	}
 
 	simulatedKeyboardVirtualKey.ki.wVk = vKey;
+	simulatedKeyboardVirtualKey.ki.dwFlags = (modifiers & MODIFIER_KEYUP ? KEYEVENTF_KEYUP : 0);
 	return SendInput(1, &simulatedKeyboardVirtualKey, sizeof(INPUT));
 }
 
 
 
-UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint)
+UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyDown)
 {
 
 	if (DEBUG)
@@ -88,12 +89,30 @@ UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint)
 		simulatedDoubleKeyboard[0].ki.wScan = 0xd800 + (codepoint >> 10);		// first message, high surrogate
 		simulatedDoubleKeyboard[1].ki.wScan = 0xdc00 + (codepoint & 0x3ff);		// second message, low surrogate
 
-		return SendInput(2, simulatedDoubleKeyboard, sizeof(INPUT));
+		if (keyDown)
+			return SendInput(2, simulatedDoubleKeyboard, sizeof(INPUT));
+		else
+		{
+			simulatedDoubleKeyboard[0].ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_UNICODE;
+			simulatedDoubleKeyboard[1].ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_UNICODE;
+			UINT returnValue = SendInput(2, simulatedDoubleKeyboard, sizeof(INPUT));	// remember
+			simulatedDoubleKeyboard[0].ki.dwFlags = KEYEVENTF_UNICODE;					// undo flag
+			simulatedDoubleKeyboard[1].ki.dwFlags = KEYEVENTF_UNICODE;					// return
+			return returnValue;
+		}
 	}
 
 	simulatedKeyboardUnicode.ki.wScan = codepoint;		// This is the unicode character
 
-	return SendInput(1, &simulatedKeyboardUnicode, sizeof(INPUT));		// 1. No. of inputs; 2. array of inputs; 3. size of one structure
+	if (keyDown)		// 1. No. of inputs; 2. array of inputs; 3. size of one structure
+		return SendInput(1, &simulatedKeyboardUnicode, sizeof(INPUT));
+	else
+	{
+		simulatedKeyboardUnicode.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_UNICODE;
+		UINT returnValue = SendInput(1, &simulatedKeyboardUnicode, sizeof(INPUT));
+		simulatedKeyboardUnicode.ki.dwFlags = KEYEVENTF_UNICODE;
+		return returnValue;
+	}
 }
 
 
@@ -103,7 +122,7 @@ UINT Multikeys::InputSimulator::SendKeyboardInput(Keystroke key)
 	if (key.vKey == 0)
 	{
 		// We must send a unicode instead
-		return SendUnicodeCharacter(key.codepoint);
+		return SendUnicodeCharacter(key.codepoint, (key.modifiers & MODIFIER_KEYUP ? 0 : 1));
 	}
 
 	// Ok, normal virtual key

@@ -61,7 +61,7 @@ namespace Multikeys
 		// Remarks:
 		//		An input event sent by this function contains a virtual key value
 		//		of 0xe7 (corresponds to no character). It does not generate raw input data.
-		UINT SendUnicodeCharacter(UINT32 codepoint);
+		UINT SendUnicodeCharacter(UINT32 codepoint, BOOL keyDown);
 
 
 	public:

@@ -34,13 +34,15 @@ RAWINPUT * raw;
 
 // Remapper
 std::string myString = std::string("F:\\MultiKeys\\configuration");
-Multikeys::Remapper remapper = Multikeys::Remapper(myString);
+Multikeys::Remapper remapper = Multikeys::Remapper(myString);					// change to actual constructor when it works
 
 // text to display on screen for debugging. Won't break as long as we're using safe memcpy.
 WCHAR* debugText = new WCHAR[DEBUG_TEXT_SIZE];
 WCHAR* debugTextKeyboardName = new WCHAR[DEBUG_TEXT_SIZE];
 WCHAR* debugTextBeingBlocked = new WCHAR[DEBUG_TEXT_SIZE];
 
+// Variables to hold timer values
+DWORD currentTime, startTime;
 
 // Buffer for the decisions whether to block the input with Hook
 std::deque<DecisionRecord> decisionBuffer;
@@ -62,10 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
-
 	// Setting up everything...
-	// (there's nothing yet)
 
 
     // Initialize global strings
@@ -86,7 +85,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))				// We might want to ignore all accelerators
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -152,15 +151,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    mainHwnd = hWnd;
 
 
-
+   // Show the window. This might need to go away someday.
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
-
 
    
    // Register for receiving Raw Input for keyboards
    RAWINPUTDEVICE rawInputDevice[1];
-   rawInputDevice[0].usUsagePage = 1;		// usage page = 1 and usage = 6 is for keyboards
+   rawInputDevice[0].usUsagePage = 1;		// usage page = 1 is generic and usage = 6 is for keyboards
    rawInputDevice[0].usUsage = 6;				// (2 is mouse, 4 is joystick, 6 is keyboard, there are others)
    rawInputDevice[0].dwFlags = RIDEV_INPUTSINK;		// Receive input even if the registered window is in the foreground
    rawInputDevice[0].hwndTarget = hWnd;				// Handle to the target window (NULL would make it follow kb focus)
@@ -192,7 +190,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
 	// Raw Input Message:
-	case WM_INPUT:			// <- is a UINT (unsigned int)
+	case WM_INPUT:				// case of UINTs
 	{	// brackets for locality
 
 		UINT bufferSize;		// work variable
@@ -253,15 +251,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (DEBUG)
 		{
 			memcpy_s(debugTextKeyboardName, DEBUG_TEXT_SIZE, keyboardNameBuffer, keyboardNameBufferSize);
-			// OutputDebugString(keyboardNameBuffer);
+			WCHAR * text = new WCHAR[200];
+			swprintf_s(text, 200, L"Keyboard name is %ls\n", keyboardNameBuffer);
+			OutputDebugString(text);
 		}	// will redraw later
 
 		// Call the function that decides whether to block or allow this keystroke
 		// Store that decision in the decisionBuffer; look for it when the hook asks.
 
 		// Check whether to block this key, and store the decision for when the hook asks for it
-		BOOL DoBlock = Remaps::EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer);		// ask
-		decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, DoBlock));	// remember the answer
+		Keystroke possibleAction;		// <- we don't know yet is our key maps to anything
+		BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
+		
+		decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
 
 		if (DEBUG) RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE);
 
@@ -281,6 +283,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// and long parameter contains whether or not the keypress is a down key.
 		USHORT virtualKeyCode = (USHORT)wParam;
 		USHORT keyPressed = lParam & 0x80000000 ? 0 : 1;
+		
 
 		WCHAR text[128];
 		swprintf_s(text, 128, L"Hook: %X (%d)\n", virtualKeyCode, keyPressed);
@@ -305,6 +308,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					// The problem that the hook can't see low level information about the keypress is exactly why this whole thing exists.
 					// Making them work together is not easy.
 					blockThisHook = iterator->decision;	// this was decided somewhere else
+					// Now, if the decision was to block the hook, we must act on it at this point, just before popping it
+					if (blockThisHook) remapper.SimulateKeystroke(iterator->mappedInput);
 					recordFound = TRUE;		// set the flag
 					// Then, remove this and all preceding messages from the buffer
 					for (int i = 0; i <= index; i++)		// <- up until and including this one
@@ -322,9 +327,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// At this point, recordFound is either TRUE or FALSE, and if TRUE, blockThisHook has the correct choice.
 
 		// Wait for the matching Raw Input message if the decision buffer was empty or the matching record wasn't there
-		DWORD currentTime, startTime;
+		
+
+		// Variables used for timers are startTime and currentTime
 		startTime = GetTickCount();			// <- record start time
-		// This happens every time and didn't need to.
 
 		// Will only fall into this if we didn't find the correct record.
 		// It's a lot of work, but hopefully won't happen frequently.
@@ -373,7 +379,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Load data into the buffer
 			GetRawInputData((HRAWINPUT)rawMessage.lParam, RID_INPUT, rawKeyboardBuffer, &rawKeyboardBufferSize, sizeof(RAWINPUTHEADER));
 
-			RAWINPUT* raw = (RAWINPUT*)rawKeyboardBuffer;
+			RAWINPUT* raw = (RAWINPUT*)rawKeyboardBuffer;		// <- casting into correct type for convenience
 
 			// A lot of code here is similar to that in the WM_INPUT case.
 
@@ -409,8 +415,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				// Turns out this raw input message wasn't the one we were looking for.
 				// Put it in the queue just like we did in the WM_INPUT case, and keep waiting.
-				BOOL doBlock = Remaps::EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer);
-				decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, doBlock));
+				Keystroke possibleInput;
+				BOOL doBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleInput);
+				decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleInput, doBlock));
 			}
 			else
 			{
@@ -418,7 +425,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				recordFound = TRUE;		// This will get us out of the loop.
 										// (the other way to exit the loop is by timing out)
 				// But we still didn't evaluate the raw message (it just arrived!)
-				blockThisHook = Remaps::EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer);
+				Keystroke possibleInput;
+				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleInput);
+				// Immediately act on the input if there is one, since this decision won't be stored in the buffer
+				if (blockThisHook) remapper.SimulateKeystroke(possibleInput);
 			}
 
 		}

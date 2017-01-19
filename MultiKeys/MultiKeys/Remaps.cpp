@@ -1,120 +1,151 @@
+#include "stdafx.h"
+
 #include "Remaps.h"
 
 
-struct KEYBOARD
+
+Multikeys::Remapper::Remapper(std::string filename)					// constructor
 {
-	// Name of this device
-	WCHAR * device_name;
+	
+	// Setup a keyboard input simulator
+	inputSimulator = InputSimulator();
 
-	// Map between scancodes and their unicode remaps
-	std::map<USHORT, WCHAR> remaps;
-
-	KEYBOARD()
+	if (!LoadSettings(filename))
 	{
-		device_name = new WCHAR[128];
+		// Error; figure out what to do.
 	}
-};
+}
 
-
-
-// Good idea to use this name?
-namespace MultiKeys
+BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 {
-	class Remapper
+	setlocale(LC_ALL, "");
+	// in-file-stream: will only read
+	std::ifstream file(filename.c_str());
+
+	// hold each line here:
+	std::string line;
+
+	// from <codecvt>, the object that will convert between narrow and wide strings (C++11 and newer)
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+	if (!file.is_open())
+		return FALSE;	// oh, no!
+
+						// read line by line:
+	while (getline(file, line))		// guarantees read until newline, unline file >> line
 	{
-	private:
-
-		// work variable
-		WCHAR * wcharWork;
-
-		// a vector of keyboards
-		std::vector<KEYBOARD> keyboards;
-		// to hold each keyboard
-
-		BOOL Remapper::LoadSettings(std::string filename)		// parser
+		// device_begin
+		// read device name into new KEYBOARD structure
+		// add its remaps one by one
+		if (line == "device_begin")
 		{
-			setlocale(LC_ALL, "");
-			// in-file-stream: will only read
-			std::ifstream file(filename.c_str());
-
-			// hold each line here:
-			std::string line;
-
-			if (!file.is_open())
-				return FALSE;	// oh, no!
-
-								// read line by line:
-			while (getline(file, line))		// guarantees read until newline, unline file >> line
+			// next line is the keyboard name
+			std::getline(file, line);
+			KEYBOARD thisKeyboard = KEYBOARD();
+			// copy keyboard name into newly created keyboard
+			// (swprintf_s because destination is in utf-16
+			auto wideString = std::wstring();
+			
+			wideString = converter.from_bytes(line);							// %ls is wide string
+			swprintf_s(thisKeyboard.device_name, thisKeyboard.device_name_sizeof, L"%ls", wideString.c_str());
+			// read the remaps one by one
+			while (getline(file, line))
 			{
-				// case one: device_name
-				// read device name into new KEYBOARD structure
-				// add its remaps one by one
-				if (line == "device_name")
+				if (line == "remap")
 				{
-					// next line is the keyboard name
-					std::getline(file, line);
-					KEYBOARD thisKeyboard;
-					// copy keyboard name into newly created keyboard
-					// (swprintf_s because destination is in unicode
-					swprintf_s(thisKeyboard.device_name, sizeof(thisKeyboard.device_name), L"%s", (std::wstring(line.begin(), line.end()).c_str()));
-					// read the remaps one by one
-					while (getline(file, line))
-					{
-						if (line == "remap")
-						{
-							// parse next line into a hexadecimal value
-							getline(file, line);
-							USHORT hexadecimal;
-							scanf_s(line.c_str(), "%hX", &hexadecimal);		// <- h: short // X: hex
-																			// parse next line into a (unicode) character
-							getline(file, line);
-							ULONG codePoint;
-							scanf_s(line.c_str(), "%lX", &codePoint);			// <- l: long // X: hex
+					// parse next line into hexadecimal values
+					getline(file, line);
+					USHORT scancode;
+					UINT codePoint;
 
-							thisKeyboard.remaps.insert(std::pair<USHORT, WCHAR>(hexadecimal, (WCHAR)codePoint));
-						}
-						else if (line == "device_end")
-						{
-							break;	// break the loop and expect a possible next device
-						}
-						else
-						{
-							// error: unexpected term
-							return FALSE;
-						}
-					}
+					// sscanf_s: from string into anything - should return the amount of scans
+					if (sscanf_s(line.c_str(), "%hx %x", &scancode, &codePoint) != 2)
+						return FALSE;			// hx is short-sized hex, x is int-sized hex
+					
+					thisKeyboard.remaps.insert(std::pair<USHORT, Keystroke>(scancode, Keystroke(codePoint)));
+				}
+				else if (line == "device_end")
+				{
+					break;	// break the loop and expect a possible next device
 				}
 				else
 				{
 					// error: unexpected term
 					return FALSE;
 				}
+			}
+			// finished this device. We'll add it to the list of devices
+			keyboards.push_back(thisKeyboard);
+		}
+		else
+		{
+			// error: unexpected term
+			return FALSE;
+		}
+		
+	}
+	return TRUE;
+}
 
+
+
+
+BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, Keystroke * out_action)
+{
+	// Get scancode (physical key)
+	USHORT scancode = keypressed->MakeCode;
+	
+	// Look for correct device; return FALSE (= do not block) otherwise
+	for (auto iterator = keyboards.begin(); iterator != keyboards.end(); iterator++)
+	{
+		if (wcscmp(iterator->device_name, deviceName) == 0)
+		{
+			// found it!
+			// check if the remaps map for this device contains our scancode
+			auto innerIt = iterator->remaps.find(scancode);
+			if (innerIt != iterator->remaps.end())
+			{
+				// Reaching this point means that the codepoint was found. Return it
+				if (keypressed->Flags & RI_KEY_BREAK ? 0 : 1)
+				{
+					// Copy the keystroke
+					*out_action = innerIt->second;		// "return" as in the out parameter
+					// We don't want to copy a reference. That would lead to the map itself.
+					return TRUE;
+				}
+				// This is a keyup.
+				// Do we return true and make a dummy action, or return false and let keyups through?
+				// We must have up keys remappings as well..
+				// What about we use a RAWKEYBOARD structure or similar instead of making our own?
+				// Our current solution is to modify one of the flags in the existing struct and
+				// return it. Others will hopefully know what to do.
+				*out_action = innerIt->second;
+				out_action->modifiers |= MODIFIER_KEYUP;
 				return TRUE;
 			}
+			else
+				return FALSE;
+			
 		}
+	}
 
-		void Remapper::SimulateKeyStroke(WCHAR)
-		{
-			;	// idk
-		}
-
-	public:
-
-		Remapper::Remapper(std::string filename)					// constructor
-		{
-			LoadSettings(filename);
-		}
-
-		BOOL Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName)
-		{
-			return TRUE;
-		}
-
-		BOOL Remapper::ReloadSettings(std::string filename)
-		{
-			LoadSettings(filename);
-			return TRUE;
-		}
-	};
+	return FALSE;
 }
+
+
+// oh, look, a wrapper
+BOOL Multikeys::Remapper::SimulateKeystroke(Keystroke key)
+{
+	return inputSimulator.SendKeyboardInput(key);
+}
+
+
+BOOL Multikeys::Remapper::ReloadSettings(std::string filename)
+{
+	LoadSettings(filename);
+	return TRUE;
+}
+
+
+
+

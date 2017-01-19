@@ -35,13 +35,27 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 
 // Keyboard Hook procedure (this syntax is necessary for all hook procedures)
 // This hook can block keys, Raw Input cannot.
-// int code determines the action to perform; depends on the type of hook
+// int code - either 0 (process), smaller than 0 (do not process), or 3 (someone called PeekMessage)
+// WPARAM wParam - virtual key code of the key that generated the message
+// LPARAM lParam - repeat count, scan code, extended-key flag, context code, previous state and transition state
 static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam)
 {
-	if (code < 0)
-	{
+
+	// Code smaller than zero (HC_ACTION) means "forward the message without further processing"
+	if (code != HC_ACTION)
+	{	// If another application calls PeekMessage, we will receive an extra input message
+		// carrying the code 3 (HC_NOREMOVE). If we allow those through, they will end up waiting
+		// for a corresponding raw input message that will never come.
 		return CallNextHookEx(hookHandle, code, wParam, lParam);
 	}
+
+	
+	// A virtual key code of e7 is used to pass unicode characters as if they were keystrokes
+	// In that case, the keystroke must have originated from our own fake SendInput keypress,
+	// and will not correspond to a raw input message. Thus, we ignore any message of vKey e7
+	if (wParam == 0xe7)
+		return CallNextHookEx(hookHandle, code, wParam, lParam);
+
 
 	// Report the event to the main window.
 	// Return value of 1 means block the input,

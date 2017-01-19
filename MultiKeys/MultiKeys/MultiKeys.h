@@ -7,17 +7,28 @@
 
 #include "resource.h"
 
-// SET THIS TO 0 TO DISABLE ALL DEBUG OUTPUT
-#define DEBUG				1
-#define DEBUG_TEXT_SIZE		128
+
 
 // Structure of a single record that will be saved in the decisionBuffer
 struct DecisionRecord
 {
+	// Information about the keypress that generated this record
 	RAWKEYBOARD keyboardInput;
+
+	// Information about the action to be taken, if any
+	Keystroke mappedInput;
+
+	// TRUE - this keypress should be blocked, and mappedInput should be carried out
+	// FALSE - this keypress should not be blocked, and there is no mapped input to be carried out
 	BOOL decision;
 
 	DecisionRecord(RAWKEYBOARD _keyboardInput, BOOL _decision) : keyboardInput(_keyboardInput), decision(_decision)
+	{
+		// Constructor
+	}
+
+	DecisionRecord(RAWKEYBOARD _keyboardInput, Keystroke _mappedInput, BOOL _decision)
+		: keyboardInput(_keyboardInput), mappedInput(_mappedInput), decision(_decision)
 	{
 		// Constructor
 	}

@@ -2,14 +2,15 @@
 
 #include "stdafx.h"
 
-#define MODIFIER_KEYUP		0b10000000	// 128
-#define MODIFIER_LCTRL		0b01000000	// 64
-#define MODIFIER_RCTRL		0b00100000	// 32
-#define MODIFIER_LALT		0b00010000	// 16
-#define MODIFIER_RALT		0b00001000	// 8
-#define MODIFIER_LSHIFT		0b00000100	// 4
-#define	MODIFIER_RSHIFT		0b00000010	// 2
-#define MODIFIER_WIN		0b00000001	// 1
+
+#define MODIFIER_LCTRL		0b10000000	// 128
+#define MODIFIER_RCTRL		0b01000000	// 64
+#define MODIFIER_LALT		0b00100000	// 32
+#define MODIFIER_RALT		0b00010000	// 16
+#define MODIFIER_LSHIFT		0b00001000	// 8
+#define	MODIFIER_RSHIFT		0b00000100	// 4
+#define MODIFIER_LWIN		0b00000010	// 2
+#define MODIFIER_RWIN		0x00000001	// 1
 
 namespace Multikeys
 {
@@ -22,9 +23,11 @@ namespace Multikeys
 		// Sometimes we need to simulate a surrogate pair, so we also
 		// have an array of two of them.
 		// And also a separate one for non-unicode keystrokes.
+		// And another one for modifiers
 		INPUT simulatedKeyboardUnicode;
 		INPUT * simulatedDoubleKeyboard;
 		INPUT simulatedKeyboardVirtualKey;
+		INPUT simulatedKeyboardModifiers;
 		// Initialize properly in the constructor
 
 		
@@ -38,10 +41,11 @@ namespace Multikeys
 		//		BYTE modifiers - flags indicating which (if any) modifier keys
 		//				are supposed to be held down when sending the stroke
 		//		USHORT vKey - virtual-key code (1 to 254) of the key to be sent
+		//		BOOL keyup - flag indicating whether signal is a keyup
 		// Return value:
 		//		UINT - returns the number of events that were successfully
 		//				inserted into the keyboard stream. Failed when 0.
-		UINT SendVirtualKey(BYTE modifiers, USHORT vKey);
+		UINT SendVirtualKey(BYTE modifiers, USHORT vKey, BOOL keyup);
 
 
 		// private UINT SendUnicodeCharacter
@@ -61,7 +65,7 @@ namespace Multikeys
 		// Remarks:
 		//		An input event sent by this function contains a virtual key value
 		//		of 0xe7 (corresponds to no character). It does not generate raw input data.
-		UINT SendUnicodeCharacter(UINT32 codepoint, BOOL keyDown);
+		UINT SendUnicodeCharacter(UINT32 codepoint, BOOL keyup);
 
 
 	public:
@@ -79,12 +83,12 @@ namespace Multikeys
 		// or a virtual-key code with modifiers.
 		//
 		// Parameters:
-		//		Keystroke key - keystroke structure that contains
+		//		KEYSTROKE_OUTPUT key - keystroke structure that contains
 		//				information about the key to simulate
 		// Return value:
 		//		UINT - returns the number of events that were successfully
 		//				inserted into the keyboard stream. Failed when 0.
-		UINT SendKeyboardInput(Keystroke key);	// Maybe we'll support Keystrokes with more options in the future.
-													// A good idea is a Keystroke with a string in it.
+		UINT SendKeyboardInput(KEYSTROKE_OUTPUT key);	// Maybe we'll support Keystrokes with more options in the future.
+													// A good idea is a KEYSTROKE_OUTPUT with a string in it.
 	};
 }

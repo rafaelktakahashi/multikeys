@@ -193,7 +193,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_INPUT:				// case of UINTs
 	{	// brackets for locality
 
-		UINT bufferSize;		// work variable
+		UINT bufferSize = 0;		// work variable
 
 		// Get data from the raw input structure
 		// Parameters:
@@ -224,8 +224,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (DEBUG)		// Report relevant data, if needed
 		{
 			WCHAR text[128];		// <- unnecessary allocation, but this is just for debug
-			swprintf_s(text, 128, L"Raw Input: virtual key %X scancode %X (%s)\n",
+			swprintf_s(text, 128, L"Raw Input: virtual key %X scancode %s%s%X (%s)\n",
 				raw->data.keyboard.VKey,		// virtual keycode
+				(raw->data.keyboard.Flags & RI_KEY_E0 ? L"e0 " : L""),
+				(raw->data.keyboard.Flags & RI_KEY_E1 ? L"e1 " : L""),
 				raw->data.keyboard.MakeCode,	// scancode
 				raw->data.keyboard.Flags & RI_KEY_BREAK ? L"up" : L"down");		// keydown or keyup (make/break)
 			OutputDebugString(text);
@@ -260,7 +262,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Store that decision in the decisionBuffer; look for it when the hook asks.
 
 		// Check whether to block this key, and store the decision for when the hook asks for it
-		Keystroke possibleAction;		// <- we don't know yet is our key maps to anything
+		KEYSTROKE_OUTPUT possibleAction;		// <- we don't know yet is our key maps to anything
 		BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 		
 		decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
@@ -415,7 +417,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				// Turns out this raw input message wasn't the one we were looking for.
 				// Put it in the queue just like we did in the WM_INPUT case, and keep waiting.
-				Keystroke possibleInput;
+				KEYSTROKE_OUTPUT possibleInput;
 				BOOL doBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleInput);
 				decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleInput, doBlock));
 			}
@@ -425,7 +427,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				recordFound = TRUE;		// This will get us out of the loop.
 										// (the other way to exit the loop is by timing out)
 				// But we still didn't evaluate the raw message (it just arrived!)
-				Keystroke possibleInput;
+				KEYSTROKE_OUTPUT possibleInput;
 				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleInput);
 				// Immediately act on the input if there is one, since this decision won't be stored in the buffer
 				if (blockThisHook) remapper.SimulateKeystroke(possibleInput);

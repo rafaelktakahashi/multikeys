@@ -29,15 +29,20 @@ Multikeys::InputSimulator::InputSimulator()
 	simulatedKeyboardVirtualKey.ki.dwExtraInfo = NULL;
 	simulatedKeyboardVirtualKey.ki.time = 0;
 
+	// Simulated keyboard for sending modifiers
+	simulatedKeyboardModifiers.type = INPUT_KEYBOARD;
+	simulatedKeyboardModifiers.ki.dwExtraInfo = NULL;
+	simulatedKeyboardModifiers.ki.time = 0;
+
 	// Remarks: wVk holds a virtual-key code in the range of 1 to 254, but must be 0 if
-	//		the unicode flag is set. wScan is the scancode, but hold the unicode code point
+	//		the unicode flag is set. wScan is the scancode, but holds the unicode code point
 	//		instead if the unicode flag is set.
 
 }
 
 
 
-UINT Multikeys::InputSimulator::SendVirtualKey(BYTE modifiers, USHORT vKey)
+UINT Multikeys::InputSimulator::SendVirtualKey(BYTE modifiers, USHORT vKey, BOOL keyup)
 {
 	// TODO: implement modifiers
 
@@ -50,14 +55,111 @@ UINT Multikeys::InputSimulator::SendVirtualKey(BYTE modifiers, USHORT vKey)
 		delete[] text;
 	}
 
+	UINT result = 0;
+
+	// not too proud of this:
+	if (!keyup)
+	{
+		simulatedKeyboardModifiers.ki.dwFlags = 0;
+		// Handle modifiers
+		if (modifiers & MODIFIER_LSHIFT)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_LSHIFT;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_RSHIFT)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_RSHIFT;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_LCTRL)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_LCONTROL;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_RCTRL)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_RCONTROL;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_LALT)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_LMENU;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_RALT)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_RMENU;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_LWIN)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_LWIN;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_RWIN)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_RWIN;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+	}
+
 	simulatedKeyboardVirtualKey.ki.wVk = vKey;
-	simulatedKeyboardVirtualKey.ki.dwFlags = (modifiers & MODIFIER_KEYUP ? KEYEVENTF_KEYUP : 0);
-	return SendInput(1, &simulatedKeyboardVirtualKey, sizeof(INPUT));
+	simulatedKeyboardVirtualKey.ki.dwFlags = (keyup ? KEYEVENTF_KEYUP : 0);
+	result += SendInput(1, &simulatedKeyboardVirtualKey, sizeof(INPUT));
+
+	if (keyup)
+	{
+		simulatedKeyboardModifiers.ki.dwFlags = KEYEVENTF_KEYUP;
+		// Handle modifiers
+		if (modifiers & MODIFIER_LSHIFT)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_LSHIFT;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_RSHIFT)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_RSHIFT;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_LCTRL)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_LCONTROL;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_RCTRL)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_RCONTROL;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_LALT)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_LMENU;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_RALT)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_RMENU;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_LWIN)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_LWIN;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+		if (modifiers & MODIFIER_RWIN)
+		{
+			simulatedKeyboardModifiers.ki.wVk = VK_RWIN;
+			result += SendInput(1, &simulatedKeyboardModifiers, sizeof(INPUT));
+		}
+	}
+	
+	return result;
 }
 
 
 
-UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyDown)
+UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyup)
 {
 
 	if (DEBUG)
@@ -89,7 +191,7 @@ UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyD
 		simulatedDoubleKeyboard[0].ki.wScan = 0xd800 + (codepoint >> 10);		// first message, high surrogate
 		simulatedDoubleKeyboard[1].ki.wScan = 0xdc00 + (codepoint & 0x3ff);		// second message, low surrogate
 
-		if (keyDown)
+		if (!keyup)
 			return SendInput(2, simulatedDoubleKeyboard, sizeof(INPUT));
 		else
 		{
@@ -102,9 +204,10 @@ UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyD
 		}
 	}
 
+	// reaching this point means it's not a surrogate pair
 	simulatedKeyboardUnicode.ki.wScan = codepoint;		// This is the unicode character
 
-	if (keyDown)		// 1. No. of inputs; 2. array of inputs; 3. size of one structure
+	if (!keyup)		// 1. No. of inputs; 2. array of inputs; 3. size of one structure
 		return SendInput(1, &simulatedKeyboardUnicode, sizeof(INPUT));
 	else
 	{
@@ -117,14 +220,14 @@ UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyD
 
 
 
-UINT Multikeys::InputSimulator::SendKeyboardInput(Keystroke key)
+UINT Multikeys::InputSimulator::SendKeyboardInput(KEYSTROKE_OUTPUT key)
 {
 	if (key.vKey == 0)
 	{
 		// We must send a unicode instead
-		return SendUnicodeCharacter(key.codepoint, (key.modifiers & MODIFIER_KEYUP ? 0 : 1));
+		return SendUnicodeCharacter(key.codepoint, key.flags & KEYEVENTF_KEYUP);
 	}
 
 	// Ok, normal virtual key
-	return SendVirtualKey(key.modifiers, key.vKey);
+	return SendVirtualKey(key.modifiers, key.vKey, key.flags & KEYEVENTF_KEYUP);
 }

@@ -33,7 +33,7 @@ WCHAR * keyboardNameBuffer = new WCHAR[keyboardNameBufferSize];
 RAWINPUT * raw;
 
 // Remapper
-std::string myString = std::string("F:\\MultiKeys\\configuration");
+std::string myString = std::string("C:\\MultiKeys\\configuration");
 Multikeys::Remapper remapper = Multikeys::Remapper(myString);					// change to actual constructor when it works
 
 // text to display on screen for debugging. Won't break as long as we're using safe memcpy.
@@ -224,7 +224,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (DEBUG)		// Report relevant data, if needed
 		{
 			WCHAR text[128];		// <- unnecessary allocation, but this is just for debug
-			swprintf_s(text, 128, L"Raw Input: virtual key %X scancode %s%s%X (%s)\n",
+			swprintf_s(text, 128, L"Raw Input: Virtual key %X scancode %s%s%X (%s)\n",
 				raw->data.keyboard.VKey,		// virtual keycode
 				(raw->data.keyboard.Flags & RI_KEY_E0 ? L"e0 " : L""),
 				(raw->data.keyboard.Flags & RI_KEY_E1 ? L"e1 " : L""),
@@ -249,14 +249,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Load the device name into the buffer
 		GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, keyboardNameBuffer, &keyboardNameBufferSize);
 		// Now the buffer contains the name of the device that sent the signal
-
+		
+		/*
 		if (DEBUG)
 		{
 			memcpy_s(debugTextKeyboardName, DEBUG_TEXT_SIZE, keyboardNameBuffer, keyboardNameBufferSize);
 			WCHAR * text = new WCHAR[200];
-			swprintf_s(text, 200, L"Keyboard name is %ls\n", keyboardNameBuffer);
+			swprintf_s(text, 200, L"Raw Input: Keyboard name is %ls\n", keyboardNameBuffer);
 			OutputDebugString(text);
 		}	// will redraw later
+		*/
 
 		// Call the function that decides whether to block or allow this keystroke
 		// Store that decision in the decisionBuffer; look for it when the hook asks.
@@ -264,6 +266,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Check whether to block this key, and store the decision for when the hook asks for it
 		KEYSTROKE_OUTPUT possibleAction;		// <- we don't know yet is our key maps to anything
 		BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
+
+		// The special case with AltGr: It does not produce a RALT scancode; rather, rawinput sees LALT and the hook
+		// sees Ctrl-Alt (0x11, 0x12).
+		// We have to deal with it. I don't know how, though.
 		
 		decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
 
@@ -284,12 +290,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// In this message, word parameter contains the virtual key code (not scancode),
 		// and long parameter contains whether or not the keypress is a down key.
 		USHORT virtualKeyCode = (USHORT)wParam;
-		USHORT keyPressed = lParam & 0x80000000 ? 0 : 1;
+
+		// Flags: bits 16 to 23 in lParam contains the scancode, 24 indicates extended key, bit 29 indicates the ALT key, 31 is keyup
+		// Don't forget to count the bits from 0, least significant to most significant.
+		USHORT keyPressed = !((lParam >> 31) & 1);			// gets the thirty-first bit which is 1 when it's a keyup; inverse it
+		USHORT extractedScancode = (lParam >> 16) & 255;	// extract one full byte at position 16
+		USHORT isExtended = (lParam >> 24) & 1;				// twenty-fourth bit
+		// There exists a KF_ALTDOWN define set to 0x2000. Very sadly, that's incorrect and points to bit 13 instead of 29.
+		// In fact, all of these KF flags seem to be one byte less than they should. I don't know the deal with that.
+		USHORT isAltKeyDown = (lParam >> 29) & 1;			// twenty-ninth bit
+		
+
+		// We should ignore keys that go up when they were already up. For now, we send a warning to the debug screen.
+		USHORT previousStateFlag = (lParam >> 30) & 1;
 		
 
 		WCHAR text[128];
-		swprintf_s(text, 128, L"Hook: %X (%d)\n", virtualKeyCode, keyPressed);
-		if (DEBUG) OutputDebugString(text);	// <- sends to debug window
+		if (DEBUG)
+		{
+			swprintf_s(text, 128, L"Hook: vKey=%X keydown=%d sc=%x extend=%d Alt=%d raw lParam=%x\n",
+				virtualKeyCode, keyPressed, extractedScancode, isExtended, isAltKeyDown, lParam);
+			OutputDebugString(text);	// <- sends to debug window
+		}
+		
 
 		// Check the Raw Input buffer to see if this Hook message is supposed to be blocked; WdnProc returns 1 if it is
 		BOOL blockThisHook = FALSE;
@@ -302,13 +325,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				iterator != decisionBuffer.end();
 				iterator++, index++)
 			{
-				if (iterator->keyboardInput.VKey == virtualKeyCode)		// match!
+				if (iterator->keyboardInput.VKey == virtualKeyCode
+					&& iterator->keyboardInput.MakeCode == extractedScancode)		// match!
 				{
-					// Actually, this doesn't guarantee a match:
-					// 1. Keys in two different keyboards corresponding to the same virtual key may be pressed in rapid succession
-					// 2. Two physical keys may correspond to one virtual key if other remaps have been done. This shouldn't happen.
-					// The problem that the hook can't see low level information about the keypress is exactly why this whole thing exists.
-					// Making them work together is not easy.
+					// Actually, this doesn't guarantee a match;
+					// Keys in two different keyboards corresponding to the same virtual key may be pressed in rapid succession
+
 					blockThisHook = iterator->decision;	// this was decided somewhere else
 					// Now, if the decision was to block the hook, we must act on it at this point, just before popping it
 					if (blockThisHook) remapper.SimulateKeystroke(iterator->mappedInput);
@@ -365,7 +387,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 
 			// The Raw Input message has arrived; decide whether to block the input
-			// We're still inside that possibility that the message took long to arrive.
+			// We're still in that case that the raw message took long to arrive.
 			UINT bufferSize;
 
 			// See if we'll need more space
@@ -413,7 +435,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Evaluate and take action depending on whether the message is the one we were expecting:
 
 			// If the raw input message doesn't match the hook, push it into the buffer and continue waiting
-			if (virtualKeyCode != raw->data.keyboard.VKey)
+			if (virtualKeyCode != raw->data.keyboard.VKey
+				|| extractedScancode != raw->data.keyboard.MakeCode)						// Plenty of checks here,
+				// Unfortunately, an exended key doesn't necessarily correspond to a scancode with e0 prefix.
 			{
 				// Turns out this raw input message wasn't the one we were looking for.
 				// Put it in the queue just like we did in the WM_INPUT case, and keep waiting.
@@ -427,10 +451,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				recordFound = TRUE;		// This will get us out of the loop.
 										// (the other way to exit the loop is by timing out)
 				// But we still didn't evaluate the raw message (it just arrived!)
-				KEYSTROKE_OUTPUT possibleInput;
-				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleInput);
+				KEYSTROKE_OUTPUT possibleOutput;
+				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleOutput);
 				// Immediately act on the input if there is one, since this decision won't be stored in the buffer
-				if (blockThisHook) remapper.SimulateKeystroke(possibleInput);
+				if (blockThisHook) remapper.SimulateKeystroke(possibleOutput);
 			}
 
 		}

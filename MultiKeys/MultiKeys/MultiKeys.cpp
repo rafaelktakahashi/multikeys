@@ -250,6 +250,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, keyboardNameBuffer, &keyboardNameBufferSize);
 		// Now the buffer contains the name of the device that sent the signal
 		
+		
 		/*
 		if (DEBUG)
 		{
@@ -259,6 +260,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			OutputDebugString(text);
 		}	// will redraw later
 		*/
+
 
 		// Call the function that decides whether to block or allow this keystroke
 		// Store that decision in the decisionBuffer; look for it when the hook asks.

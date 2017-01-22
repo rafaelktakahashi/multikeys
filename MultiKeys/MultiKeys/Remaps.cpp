@@ -21,6 +21,7 @@ Multikeys::Remapper::Remapper(std::string filename)					// constructor
 // When that's ready, this function should just call that.
 BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 {
+	/*
 	setlocale(LC_ALL, "");
 	// in-file-stream: will only read
 	std::ifstream file(filename.c_str());
@@ -88,14 +89,14 @@ BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 
 	}
 	return TRUE;
+	*/
+	return Parser::ReadFile(filename, &keyboards);
 }
 
 
 // Temporary function to test the parser
 void ParserTest()
 {
-	auto tester = std::unordered_map<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT>();
-	BOOL res = Parser::ReadFile(std::string("C:\\MultiKeys\\Multi"), &tester);
 	return;
 }
 
@@ -106,8 +107,8 @@ void ParserTest()
 
 BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, KEYSTROKE_OUTPUT * out_action)
 {
-	// Get scancode (physical key)
-	USHORT scancode = keypressed->MakeCode;
+	// Get scancode (physical key)=
+	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(keypressed->MakeCode, keypressed->Flags);
 	
 	// Look for correct device; return FALSE (= do not block) otherwise
 	for (auto iterator = keyboards.begin(); iterator != keyboards.end(); iterator++)
@@ -116,7 +117,7 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 		{
 			// found it!
 			// check if the remaps map for this device contains our scancode
-			auto innerIt = iterator->remaps.find(scancode);
+			auto innerIt = iterator->remaps.find(input);
 			if (innerIt != iterator->remaps.end())
 			{
 				// Reaching this point means that the codepoint was found. Return it

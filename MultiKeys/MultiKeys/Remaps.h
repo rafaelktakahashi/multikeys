@@ -17,9 +17,8 @@ struct KEYBOARD
 
 	// The simulator that sends keystrokes
 
-	// Map between scancodes and their unicode remaps
-	// 32-bits can represent any unicode code point
-	std::unordered_map<USHORT, KEYSTROKE_OUTPUT> remaps;
+	// Map between inputs and outputs
+	std::unordered_map<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT> remaps;
 
 	KEYBOARD()
 	{
@@ -165,7 +164,7 @@ private:
 		(*code) = 0;
 
 		input_char = stream->peek();		// evaluate *next* character
-		switch (input_char)
+		switch (input_char)					// TODO: Put this switch into a loop
 		{
 		case '<':					// next modifier is left only
 			sideModifier = 1;
@@ -237,6 +236,9 @@ private:
 		default:			// Do not extract character
 			return FALSE;
 		}
+
+		// switch ran out?
+		return FALSE;
 	}
 
 
@@ -298,7 +300,7 @@ private:
 public:
 
 	// This isn't an interpreter.
-	static BOOL ReadFile(std::string filename, std::unordered_map<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT> * map)
+	static BOOL ReadFile(std::string filename, std::vector<KEYBOARD> * ptrVectorKeyboard)
 	{
 		// having a function explicitly expect such a specific map is not very nice, but that's what I could do.
 
@@ -311,10 +313,10 @@ public:
 		if (!file.is_open())
 			return FALSE;							// oh, no!
 
-		map->clear();								// First of all, clear the map
+		ptrVectorKeyboard->clear();					// clear all keyboards with the maps in them
 
 
-													// hold one line
+		// hold one line
 		auto lineBuffer = std::string();
 
 		// hold one symbol
@@ -350,6 +352,7 @@ public:
 			if (!ReadSymbol(&file, &symbol))
 			{
 				// save keyboard and close
+				ptrVectorKeyboard->push_back(keyboard);
 				return TRUE;
 			}
 			// evaluate symbol
@@ -370,7 +373,7 @@ public:
 				read_char = file.get();
 				if (read_char != ')') return FALSE;
 				// place input and output into current keyboard
-				map->insert(std::pair<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT>(input, output));
+				keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT>(input, output)));
 			}
 			else if (symbol == "virtual")
 			{
@@ -389,18 +392,30 @@ public:
 				read_char = file.get();
 				if (read_char != ')') return FALSE;
 				// place input and output into current keyboard
-				map->insert(std::pair<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT>(input, output));
+				keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT>(input, output)));
 			}
 			else if (symbol == "keyboard")
 			{
 				// case 3 - new keyboard
 				// save this keyboard
-				// well, we just close for now
-				return TRUE;
+				ptrVectorKeyboard->push_back(keyboard);
+				// read a new one=
+				if (!ReadSymbol(&file, &symbol)) return FALSE;
+				if (symbol != "keyboard") return FALSE;
+				// expect left parenthesis
+				read_char = file.get();
+				if (read_char != '(') return FALSE;
+				// read keyboard name
+				if (!ReadKeyboardName(&file, &keyboard)) return FALSE;
+				// expect right parenthesis
+				read_char = file.get();
+				if (read_char != ')') return FALSE;
+				// jump to next line
+				getline(file, lineBuffer);
 			}
 			// jump line
 			getline(file, lineBuffer);
 
-		}
+		}	// loop
 	}
 };

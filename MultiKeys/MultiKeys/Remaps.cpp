@@ -13,83 +13,14 @@ Multikeys::Remapper::Remapper(std::string filename)					// constructor
 	{
 		// Error; figure out what to do.
 	}
+	OutputDebugString(L"Initialized.");
 }
 
 
 
-// A static class dedicated to parsing the configuration file is under development
-// When that's ready, this function should just call that.
+
 BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 {
-	/*
-	setlocale(LC_ALL, "");
-	// in-file-stream: will only read
-	std::ifstream file(filename.c_str());
-
-	// hold each line here:
-	std::string line;
-
-	// from <codecvt>, the object that will convert between narrow and wide strings (C++11 and newer)
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-
-	if (!file.is_open())
-		return FALSE;	// oh, no!
-
-						// read line by line:
-	while (getline(file, line))		// guarantees read until newline, unlike file >> line
-	{
-		// device_begin
-		// read device name into new KEYBOARD structure
-		// add its remaps one by one
-		if (line == "device_begin")
-		{
-			// next line is the keyboard name
-			std::getline(file, line);
-			KEYBOARD thisKeyboard = KEYBOARD();
-			// copy keyboard name into newly created keyboard
-			// (swprintf_s because destination is in utf-16
-			auto wideString = std::wstring();
-
-			wideString = converter.from_bytes(line);							// %ls is wide string
-			swprintf_s(thisKeyboard.device_name, thisKeyboard.device_name_sizeof, L"%ls", wideString.c_str());
-			// read the remaps one by one
-			while (getline(file, line))
-			{
-				if (line == "remap")
-				{
-					// parse next line into hexadecimal values
-					getline(file, line);
-					USHORT scancode;
-					UINT codePoint;
-
-					// sscanf_s: from string into anything - should return the amount of scans
-					if (sscanf_s(line.c_str(), "%hx %x", &scancode, &codePoint) != 2)
-						return FALSE;			// hx is short-sized hex, x is int-sized hex
-
-					thisKeyboard.remaps.insert(std::pair<USHORT, KEYSTROKE_OUTPUT>(scancode, KEYSTROKE_OUTPUT(codePoint)));
-				}
-				else if (line == "device_end")
-				{
-					break;	// break the loop and expect a possible next device
-				}
-				else
-				{
-					// error: unexpected term
-					return FALSE;
-				}
-			}
-			// finished this device. We'll add it to the list of devices
-			keyboards.push_back(thisKeyboard);
-		}
-		else
-		{
-			// error: unexpected term
-			return FALSE;
-		}
-
-	}
-	return TRUE;
-	*/
 	return Parser::ReadFile(filename, &keyboards);
 }
 
@@ -107,8 +38,21 @@ void ParserTest()
 
 BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, KEYSTROKE_OUTPUT * out_action)
 {
-	// Get scancode (physical key)=
-	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(keypressed->MakeCode, keypressed->Flags);
+	// Make an input
+
+	BYTE modifiers = 0;
+	// GetKeyState checks the state of a virtual key at the time of this event, not this very moment
+	// Most significant bit is 1 if key is down
+	modifiers += (GetKeyState(VK_LCONTROL & 0x8000) ? MODIFIER_LCTRL : 0);
+	modifiers += (GetKeyState(VK_RCONTROL & 0x8000) ? MODIFIER_RCTRL : 0);
+	modifiers += (GetKeyState(VK_LSHIFT & 0x8000) ? MODIFIER_LSHIFT : 0);
+	modifiers += (GetKeyState(VK_RSHIFT & 0x8000) ? MODIFIER_RSHIFT : 0);
+	modifiers += (GetKeyState(VK_LMENU & 0x8000) ? MODIFIER_LALT : 0);
+	modifiers += (GetKeyState(VK_RMENU & 0x8000) ? MODIFIER_RALT : 0);
+	modifiers += (GetKeyState(VK_LWIN & 0x8000) ? MODIFIER_LWIN : 0);
+	modifiers += (GetKeyState(VK_RWIN & 0x8000) ? MODIFIER_RWIN : 0);
+	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(modifiers, keypressed->MakeCode, keypressed->Flags);
+	// We'll look for a similar one in our list
 	
 	// Look for correct device; return FALSE (= do not block) otherwise
 	for (auto iterator = keyboards.begin(); iterator != keyboards.end(); iterator++)

@@ -164,81 +164,81 @@ private:
 		(*code) = 0;
 
 		input_char = stream->peek();		// evaluate *next* character
-		switch (input_char)					// TODO: Put this switch into a loop
+		while (true)
 		{
-		case '<':					// next modifier is left only
-			sideModifier = 1;
-			stream->get();
-			break;
-
-		case '>':					// next modifier is right only
-			sideModifier = 2;
-			stream->get();
-			break;
-
-		case '#':					// Winkey (unaffected by side modifiers)
-			if (sideModifier == 1 || sideModifier == 0)
-				*modifiers |= MODIFIER_LWIN;
-			if (sideModifier == 2 || sideModifier == 0)
-				*modifiers |= MODIFIER_RWIN;		// (I've never seen a right Winkey)
-			sideModifier = 0;
-			stream->get();
-			break;
-
-		case '^':					// Ctrl
-			if (sideModifier == 1 || sideModifier == 0)
-				*modifiers |= MODIFIER_LCTRL;
-			if (sideModifier == 2 || sideModifier == 0)
-				*modifiers |= MODIFIER_RCTRL;
-			sideModifier = 0;
-			stream->get();
-			break;
-
-		case '!':					// Alt
-			if (sideModifier == 1 || sideModifier == 0)
-				*modifiers |= MODIFIER_LALT;
-			if (sideModifier == 2 || sideModifier == 0)
-				*modifiers |= MODIFIER_RALT;
-			sideModifier = 0;
-			stream->get();
-			break;
-
-		case '+':					// Shift
-			if (sideModifier == 1 || sideModifier == 0)
-				*modifiers |= MODIFIER_LSHIFT;
-			if (sideModifier == 2 || sideModifier == 0)
-				*modifiers |= MODIFIER_RSHIFT;
-			sideModifier = 0;
-			stream->get();
-			break;
-
-		case '0':
-		{	// brackets for locality
-			// expect an 'x' or 'X'
-			stream->get();
-			input_char = stream->peek();
-			if (input_char != 'x' && input_char != 'X')
-				return FALSE;
-			stream->get();
-			// while the next character is a hexadecimal digit, read it
-			std::string numberBuffer = std::string();
-			while (isxdigit(stream->peek()))
+			switch (input_char)					// TODO: Put this switch into a loop
 			{
-				numberBuffer += stream->get();
+			case '<':					// next modifier is left only
+				sideModifier = 1;
+				stream->get();
+				break;
+
+			case '>':					// next modifier is right only
+				sideModifier = 2;
+				stream->get();
+				break;
+
+			case '#':					// Winkey (unaffected by side modifiers)
+				if (sideModifier == 1 || sideModifier == 0)
+					*modifiers |= MODIFIER_LWIN;
+				if (sideModifier == 2 || sideModifier == 0)
+					*modifiers |= MODIFIER_RWIN;		// (I've never seen a right Winkey)
+				sideModifier = 0;
+				stream->get();
+				break;
+
+			case '^':					// Ctrl
+				if (sideModifier == 1 || sideModifier == 0)
+					*modifiers |= MODIFIER_LCTRL;
+				if (sideModifier == 2 || sideModifier == 0)
+					*modifiers |= MODIFIER_RCTRL;
+				sideModifier = 0;
+				stream->get();
+				break;
+
+			case '!':					// Alt
+				if (sideModifier == 1 || sideModifier == 0)
+					*modifiers |= MODIFIER_LALT;
+				if (sideModifier == 2 || sideModifier == 0)
+					*modifiers |= MODIFIER_RALT;
+				sideModifier = 0;
+				stream->get();
+				break;
+
+			case '+':					// Shift
+				if (sideModifier == 1 || sideModifier == 0)
+					*modifiers |= MODIFIER_LSHIFT;
+				if (sideModifier == 2 || sideModifier == 0)
+					*modifiers |= MODIFIER_RSHIFT;
+				sideModifier = 0;
+				stream->get();
+				break;
+
+			case '0':
+			{	// brackets for locality
+				// expect an 'x' or 'X'
+				stream->get();
+				input_char = stream->peek();
+				if (input_char != 'x' && input_char != 'X')
+					return FALSE;
+				stream->get();
+				// while the next character is a hexadecimal digit, read it
+				std::string numberBuffer = std::string();
+				while (isxdigit(stream->peek()))
+				{
+					numberBuffer += stream->get();
+				}
+				if (sscanf_s(numberBuffer.c_str(), "%x", code) != 1)
+					return FALSE;		// that's one way to cast
+										// we're not trying to be fast, exactly
+										// scanf returns the amount of variables scanned
+				else return TRUE;
 			}
-			if (sscanf_s(numberBuffer.c_str(), "%x", code) != 1)
-				return FALSE;		// that's one way to cast
-									// we're not trying to be fast, exactly
-									// scanf returns the amount of variables scanned
-			else return TRUE;
-		}
 
-		default:			// Do not extract character
-			return FALSE;
-		}
-
-		// switch ran out?
-		return FALSE;
+			default:			// Do not extract character
+				return FALSE;
+			}	// end of switch
+		}	// loop
 	}
 
 

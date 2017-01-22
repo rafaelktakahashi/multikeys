@@ -33,7 +33,7 @@ WCHAR * keyboardNameBuffer = new WCHAR[keyboardNameBufferSize];
 RAWINPUT * raw;
 
 // Remapper
-std::string myString = std::string("C:\\MultiKeys\\configuration");
+std::string myString = std::string("C:\\MultiKeys\\Multi");
 Multikeys::Remapper remapper = Multikeys::Remapper(myString);					// change to actual constructor when it works
 
 // text to display on screen for debugging. Won't break as long as we're using safe memcpy.

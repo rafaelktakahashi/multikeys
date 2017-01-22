@@ -33,8 +33,7 @@ WCHAR * keyboardNameBuffer = new WCHAR[keyboardNameBufferSize];
 RAWINPUT * raw;
 
 // Remapper
-std::string myString = std::string("C:\\MultiKeys\\Multi");
-Multikeys::Remapper remapper = Multikeys::Remapper(myString);					// change to actual constructor when it works
+Multikeys::Remapper remapper = Multikeys::Remapper();
 
 // text to display on screen for debugging. Won't break as long as we're using safe memcpy.
 WCHAR* debugText = new WCHAR[DEBUG_TEXT_SIZE];
@@ -62,11 +61,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-
-	// Setting up everything...
-
-
+    // UNREFERENCED_PARAMETER(lpCmdLine);			// <- is it ok to comment out?
+	
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_MULTIKEYS, szWindowClass, MAX_LOADSTRING);
@@ -82,10 +78,38 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
+	// Setting up everything...
+	LPWSTR * szArgList;			// to hold arguments (only one: path to configuration file)
+	int argCount;
+	szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount);
+	if (szArgList == NULL)
+	{
+		OutputDebugString(L"No arguments found. Initializing with default file");
+		remapper.LoadSettings("C:\\MultiKeys\\Multi");
+	}
+	else if (argCount != 2)
+	{
+		OutputDebugString(L"Wrong number of arguments. Initializing with default file");
+		remapper.LoadSettings("C:\\MultiKeys\\Multi");
+	}
+	else
+	{
+		// try this
+		if (!remapper.LoadSettings(std::wstring(szArgList[1])))
+		{
+			OutputDebugString(L"Failed to open file. Initializing with default file");
+			remapper.LoadSettings("C:\\MultiKeys\\Multi");
+		}
+	}
+
+	// return of CommandLineToArgvW is a contiguous memory of pointers
+	LocalFree(szArgList);			// return it to the abyss
+
+
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))				// We might want to ignore all accelerators
+        if (/*!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)*/ true)				// We might want to ignore all accelerators
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -251,15 +275,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Now the buffer contains the name of the device that sent the signal
 		
 		
-		/*
+		
 		if (DEBUG)
 		{
 			memcpy_s(debugTextKeyboardName, DEBUG_TEXT_SIZE, keyboardNameBuffer, keyboardNameBufferSize);
 			WCHAR * text = new WCHAR[200];
 			swprintf_s(text, 200, L"Raw Input: Keyboard name is %ls\n", keyboardNameBuffer);
-			OutputDebugString(text);
+			// OutputDebugString(text);
 		}	// will redraw later
-		*/
+		
 
 
 		// Call the function that decides whether to block or allow this keystroke

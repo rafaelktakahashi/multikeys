@@ -42,8 +42,7 @@ namespace Multikeys
 		// It would be possible to make a map between keyboard name and keyboard
 		// but we won't have that many at once to require such a thing
 
-		// Loads the settings in file at filename into memory
-		BOOL LoadSettings(std::string filename);
+		
 
 		// Class that will simulate the output for this remapper
 		InputSimulator inputSimulator;
@@ -54,6 +53,17 @@ namespace Multikeys
 		// Parameters:
 		//		std::string - full path to the configuration file to be read
 		Remapper(std::string filename);
+		Remapper(std::wstring filename);
+		// Constructor
+		//
+		// Creates an instance with an empty map. Must be properly initialized with LoadSettings
+		//
+		// Parameters: none
+		Remapper();
+
+		// Loads the settings in file at filename into memory
+		BOOL LoadSettings(std::string filename);
+		BOOL LoadSettings(std::wstring filename);
 
 		// EvaluateKey
 		//
@@ -75,16 +85,6 @@ namespace Multikeys
 
 		BOOL SimulateKeystroke(KEYSTROKE_OUTPUT key);
 
-		// ReloadSettings
-		//
-		// Replace all remaps in memory with the settings in file at filename.
-		//
-		// Parameters:
-		//		std::string - full path to the configuration file to be read
-		// Return value:
-		//		TRUE - Reload succeeded
-		//		FALSE - Reload was unsuccessful
-		BOOL ReloadSettings(std::string filename);
 
 
 	};

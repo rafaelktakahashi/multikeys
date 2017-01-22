@@ -11,9 +11,22 @@ Multikeys::Remapper::Remapper(std::string filename)					// constructor
 
 	if (!LoadSettings(filename))
 	{
-		// Error; figure out what to do.
+		
 	}
 	OutputDebugString(L"Initialized.");
+}
+Multikeys::Remapper::Remapper(std::wstring filename)
+{
+	// Setup a keyboard input simulator
+	inputSimulator = InputSimulator();
+
+	if (!LoadSettings(filename))
+	{ }
+	OutputDebugString(L"Initialized.");
+}
+Multikeys::Remapper::Remapper()
+{
+	// InputSimulator is not initialized;
 }
 
 
@@ -22,6 +35,11 @@ Multikeys::Remapper::Remapper(std::string filename)					// constructor
 BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 {
 	return Parser::ReadFile(filename, &keyboards);
+}
+BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return Parser::ReadFile(converter.to_bytes(filename), &keyboards);
 }
 
 
@@ -87,18 +105,13 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 }
 
 
-// oh, look, a wrapper
+// oh, look, wrappers
 BOOL Multikeys::Remapper::SimulateKeystroke(KEYSTROKE_OUTPUT key)
 {
 	return inputSimulator.SendKeyboardInput(key);
 }
 
 
-BOOL Multikeys::Remapper::ReloadSettings(std::string filename)
-{
-	LoadSettings(filename);
-	return TRUE;
-}
 
 
 

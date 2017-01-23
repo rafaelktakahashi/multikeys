@@ -34,7 +34,7 @@ Multikeys::Remapper::Remapper()
 
 BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 {
-	std::ifstream file(filename.c_str());		// Open file with ANSI filename
+	std::ifstream file(filename);		// Open file with ANSI filename
 
 	if (!file.is_open())
 		return FALSE;
@@ -45,7 +45,7 @@ BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 }
 BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
 {
-	std::ifstream file(filename.c_str());		// Open file with unicode (UTF-16) filename
+	std::ifstream file(filename);		// Open file with unicode (UTF-16) filename
 
 	if (!file.is_open())
 		return FALSE;

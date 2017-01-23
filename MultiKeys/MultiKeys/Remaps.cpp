@@ -34,12 +34,21 @@ Multikeys::Remapper::Remapper()
 
 BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 {
-	return Parser::ReadFile(filename, &keyboards);
+	std::ifstream file(filename.c_str());		// Open file with ANSI filename
+
+	if (!file.is_open())
+		return FALSE;
+
+	return Parser::ReadFile(&file, &keyboards);
 }
 BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
 {
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	return Parser::ReadFile(converter.to_bytes(filename), &keyboards);
+	std::ifstream file(filename.c_str());		// Open file with unicode (UTF-16) filename
+
+	if (!file.is_open())
+		return FALSE;
+
+	return Parser::ReadFile(&file, &keyboards);
 }
 
 

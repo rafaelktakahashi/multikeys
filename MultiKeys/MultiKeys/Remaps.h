@@ -303,7 +303,7 @@ private:
 public:
 
 	// This isn't an interpreter.
-	static BOOL ReadFile(std::string filename, std::vector<KEYBOARD> * ptrVectorKeyboard)
+	static BOOL ReadFile(std::ifstream* stream, std::vector<KEYBOARD> * ptrVectorKeyboard)
 	{
 		// having a function explicitly expect such a specific map is not very nice, but that's what I could do.
 
@@ -311,10 +311,6 @@ public:
 
 		setlocale(LC_ALL, "");						// Set the locale, just in case
 
-		std::ifstream file(filename.c_str());		// Input file stream because we only need to read
-
-		if (!file.is_open())
-			return FALSE;							// oh, no!
 
 		ptrVectorKeyboard->clear();					// clear all keyboards with the maps in them
 
@@ -337,22 +333,22 @@ public:
 
 
 		// First term should be a "keyboard"
-		if (!ReadSymbol(&file, &symbol)) return FALSE;
+		if (!ReadSymbol(stream, &symbol)) return FALSE;
 		if (symbol != "keyboard") return FALSE;
 		// expect left parenthesis
-		read_char = file.get();
+		read_char = stream->get();
 		if (read_char != '(') return FALSE;
 		// read keyboard name
-		if (!ReadKeyboardName(&file, &keyboard)) return FALSE;
+		if (!ReadKeyboardName(stream, &keyboard)) return FALSE;
 		// expect right parenthesis
-		read_char = file.get();
+		read_char = stream->get();
 		if (read_char != ')') return FALSE;
 		// jump to next line
-		getline(file, lineBuffer);
+		getline(*stream, lineBuffer);
 		// begin loop
 		while (true)
 		{
-			if (!ReadSymbol(&file, &symbol))
+			if (!ReadSymbol(stream, &symbol))
 			{
 				// save keyboard and close
 				ptrVectorKeyboard->push_back(keyboard);
@@ -363,17 +359,17 @@ public:
 			{
 				// case 1 - unicode
 				// expect a left parenthesis
-				read_char = file.get();
+				read_char = stream->get();
 				if (read_char != '(') return FALSE;
 				// first parameter: an input keystroke
-				if (!ReadInputKeystroke(&file, &input)) return FALSE;
+				if (!ReadInputKeystroke(stream, &input)) return FALSE;
 				// expect a comma
-				read_char = file.get();
+				read_char = stream->get();
 				if (read_char != ',') return FALSE;
 				// second parameter: an output keystroke with a unicode codepoint
-				if (!ReadUnicode(&file, &output)) return FALSE;
+				if (!ReadUnicode(stream, &output)) return FALSE;
 				// expect a right parenthesis
-				read_char = file.get();
+				read_char = stream->get();
 				if (read_char != ')') return FALSE;
 				// place input and output into current keyboard
 				keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT>(input, output)));
@@ -382,17 +378,17 @@ public:
 			{
 				// case 2 - virtual key
 				// expect a left parenthesis
-				read_char = file.get();
+				read_char = stream->get();
 				if (read_char != '(') return FALSE;
 				// first parameter: an input keystroke
-				if (!ReadInputKeystroke(&file, &input)) return FALSE;
+				if (!ReadInputKeystroke(stream, &input)) return FALSE;
 				// expect a comma
-				read_char = file.get();
+				read_char = stream->get();
 				if (read_char != ')') return FALSE;
 				// second parameter: an output keystroke with a virtual key
-				if (!ReadVirtualkey(&file, &output)) return FALSE;
+				if (!ReadVirtualkey(stream, &output)) return FALSE;
 				// expect a right parenthesis
-				read_char = file.get();
+				read_char = stream->get();
 				if (read_char != ')') return FALSE;
 				// place input and output into current keyboard
 				keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT>(input, output)));
@@ -403,21 +399,21 @@ public:
 				// save this keyboard
 				ptrVectorKeyboard->push_back(keyboard);
 				// read a new one=
-				if (!ReadSymbol(&file, &symbol)) return FALSE;
+				if (!ReadSymbol(stream, &symbol)) return FALSE;
 				if (symbol != "keyboard") return FALSE;
 				// expect left parenthesis
-				read_char = file.get();
+				read_char = stream->get();
 				if (read_char != '(') return FALSE;
 				// read keyboard name
-				if (!ReadKeyboardName(&file, &keyboard)) return FALSE;
+				if (!ReadKeyboardName(stream, &keyboard)) return FALSE;
 				// expect right parenthesis
-				read_char = file.get();
+				read_char = stream->get();
 				if (read_char != ')') return FALSE;
 				// jump to next line
-				getline(file, lineBuffer);
+				getline(*stream, lineBuffer);
 			}
 			// jump line
-			getline(file, lineBuffer);
+			getline(*stream, lineBuffer);
 
 		}	// loop
 	}

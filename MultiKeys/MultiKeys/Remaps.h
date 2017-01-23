@@ -260,6 +260,7 @@ private:
 	// Maybe we'll support multiple keypresses in the future, but not now.
 	static BOOL ReadVirtualkey(std::ifstream* stream, KEYSTROKE_OUTPUT* keystroke)
 	{
+		keystroke->flags = 0;
 		return ReadModifierHex(stream, &(keystroke->modifiers), &(keystroke->codepoint));
 	}
 
@@ -268,6 +269,8 @@ private:
 	// Expects a hexadecimal value
 	static BOOL ReadUnicode(std::ifstream* stream, KEYSTROKE_OUTPUT* keystroke)
 	{
+		keystroke->flags = KEYEVENTF_UNICODE;
+
 		// All modifiers will be read but ignored
 		while (stream->peek() == '<'
 			|| stream->peek() == '>'

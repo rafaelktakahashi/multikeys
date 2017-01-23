@@ -34,7 +34,7 @@
 #include <locale>			// setting locale
 #include <codecvt>			// for converting strings between different encodings
 #include <cctype>			// make sure things like hex digit checking will work (that's also in locale)
-#include <shellapi.h>
+#include <shellapi.h>		// to get arguments passed to main
 
 
 // Next, structs that are referenced globally

@@ -222,7 +222,7 @@ UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyu
 
 UINT Multikeys::InputSimulator::SendKeyboardInput(KEYSTROKE_OUTPUT key)
 {
-	if (key.vKey == 0)
+	if (key.flags & KEYEVENTF_UNICODE)
 	{
 		// We must send a unicode instead
 		return SendUnicodeCharacter(key.codepoint, key.flags & KEYEVENTF_KEYUP);

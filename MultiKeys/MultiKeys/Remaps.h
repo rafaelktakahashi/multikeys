@@ -24,6 +24,13 @@ struct KEYBOARD
 	{
 		device_name = new WCHAR[device_name_sizeof];
 	}
+
+	// Refresh: Will use another space for device name, and clear the map
+	void Clear()
+	{
+		device_name = new WCHAR[device_name_sizeof];
+		remaps.clear();
+	}
 };
 
 

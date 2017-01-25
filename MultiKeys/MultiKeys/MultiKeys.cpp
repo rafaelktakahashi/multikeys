@@ -542,7 +542,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					&& virtualKeyCode == 0x11	// <- LCtrl
 					&& keyPressed == 1)			// <- down
 				{
-					if (raw->data.keyboard.MakeCode == 0x38		// <- Alt key
+					if (raw->data.keyboard.MakeCode == 0x38		// <- Raw Input is Alt key
 						&& raw->data.keyboard.Flags & RI_KEY_E0)	// Right variant
 					{
 						// then we won't wait for the LCtrl Raw Input message because it'll never happen.

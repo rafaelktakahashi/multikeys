@@ -399,20 +399,17 @@ BOOL Multikeys::Parser::ReadFile(std::ifstream* stream, std::vector<KEYBOARD> * 
 		{
 			// case 3 - new keyboard
 			// save this keyboard
-			ptrVectorKeyboard->push_back(keyboard);
-			// read a new one=
-			if (!ReadSymbol(stream, &symbol)) return FALSE;
-			if (symbol != "keyboard") return FALSE;
+			ptrVectorKeyboard->push_back(keyboard);		// store a copy
 			// expect left parenthesis
 			read_char = stream->get();
 			if (read_char != '(') return FALSE;
+			// clean keyboard
+			keyboard.Clear();
 			// read keyboard name
 			if (!ReadKeyboardName(stream, &keyboard)) return FALSE;
 			// expect right parenthesis
 			read_char = stream->get();
 			if (read_char != ')') return FALSE;
-			// jump to next line
-			getline(*stream, lineBuffer);
 		}
 		// jump line
 		getline(*stream, lineBuffer);

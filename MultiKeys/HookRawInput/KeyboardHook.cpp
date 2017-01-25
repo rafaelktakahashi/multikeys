@@ -16,6 +16,10 @@ HWND hwndServer = NULL;
 #pragma comment(linker, "/section:.SHARED,RWS")
 // Pragma comment causes the linker to have the command line switch shown added to the link step
 
+// There exists the function RegisterWindowsMessage to get a unique message identifier
+// But we should only use it when more than one application processes the same message
+// It's okay to choose some number (we chose WM_APP + 1) for private messages
+
 HINSTANCE instanceHandle;
 HHOOK hookHandle;
 

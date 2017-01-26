@@ -395,6 +395,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			OutputDebugString(L"Hook: Received message from self, will look for PrintScreen down before up\n");
 		/*----Finished dealing with PrintScreen----*/
 		
+		
 		// Check the Raw Input buffer to see if this Hook message is supposed to be blocked; WdnProc returns 1 if it is
 		BOOL blockThisHook = FALSE;
 		BOOL recordFound = FALSE;

@@ -22,7 +22,7 @@ UINT const WM_HOOK = WM_APP + 1;
 // How long should hook processing wait for the matching Raw Input message (in ms)
 DWORD maxWaitingTime = 100;		// Hopefully no legitimate keystroke should have a delay as long as 0.1s
 
-// Flag for AltGr. Used in the waiting loop of WM_HOOK for identifying AltGr keystrokes
+// Flag for AltGr. Used in the AltGr fix.
 BOOL AltGrBlockNextLCtrl = FALSE;
 
 // Buffer for keyboard Raw Input struct
@@ -65,6 +65,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     // UNREFERENCED_PARAMETER(lpCmdLine);			// <- is it ok to comment out?
+													// I guess.
 	
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -86,7 +87,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	int argCount;
 	szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount);
 	if (szArgList == NULL)
-	{
+	{					// Eventually we'll have to make these fail cases just fail.
 		OutputDebugString(L"No arguments found. Initializing with default file");
 		remapper.LoadSettings("C:\\MultiKeys\\Multi");
 	}
@@ -106,13 +107,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	// return of CommandLineToArgvW is a contiguous memory of pointers
-	LocalFree(szArgList);			// return it to the abyss
+	LocalFree(szArgList);			// return it to the abyss (sort of)
 
 
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (/*!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)*/ true)				// We might want to ignore all accelerators
+    {			// We ignore all accelerators; the point of this is that the user makes their own.
+        if (/*!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)*/ true)				
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -277,6 +278,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, keyboardNameBuffer, &keyboardNameBufferSize);
 		// Now the buffer contains the name of the device that sent the signal
 		
+
+		/*----Fix for Fake shift----*/
+		// When shift + numpad key is pressed while numlock is on, a fake shift up is pressed on keydown,
+		// and a fake shift down is pressed on keyup to simulate unshifted behavior (similar to capslock
+		// and shift, but that doesn't cause fake shifts).
+		// We look for a virtual-key code translated from a scancode that normally wouldn't produce it.
+		if (raw->data.keyboard.VKey == 0x10		// (legit) shift, either side
+			&& raw->data.keyboard.MakeCode != 0x2a	// scancode is not left shift
+			&& raw->data.keyboard.MakeCode != 0x36)	// and is not right shift
+		{
+			// then it must be an illegitimate shift, not produced by a physical keystroke
+			// but there is a Hook message for a legitimate (although faked) shift waiting for it
+			// Instead of storing the decision for this keystroke, store the decision for both a
+			// left shift and a right shift, since we don't know which one produced this message
+			OutputDebugString(L"Raw Input: Fake shift detected, storing two shift decisions.");
+			KEYSTROKE_OUTPUT possibleAction;
+
+			// keyup and keydown is wrong
+			if (raw->data.keyboard.Flags & RI_KEY_BREAK)
+				raw->data.keyboard.Flags &= 0xfffe;		// unset last bit
+			else raw->data.keyboard.Flags |= RI_KEY_BREAK;	// set last bit
+
+			// pretend this is a left shift
+			raw->data.keyboard.MakeCode = 0x2a;
+			BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
+			decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
+
+			// pretend this is a right shift
+			raw->data.keyboard.MakeCode = 0x36;
+			DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
+			decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
+
+			return 0;
+		}
+		/*---End of fix for Fake shift----*/
+		// There is a copy of this on the delayed message loop.
+
 		
 		
 		if (DEBUG)
@@ -331,20 +369,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// We should ignore keys that go up when they were already up. For now, we send a warning to the debug screen.
 		USHORT previousStateFlag = (lParam >> 30) & 1;
 		
-		if (!previousStateFlag && !keyPressed)
-		{
-			OutputDebugString(L"Hook: Redundant keyup\n");
-		}
 		
 		
 
-		WCHAR text[128];
+		
 		if (DEBUG)
 		{
+			WCHAR text[128];
 			swprintf_s(text, 128, L"Hook: vKey=%X keydown=%d sc=%x extend=%d Alt=%d raw lParam=%x\n",
 				virtualKeyCode, keyPressed, extractedScancode, isExtended, isAltKeyDown, lParam);
 			OutputDebugString(text);	// <- sends to debug window
 		}
+
+		if (!previousStateFlag && !keyPressed)
+		{
+
+			if (DEBUG)
+			{
+				WCHAR text[128];
+				swprintf_s(text, 128, L"Hook: Redundant keyup vkey=%X sc=%x ext=%d\n",
+					virtualKeyCode, extractedScancode, isExtended);
+				OutputDebugString(text);
+			}
+		}
+		
 
 		/*----Dealing with Pause/Break----*/
 		// In case this is the hook message generated by the Pause/Break key (which generates two Raw Input messages),
@@ -491,7 +539,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			RAWINPUT* raw = (RAWINPUT*)rawKeyboardBuffer;		// <- casting into correct type for convenience
 
-			
+
 
 			// A lot of code here is similar to that in the WM_INPUT case.
 			if (DEBUG)		// Report relevant data, if needed
@@ -519,6 +567,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			// Load the device name into the buffer
 			GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, keyboardNameBuffer, &keyboardNameBufferSize);
+
+			/*----Fix for fake shift----*/
+			// There is another copy of this on the Raw Input case, for when the message arrives in time.
+			// In there, we don't know which version of Shift (left or right) produced the raw message
+			// But if we're in here, we have that information. We check differently:
+			// 1. If this message is either shift:
+			// 2.		If the delayed raw input is a shift from a scancode that shouldn't produce it
+			// 3.				Then we change that message's scancode (and flip the keyup flag, which is wrong)
+			// 4. Continue normally.
+			if (virtualKeyCode == 0x10		// This is a shift
+				&& (extractedScancode == 0x2a || extractedScancode == 0x36))	// yep. shift.
+			{
+				if (raw->data.keyboard.VKey == 0x10				// delayed signal is a shift
+					&& raw->data.keyboard.MakeCode != 0x2a		// but not produced by left shift physical key
+					&& raw->data.keyboard.MakeCode != 0x36)		// nor right shift physical key
+				{
+					// keyup and keydown is wrong
+					if (raw->data.keyboard.Flags & RI_KEY_BREAK)
+						raw->data.keyboard.Flags &= 0xfffe;		// unset last bit
+					else raw->data.keyboard.Flags |= RI_KEY_BREAK;	// set last bit
+
+					// We pretend that this extracted message is for our own shift
+					raw->data.keyboard.MakeCode = extractedScancode;
+					// That'll make this Hook continue, and recognize this delayed message as its match.
+				}
+			}
+			/*---End of fix for Fake shift----*/
+
+
 
 			// Evaluate and take action depending on whether the message is the one we were expecting:
 
@@ -588,6 +665,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		if (DEBUG && blockThisHook)
 		{
+			WCHAR text[128];
 			swprintf_s(text, 128, L"Keyboard event: %X (%d) is being blocked!\n", virtualKeyCode, keyPressed);
 			memcpy_s(debugTextBeingBlocked, DEBUG_TEXT_SIZE, text, 128);
 			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE);
@@ -595,6 +673,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		else if (DEBUG)
 		{
+			WCHAR text[128];
 			swprintf_s(text, 128, L"Keyboard event: %X (%d) passed through.\n", virtualKeyCode, keyPressed);
 			memcpy_s(debugTextBeingBlocked, DEBUG_TEXT_SIZE, text, 128);
 			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE);

@@ -292,7 +292,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// but there is a Hook message for a legitimate (although faked) shift waiting for it
 			// Instead of storing the decision for this keystroke, store the decision for both a
 			// left shift and a right shift, since we don't know which one produced this message
-			OutputDebugString(L"Raw Input: Fake shift detected, storing two shift decisions.");
+			OutputDebugString(L"Raw Input: Fake shift detected, storing two shift decisions.\n");
 			KEYSTROKE_OUTPUT possibleAction;
 
 			// keyup and keydown is wrong
@@ -312,6 +312,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			return 0;
 		}
+		// This fix prevents most timeouts, but occasional lag and wrong behavior still occur.
 		/*---End of fix for Fake shift----*/
 		// There is a copy of this on the delayed message loop.
 
@@ -517,7 +518,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 
 				// Take a nap until checking again.
-				Sleep(20);			// Take this out if it causes problems.
+				Sleep(10);			// Take this out if it causes problems.
 			}
 
 			// The Raw Input message has arrived; decide whether to block the input
@@ -583,16 +584,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					&& raw->data.keyboard.MakeCode != 0x2a		// but not produced by left shift physical key
 					&& raw->data.keyboard.MakeCode != 0x36)		// nor right shift physical key
 				{
-					// keyup and keydown is wrong
+					// keyup flag will be wrong; invert it.
 					if (raw->data.keyboard.Flags & RI_KEY_BREAK)
 						raw->data.keyboard.Flags &= 0xfffe;		// unset last bit
 					else raw->data.keyboard.Flags |= RI_KEY_BREAK;	// set last bit
 
-					// We pretend that this extracted message is for our own shift
-					raw->data.keyboard.MakeCode = extractedScancode;
+					raw->data.keyboard.MakeCode = extractedScancode;				// *You're the same as us*
 					// That'll make this Hook continue, and recognize this delayed message as its match.
 				}
 			}
+			// (I wish we could fake RawInput messages. Doesn't seem like so).
 			/*---End of fix for Fake shift----*/
 
 
@@ -601,8 +602,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			// If the raw input message doesn't match the hook, push it into the buffer and continue waiting
 			if (virtualKeyCode != raw->data.keyboard.VKey
-				|| extractedScancode != raw->data.keyboard.MakeCode)						// Plenty of checks here,
-				// Unfortunately, an exended key doesn't necessarily correspond to a scancode with e0 prefix.
+				|| extractedScancode != raw->data.keyboard.MakeCode
+				|| keyPressed != (raw->data.keyboard.Flags & RI_KEY_BREAK ? 1 : 0))						// Plenty of checks here,
+				// I couldn't get the extended flag check to work
 			{
 				// Turns out this raw input message wasn't the one we were looking for.
 				// Put it in the queue just like we did in the WM_INPUT case, and keep waiting.

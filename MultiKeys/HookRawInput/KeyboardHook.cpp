@@ -48,8 +48,7 @@ static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam)
 	// Code smaller than zero (HC_ACTION) means "forward the message without further processing"
 	if (code != HC_ACTION)
 	{	// If another application calls PeekMessage, we will receive an extra input message
-		// carrying the code 3 (HC_NOREMOVE). If we allow those through, they will end up waiting
-		// for a corresponding raw input message that will never come.
+		// carrying the code 3 (HC_NOREMOVE). We don't respond to these.
 		return CallNextHookEx(hookHandle, code, wParam, lParam);
 	}
 

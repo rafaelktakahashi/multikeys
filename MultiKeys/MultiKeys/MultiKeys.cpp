@@ -313,8 +313,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 		// This fix prevents most timeouts, but occasional lag and wrong behavior still occur.
-		/*---End of fix for Fake shift----*/
 		// There is a copy of this on the delayed message loop.
+		/*---End of fix for Fake shift----*/
 
 		
 		
@@ -351,7 +351,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	// That message is the one that can tell us whether or not to block the key,
 	// and this message is the one that can block the key.
 	// (or maybe it didn't arrive yet. Checking is necessary.)
-	case WM_HOOK:
+	case WM_HOOK:		// <- user-defined message (user is this program)
 	{
 		// In this message, word parameter contains the virtual key code (not scancode),
 		// and long parameter contains whether or not the keypress is a down key.
@@ -369,6 +369,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		// We should ignore keys that go up when they were already up. For now, we send a warning to the debug screen.
 		USHORT previousStateFlag = (lParam >> 30) & 1;
+		KF_REPEAT;
 		
 		
 		
@@ -467,7 +468,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 					blockThisHook = iterator->decision;	// this was decided somewhere else
 					// Now, if the decision was to block the hook, we must act on it at this point, just before popping it
-					if (blockThisHook) remapper.SimulateKeystroke(iterator->mappedInput);
+					if (blockThisHook) remapper.SimulateKeystroke(iterator->mappedAction);
 					recordFound = TRUE;		// set the flag
 					// Then, remove this and all preceding messages from the buffer
 					for (int i = 0; i <= index; i++)		// <- up until and including this one

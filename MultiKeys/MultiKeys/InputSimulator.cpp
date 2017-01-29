@@ -8,7 +8,7 @@ Multikeys::InputSimulator::InputSimulator()
 {
 	// Setup simulated keyboard
 	simulatedKeyboardUnicode.type = INPUT_KEYBOARD;
-	simulatedKeyboardUnicode.ki.dwExtraInfo = NULL;
+	simulatedKeyboardUnicode.ki.dwExtraInfo = 0x21;		// doesn't matter
 	simulatedKeyboardUnicode.ki.wVk = 0;
 	simulatedKeyboardUnicode.ki.time = 0;
 	simulatedKeyboardUnicode.ki.dwFlags = KEYEVENTF_UNICODE;
@@ -18,20 +18,26 @@ Multikeys::InputSimulator::InputSimulator()
 	for (int i = 0; i < 2; i++)
 	{
 		simulatedDoubleKeyboard[i].type = INPUT_KEYBOARD;
-		simulatedDoubleKeyboard[i].ki.dwExtraInfo = NULL;
+		simulatedDoubleKeyboard[i].ki.dwExtraInfo = 0x42;		// doesn't matter
 		simulatedDoubleKeyboard[i].ki.time = 0;
 		simulatedDoubleKeyboard[i].ki.wVk = 0;			// causes it to send a message with vk=e7
 		simulatedDoubleKeyboard[i].ki.dwFlags = KEYEVENTF_UNICODE;
 	}
 
+	// For the virtual key codes, we must have them send a strange scancode that the hook can detect and filter out
+
 	// Simulated keyboard for sending virtual-key codes
 	simulatedKeyboardVirtualKey.type = INPUT_KEYBOARD;
 	simulatedKeyboardVirtualKey.ki.dwExtraInfo = NULL;
+	simulatedKeyboardVirtualKey.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
+	simulatedKeyboardVirtualKey.ki.wScan = 0;			// hope e0 00 doesn't correspond to anything normally
 	simulatedKeyboardVirtualKey.ki.time = 0;
 
 	// Simulated keyboard for sending modifiers
 	simulatedKeyboardModifiers.type = INPUT_KEYBOARD;
 	simulatedKeyboardModifiers.ki.dwExtraInfo = NULL;
+	simulatedKeyboardModifiers.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
+	simulatedKeyboardVirtualKey.ki.wScan = 0;			// same thing
 	simulatedKeyboardModifiers.ki.time = 0;
 
 	// Remarks: wVk holds a virtual-key code in the range of 1 to 254, but must be 0 if
@@ -44,9 +50,6 @@ Multikeys::InputSimulator::InputSimulator()
 
 UINT Multikeys::InputSimulator::SendVirtualKey(BYTE modifiers, USHORT vKey, BOOL keyup)
 {
-	// TODO: implement modifiers
-
-	// We're sending a signal without scancode. This may go very wrong.
 	if (DEBUG)
 	{
 		WCHAR * text = new WCHAR[128];
@@ -105,7 +108,7 @@ UINT Multikeys::InputSimulator::SendVirtualKey(BYTE modifiers, USHORT vKey, BOOL
 	}
 
 	simulatedKeyboardVirtualKey.ki.wVk = vKey;
-	simulatedKeyboardVirtualKey.ki.dwFlags = (keyup ? KEYEVENTF_KEYUP : 0);
+	simulatedKeyboardVirtualKey.ki.dwFlags = (keyup ? KEYEVENTF_KEYUP : 0) | KEYEVENTF_EXTENDEDKEY;
 	result += SendInput(1, &simulatedKeyboardVirtualKey, sizeof(INPUT));
 
 	if (keyup)
@@ -161,7 +164,6 @@ UINT Multikeys::InputSimulator::SendVirtualKey(BYTE modifiers, USHORT vKey, BOOL
 
 UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyup)
 {
-
 	if (DEBUG)
 	{
 		WCHAR * text = new WCHAR[128];

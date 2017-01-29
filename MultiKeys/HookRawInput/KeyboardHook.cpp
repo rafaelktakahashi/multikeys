@@ -60,6 +60,14 @@ static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam)
 		return CallNextHookEx(hookHandle, code, wParam, lParam);
 
 
+	// Injected virtual-key presses are identified by us by a scancode of e0 00
+	if (((lParam >> 16) & 0xff) == 0		// Refer to keystroke message flags
+		&& ((lParam >> 24) & 1) == 1)
+	{										// did you know that equality (==, !=) takes precedence over bitwise operators?
+		return CallNextHookEx(hookHandle, code, wParam, lParam);
+	}
+	
+
 	// Report the event to the main window.
 	// Return value of 1 means block the input,
 	// return value of 0 means pass it along the hook chain

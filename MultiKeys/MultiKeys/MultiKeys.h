@@ -16,9 +16,9 @@ struct DecisionRecord
 	RAWKEYBOARD keyboardInput;
 
 	// Information about the action to be taken, if any
-	KEYSTROKE_OUTPUT mappedInput;
+	KEYSTROKE_OUTPUT mappedAction;
 
-	// TRUE - this keypress should be blocked, and mappedInput should be carried out
+	// TRUE - this keypress should be blocked, and mappedAction should be carried out
 	// FALSE - this keypress should not be blocked, and there is no mapped input to be carried out
 	BOOL decision;
 
@@ -28,7 +28,7 @@ struct DecisionRecord
 	}
 
 	DecisionRecord(RAWKEYBOARD _keyboardInput, KEYSTROKE_OUTPUT _mappedInput, BOOL _decision)
-		: keyboardInput(_keyboardInput), mappedInput(_mappedInput), decision(_decision)
+		: keyboardInput(_keyboardInput), mappedAction(_mappedInput), decision(_decision)
 	{
 		// Constructor
 	}

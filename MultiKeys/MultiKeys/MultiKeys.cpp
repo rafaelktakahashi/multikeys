@@ -459,8 +459,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				if (iterator->keyboardInput.VKey == virtualKeyCode
 					&& iterator->keyboardInput.MakeCode == extractedScancode
-					&& !(iterator->keyboardInput.Flags & RI_KEY_BREAK) == keyPressed)		// match!
-					// Strangely, checking for the extended flag doesn't work here, and makes (I think all) keys time out.
+					&& !(iterator->keyboardInput.Flags & RI_KEY_BREAK) == keyPressed
+					&& (iterator->keyboardInput.Flags & RI_KEY_E0) >> 2 == isExtended)		// match!
 				{
 					// Actually, this doesn't guarantee a match;
 					// Keys in two different keyboards corresponding to the same virtual key may be pressed in rapid succession
@@ -604,8 +604,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// If the raw input message doesn't match the hook, push it into the buffer and continue waiting
 			if (virtualKeyCode != raw->data.keyboard.VKey
 				|| extractedScancode != raw->data.keyboard.MakeCode
-				|| keyPressed != (raw->data.keyboard.Flags & RI_KEY_BREAK ? 1 : 0))						// Plenty of checks here,
-				// I couldn't get the extended flag check to work
+				|| keyPressed != (raw->data.keyboard.Flags & RI_KEY_BREAK ? 1 : 0)
+				|| isExtended != (raw->data.keyboard.Flags & RI_KEY_E0) >> 1)						// Plenty of checks here
 			{
 				// Turns out this raw input message wasn't the one we were looking for.
 				// Put it in the queue just like we did in the WM_INPUT case, and keep waiting.

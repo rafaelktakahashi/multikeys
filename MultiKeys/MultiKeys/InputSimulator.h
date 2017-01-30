@@ -20,15 +20,9 @@ namespace Multikeys
 	{
 	private:
 		// This is the dummy keyboard that we use to simulate keystrokes
-		// Sometimes we need to simulate a surrogate pair, so we also
-		// have an array of two of them.
-		// And also a separate one for non-unicode keystrokes.
-		// And another one for modifiers
-		INPUT simulatedKeyboardUnicode;
-		INPUT * simulatedDoubleKeyboard;
-		INPUT simulatedKeyboardVirtualKey;
-		INPUT simulatedKeyboardModifiers;
-		// Initialize properly in the constructor
+		INPUT simulatedKeyboards[512];
+		// For up to 512 inputs in sequence
+		// Initialize in constructor
 
 		
 		// private UINT SendVirtualKey

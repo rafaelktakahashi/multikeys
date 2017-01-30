@@ -105,7 +105,7 @@ namespace std
 	{
 		bool operator()(const KEYSTROKE_INPUT& x, const KEYSTROKE_INPUT& y) const
 		{
-			return (x.modifiers == y.modifiers && x.scancode == y.scancode && x.flags == y.flags);
+			return (x.scancode == y.scancode && x.flags == y.flags);
 		}
 	};
 }

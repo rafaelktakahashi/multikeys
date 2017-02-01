@@ -61,7 +61,7 @@ BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
 
 
 
-BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, KEYSTROKE_OUTPUT * out_action)
+BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput * out_action)
 {
 	// Make an input
 
@@ -113,7 +113,7 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 
 
 // oh, look, wrappers
-BOOL Multikeys::Remapper::SimulateKeystroke(KEYSTROKE_OUTPUT key)
+BOOL Multikeys::Remapper::SimulateKeystroke(IKeystrokeOutput key)
 {
 	return inputSimulator.SendKeyboardInput(key);
 }
@@ -266,14 +266,14 @@ BOOL Multikeys::Parser::ReadInputKeystroke(std::ifstream* stream, KEYSTROKE_INPU
 }
 
 
-BOOL Multikeys::Parser::ReadVirtualkey(std::ifstream* stream, KEYSTROKE_OUTPUT* keystroke)
+BOOL Multikeys::Parser::ReadVirtualkey(std::ifstream* stream, IKeystrokeOutput* keystroke)
 {
 	keystroke->flags = 0;
 	return ReadModifierHex(stream, &(keystroke->modifiers), &(keystroke->codepoint));
 }
 
 
-BOOL Multikeys::Parser::ReadUnicode(std::ifstream* stream, KEYSTROKE_OUTPUT* keystroke)
+BOOL Multikeys::Parser::ReadUnicode(std::ifstream* stream, IKeystrokeOutput* keystroke)
 {
 	keystroke->flags = KEYEVENTF_UNICODE;
 
@@ -328,7 +328,7 @@ BOOL Multikeys::Parser::ReadFile(std::ifstream* stream, std::vector<KEYBOARD> * 
 
 	// input and output
 	auto input = KEYSTROKE_INPUT();
-	auto output = KEYSTROKE_OUTPUT();
+	auto output = IKeystrokeOutput();
 
 	// one character
 	int read_char = 0;
@@ -374,7 +374,7 @@ BOOL Multikeys::Parser::ReadFile(std::ifstream* stream, std::vector<KEYBOARD> * 
 			read_char = stream->get();
 			if (read_char != ')') return FALSE;
 			// place input and output into current keyboard
-			keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT>(input, output)));
+			keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, IKeystrokeOutput>(input, output)));
 		}
 		else if (symbol == "virtual")
 		{
@@ -393,7 +393,7 @@ BOOL Multikeys::Parser::ReadFile(std::ifstream* stream, std::vector<KEYBOARD> * 
 			read_char = stream->get();
 			if (read_char != ')') return FALSE;
 			// place input and output into current keyboard
-			keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT>(input, output)));
+			keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, IKeystrokeOutput>(input, output)));
 		}
 		else if (symbol == "keyboard")
 		{

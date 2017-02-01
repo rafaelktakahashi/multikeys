@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="InputSimulator.h" />
     <ClInclude Include="KeyboardHook.h" />
+    <ClInclude Include="Keystrokes.h" />
     <ClInclude Include="MultiKeys.h" />
     <ClInclude Include="Remaps.h" />
     <ClInclude Include="Resource.h" />

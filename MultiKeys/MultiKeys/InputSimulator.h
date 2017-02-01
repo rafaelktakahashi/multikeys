@@ -77,12 +77,12 @@ namespace Multikeys
 		// or a virtual-key code with modifiers.
 		//
 		// Parameters:
-		//		KEYSTROKE_OUTPUT key - keystroke structure that contains
+		//		IKeystrokeOutput key - keystroke structure that contains
 		//				information about the key to simulate
 		// Return value:
 		//		UINT - returns the number of events that were successfully
 		//				inserted into the keyboard stream. Failed when 0.
-		UINT SendKeyboardInput(KEYSTROKE_OUTPUT key);	// Maybe we'll support Keystrokes with more options in the future.
-													// A good idea is a KEYSTROKE_OUTPUT with a string in it.
+		UINT SendKeyboardInput(IKeystrokeOutput key);	// Maybe we'll support Keystrokes with more options in the future.
+													// A good idea is a IKeystrokeOutput with a string in it.
 	};
 }

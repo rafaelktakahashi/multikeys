@@ -108,7 +108,7 @@ UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyu
 
 
 
-UINT Multikeys::InputSimulator::SendKeyboardInput(KEYSTROKE_OUTPUT key)
+UINT Multikeys::InputSimulator::SendKeyboardInput(IKeystrokeOutput key)
 {
 	if (key.flags & KEYEVENTF_UNICODE)
 	{

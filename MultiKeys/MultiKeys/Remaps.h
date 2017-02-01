@@ -18,7 +18,7 @@ struct KEYBOARD
 	// The simulator that sends keystrokes
 
 	// Map between inputs and outputs
-	std::unordered_map<KEYSTROKE_INPUT, KEYSTROKE_OUTPUT> remaps;
+	std::unordered_map<KEYSTROKE_INPUT, IKeystrokeOutput> remaps;
 
 	KEYBOARD()
 	{
@@ -81,16 +81,16 @@ namespace Multikeys
 		//		RAWKEYBOARD* keypressed - pointer to the structure representing the keyboard input,
 		//				from the Raw Input API.
 		//		WCHAR* deviceName - wide string containing the name of the device that generated the keystroke
-		//		KEYSTROKE_OUTPUT* out_action - if there is a remap for the keystroke in RAWKEYBOARD* keypressed
+		//		IKeystrokeOutput* out_action - if there is a remap for the keystroke in RAWKEYBOARD* keypressed
 		//				for the keyboard of name WCHAR* deviceName, then this will point to a
-		//				KEYSTROKE_OUTPUT containing the keystroke or unicode code point to be simulated.
+		//				IKeystrokeOutput containing the keystroke or unicode code point to be simulated.
 		// Return value:
 		//		TRUE - There is a remap, and it's been placed in *out_action
 		//		FALSE - There is no remap for this key.
-		BOOL EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, KEYSTROKE_OUTPUT* out_action);
+		BOOL EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput* out_action);
 
 
-		BOOL SimulateKeystroke(KEYSTROKE_OUTPUT key);
+		BOOL SimulateKeystroke(IKeystrokeOutput key);
 
 
 
@@ -138,11 +138,11 @@ namespace Multikeys
 
 
 		// Read a virtual key, together with modifiers, such as <^0x41
-		static BOOL ReadVirtualkey(std::ifstream* stream, KEYSTROKE_OUTPUT* keystroke);
+		static BOOL ReadVirtualkey(std::ifstream* stream, IKeystrokeOutput* keystroke);
 
 
 		// Expects a hexadecimal value
-		static BOOL ReadUnicode(std::ifstream* stream, KEYSTROKE_OUTPUT* keystroke);
+		static BOOL ReadUnicode(std::ifstream* stream, IKeystrokeOutput* keystroke);
 
 
 	public:

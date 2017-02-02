@@ -22,7 +22,8 @@ struct DecisionRecord
 	// FALSE - this keypress should not be blocked, and there is no mapped input to be carried out
 	BOOL decision;
 
-	DecisionRecord(RAWKEYBOARD _keyboardInput, BOOL _decision) : keyboardInput(_keyboardInput), decision(_decision)
+	DecisionRecord(RAWKEYBOARD _keyboardInput, BOOL _decision)
+		: keyboardInput(_keyboardInput), mappedAction(nullptr), decision(_decision)
 	{
 		// Constructor
 	}

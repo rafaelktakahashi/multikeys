@@ -302,12 +302,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			// pretend this is a left shift
 			raw->data.keyboard.MakeCode = 0x2a;
-			BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, possibleAction);		// ask
+			BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 			decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
 
 			// pretend this is a right shift
 			raw->data.keyboard.MakeCode = 0x36;
-			DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, possibleAction);		// ask
+			DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 			decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
 
 			return 0;
@@ -332,10 +332,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Store that decision in the decisionBuffer; look for it when the hook asks.
 
 		// Check whether to block this key, and store the decision for when the hook asks for it
-		IKeystrokeOutput * possibleAction;		// <- we don't know yet is our key maps to anything
-		BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, possibleAction);		// ask
+		IKeystrokeOutput * possibleAction = nullptr;		// <- we don't know yet is our key maps to anything
+		BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 
-		
+		if (DEBUG && DoBlock)
+			OutputDebugString(L"Raw Input: Recording a key block\n");
 
 		decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
 
@@ -364,7 +365,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		// Flags: bits 16 to 23 in lParam contains the scancode, 24 indicates extended key, bit 29 indicates the ALT key, 31 is keyup
 		// Don't forget to count the bits from 0, least significant to most significant.
-		USHORT keyPressed = !((lParam >> 31) & 1);			// gets the thirty-first bit which is 1 when it's a keyup; inverse it
+		USHORT keyPressed = !((lParam >> 31) & 1);			// gets the thirty-first bit which is 1 when it's a keyup; invert it
 		USHORT extractedScancode = (lParam >> 16) & 255;	// extract one full byte at position 16
 		USHORT isExtended = (lParam >> 24) & 1;				// twenty-fourth bit
 		// There exists a KF_ALTDOWN define set to 0x2000. Very sadly, that's incorrect and points to bit 13 instead of 29.
@@ -374,7 +375,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		// We should ignore keys that go up when they were already up. For now, we send a warning to the debug screen.
 		USHORT previousStateFlagWasDown = (lParam >> 30) & 1;
-		KF_REPEAT;
 		
 		
 		
@@ -470,13 +470,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					// Actually, this doesn't guarantee a match;
 					// Keys in two different keyboards corresponding to the same virtual key may be pressed in rapid succession
 					// We have to assume that people don't do that normally.
+					
+					if (DEBUG && iterator->decision) OutputDebugString(L"Hook: Must block this key.\n");
+					else if (DEBUG && iterator->decision == FALSE) OutputDebugString(L"Hook: Must let this key through.\n");
 
 					
 					// Now, if the decision was to block the hook, we must act on it at this point, just before popping it
 					if (iterator->decision)
-						iterator->mappedAction->simulate(!keyPressed, previousStateFlagWasDown && keyPressed);
+						if (iterator->mappedAction->simulate(!keyPressed, previousStateFlagWasDown && keyPressed) == FALSE)
+							if (DEBUG) OutputDebugString(L"Hook: Simulation failed!\n");
 
-					recordFound = TRUE;		// set the flag
+					recordFound = TRUE;		// set the flags
+					blockThisHook = iterator->decision;
+
 					// Then, remove this and all preceding messages from the buffer
 					for (int i = 0; i <= index; i++)		// <- up until and including this one
 						decisionBuffer.pop_front();
@@ -617,7 +623,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				// Turns out this raw input message wasn't the one we were looking for.
 				// Put it in the queue just like we did in the WM_INPUT case, and keep waiting.
 				IKeystrokeOutput * possibleInput;
-				BOOL doBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, possibleInput);
+				BOOL doBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleInput);
 				decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleInput, doBlock));
 
 
@@ -666,7 +672,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 										// (the other way to exit the loop is by timing out)
 				// But we still didn't evaluate the raw message (it just arrived!)
 				IKeystrokeOutput * possibleOutput;
-				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, possibleOutput);
+				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleOutput);
 				// Immediately act on the input if there is one, since this decision won't be stored in the buffer
 				if (blockThisHook)
 					possibleOutput->simulate(!keyPressed, previousStateFlagWasDown && keyPressed);

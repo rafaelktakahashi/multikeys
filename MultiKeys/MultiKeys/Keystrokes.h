@@ -43,6 +43,8 @@ struct IKeystrokeOutput		/*Interface*/
 
 struct UnicodeOutput : IKeystrokeOutput
 {
+	UINT codepoint;
+	// Non-surrogate codepoint is for checking dead keys
 
 	KeystrokeOutputType getType()
 	{
@@ -141,7 +143,7 @@ public:
 		// TODO: handle errors
 	}
 
-	BOOL simulateKeyDown()
+	BOOL simulateKeyUp()
 	{
 		return FALSE;
 	}

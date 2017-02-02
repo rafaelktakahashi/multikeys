@@ -18,12 +18,25 @@ struct KEYBOARD
 	// The simulator that sends keystrokes
 
 	// Map between inputs and outputs
-	std::unordered_map<KEYSTROKE_INPUT, IKeystrokeOutput> remaps;
+	std::unordered_map<KEYSTROKE_INPUT, IKeystrokeOutput*> remaps;
 
 	KEYBOARD()
 	{
 		device_name = new WCHAR[device_name_sizeof];
 	}
+
+	/*				Need to sort this out later
+	~KEYBOARD()
+	{
+		delete[] device_name;
+		for (auto iterator = remaps.begin(); iterator != remaps.end(); iterator++)
+		{
+			delete[] iterator->second->keystrokesUp;
+			delete[] iterator->second->keystrokesDown;
+			delete[] iterator->second;
+		}
+	}
+	*/
 
 	// Refresh: Will use another space for device name, and clear the map
 	void Clear()
@@ -87,7 +100,7 @@ namespace Multikeys
 		// Return value:
 		//		TRUE - There is a remap, and it's been placed in *out_action
 		//		FALSE - There is no remap for this key.
-		BOOL EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput* out_action);
+		BOOL EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput** out_action);
 
 
 		BOOL SimulateKeystroke(IKeystrokeOutput * key);

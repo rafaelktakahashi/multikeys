@@ -4,109 +4,9 @@
 
 
 
-Multikeys::Remapper::Remapper(std::string filename)					// constructor
-{
-	// Setup a keyboard input simulator
-	inputSimulator = InputSimulator();
-
-	if (!LoadSettings(filename))
-	{
-		
-	}
-	OutputDebugString(L"Initialized.");
-}
-Multikeys::Remapper::Remapper(std::wstring filename)
-{
-	// Setup a keyboard input simulator
-	inputSimulator = InputSimulator();
-
-	if (!LoadSettings(filename))
-	{ }
-	OutputDebugString(L"Initialized.");
-}
-Multikeys::Remapper::Remapper()
-{
-	// InputSimulator is not initialized;
-}
 
 
 
-
-BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
-{
-	std::ifstream file(filename);		// Open file with ANSI filename
-
-	if (!file.is_open())
-		return FALSE;
-
-	BOOL result = Parser::ReadFile(&file, &keyboards);
-	file.close();
-	return result;
-}
-BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
-{
-	std::ifstream file(filename);		// Open file with unicode (UTF-16) filename
-
-	if (!file.is_open())
-		return FALSE;
-
-	BOOL result = Parser::ReadFile(&file, &keyboards);
-	file.close();
-	return result;
-}
-
-
-
-
-
-
-
-BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput * out_action)
-{
-	// Make an input
-
-	BYTE modifiers = 0;
-	// GetKeyState checks the state of a virtual key at the time of this event, not this very moment
-	// Most significant bit is 1 if key is down
-	modifiers += (GetKeyState(VK_LCONTROL & 0x8000) ? MODIFIER_LCTRL : 0);
-	modifiers += (GetKeyState(VK_RCONTROL & 0x8000) ? MODIFIER_RCTRL : 0);
-	modifiers += (GetKeyState(VK_LSHIFT & 0x8000) ? MODIFIER_LSHIFT : 0);
-	modifiers += (GetKeyState(VK_RSHIFT & 0x8000) ? MODIFIER_RSHIFT : 0);
-	modifiers += (GetKeyState(VK_LMENU & 0x8000) ? MODIFIER_LALT : 0);
-	modifiers += (GetKeyState(VK_RMENU & 0x8000) ? MODIFIER_RALT : 0);
-	modifiers += (GetKeyState(VK_LWIN & 0x8000) ? MODIFIER_LWIN : 0);
-	modifiers += (GetKeyState(VK_RWIN & 0x8000) ? MODIFIER_RWIN : 0);
-	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(modifiers, keypressed->MakeCode, keypressed->Flags);
-	// We'll look for a similar one in our list
-	
-	// Look for correct device; return FALSE (= do not block) otherwise
-	for (auto iterator = keyboards.begin(); iterator != keyboards.end(); iterator++)
-	{
-		if (wcscmp(iterator->device_name, deviceName) == 0)
-		{
-			// found it!
-			// check if the remaps map for this device contains our scancode
-			auto innerIt = iterator->remaps.find(input);
-			if (innerIt != iterator->remaps.end())
-			{
-				*out_action = innerIt->second;
-				return TRUE;
-			}
-			else
-				return FALSE;
-			
-		}
-	}
-
-	return FALSE;
-}
-
-
-// oh, look, wrappers
-BOOL Multikeys::Remapper::SimulateKeystroke(IKeystrokeOutput * key)
-{
-	return inputSimulator.SendKeyboardInput(key);
-}
 
 
 
@@ -280,40 +180,42 @@ public:
 
 	static BOOL ReadVirtualkey(std::ifstream* stream, IKeystrokeOutput* keystroke)
 	{
-		keystroke->flags = 0;
-		return ReadModifierHex(stream, &(keystroke->modifiers), &(keystroke->codepoint));
+		//keystroke->flags = 0;
+		//return ReadModifierHex(stream, &(keystroke->modifiers), &(keystroke->codepoint));
 	}
 
 
 	static BOOL ReadUnicode(std::ifstream* stream, IKeystrokeOutput* keystroke)
 	{
+		/*
 		keystroke->flags = KEYEVENTF_UNICODE;
 
 		// All modifiers will be read but ignored
 		while (stream->peek() == '<'
-			|| stream->peek() == '>'
-			|| stream->peek() == '#'
-			|| stream->peek() == '^'
-			|| stream->peek() == '!'
-			|| stream->peek() == '+')
-			stream->get();
+		|| stream->peek() == '>'
+		|| stream->peek() == '#'
+		|| stream->peek() == '^'
+		|| stream->peek() == '!'
+		|| stream->peek() == '+')
+		stream->get();
 
 		if (stream->peek() != '0')			// expect a hexadecimal
-			return FALSE;
+		return FALSE;
 		stream->get();
 		if (stream->peek() != 'x' && stream->peek() != 'X')
-			return FALSE;
+		return FALSE;
 		stream->get();
 
 		std::string numberBuffer = std::string();
 		while (isxdigit(stream->peek()))		// read all following hex digits
 		{
-			numberBuffer += stream->get();
+		numberBuffer += stream->get();
 		}
 		if (sscanf_s(numberBuffer.c_str(), "%x", &(keystroke->codepoint)) != 1)
-			return FALSE;
+		return FALSE;
 
 		return TRUE;
+		*/
 	}
 
 
@@ -321,6 +223,69 @@ public:
 
 	static BOOL ReadFile(std::ifstream* stream, std::vector<KEYBOARD> * ptrVectorKeyboard)
 	{
+		// Make a dummy object for now to test other things
+
+		// Have this file generate the data structure, and build the parser later.
+		ptrVectorKeyboard->clear();
+
+		auto keyboard = KEYBOARD();
+
+		keyboard.device_name = L"\\\\?\\HID#VID_0510&PID_0002#7&141e5925&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
+		keyboard.remaps.clear();
+
+
+		auto input = KEYSTROKE_INPUT();
+
+		input.scancode = 0x02;
+		input.flags = 0;
+		input.modifiers = 0;
+
+		auto output = new UnicodeOutput();
+		output->codepoint = 0x1f604;
+
+		INPUT * oneSurrogate = new INPUT[2]();
+		INPUT * oneSurrogateUp = new INPUT[2]();
+
+		
+		oneSurrogate[0].type = INPUT_KEYBOARD;
+		oneSurrogate[0].ki.dwExtraInfo = 0;
+		oneSurrogate[0].ki.dwFlags = KEYEVENTF_UNICODE;
+		oneSurrogate[0].ki.wScan = 0xd83d;
+		oneSurrogate[0].ki.wVk = 0;
+		oneSurrogate[0].ki.time = 0;
+
+		oneSurrogate[1].type = INPUT_KEYBOARD;
+		oneSurrogate[1].ki.dwExtraInfo = 0;
+		oneSurrogate[1].ki.dwFlags = KEYEVENTF_UNICODE;
+		oneSurrogate[1].ki.wScan = 0xde04;
+		oneSurrogate[1].ki.wVk = 0;
+		oneSurrogate[1].ki.time = 0;
+
+		oneSurrogateUp[0].type = INPUT_KEYBOARD;
+		oneSurrogateUp[0].ki.dwExtraInfo = 0;
+		oneSurrogateUp[0].ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
+		oneSurrogateUp[0].ki.wScan = 0xd83d;
+		oneSurrogateUp[0].ki.wVk = 0;
+		oneSurrogateUp[0].ki.time = 0;
+
+		oneSurrogateUp[1].type = INPUT_KEYBOARD;
+		oneSurrogateUp[1].ki.dwExtraInfo = 0;
+		oneSurrogateUp[1].ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
+		oneSurrogateUp[1].ki.wScan = 0xde04;
+		oneSurrogateUp[1].ki.wVk = 0;
+		oneSurrogateUp[1].ki.time = 0;
+
+		output->keystrokesDown = oneSurrogate;
+		output->keystrokesUp = oneSurrogateUp;
+		output->inputCount = 2;
+
+		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, output));
+
+		ptrVectorKeyboard->push_back(keyboard);
+
+		return TRUE;
+
+		/*
 		// having a function explicitly expect such a specific map is not very nice, but that's what I could do.
 
 		// Also, in the future we should consider supporting UTF-16 filenames. I don't know how to do that.
@@ -331,7 +296,7 @@ public:
 		ptrVectorKeyboard->clear();					// clear all keyboards with the maps in them
 
 
-													// hold one line
+		// hold one line
 		auto lineBuffer = std::string();
 
 		// hold one symbol
@@ -364,75 +329,208 @@ public:
 		// begin loop
 		while (true)
 		{
-			if (!ReadSymbol(stream, &symbol))
-			{
-				// save keyboard and close
-				ptrVectorKeyboard->push_back(keyboard);
-				return TRUE;
-			}
-			// evaluate symbol
-			if (symbol == "unicode")
-			{
-				// case 1 - unicode
-				// expect a left parenthesis
-				read_char = stream->get();
-				if (read_char != '(') return FALSE;
-				// first parameter: an input keystroke
-				if (!ReadInputKeystroke(stream, &input)) return FALSE;
-				// expect a comma
-				read_char = stream->get();
-				if (read_char != ',') return FALSE;
-				// second parameter: an output keystroke with a unicode codepoint
-				if (!ReadUnicode(stream, &output)) return FALSE;
-				// expect a right parenthesis
-				read_char = stream->get();
-				if (read_char != ')') return FALSE;
-				// place input and output into current keyboard
-				keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, IKeystrokeOutput>(input, output)));
-			}
-			else if (symbol == "virtual")
-			{
-				// case 2 - virtual key
-				// expect a left parenthesis
-				read_char = stream->get();
-				if (read_char != '(') return FALSE;
-				// first parameter: an input keystroke
-				if (!ReadInputKeystroke(stream, &input)) return FALSE;
-				// expect a comma
-				read_char = stream->get();
-				if (read_char != ')') return FALSE;
-				// second parameter: an output keystroke with a virtual key
-				if (!ReadVirtualkey(stream, &output)) return FALSE;
-				// expect a right parenthesis
-				read_char = stream->get();
-				if (read_char != ')') return FALSE;
-				// place input and output into current keyboard
-				keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, IKeystrokeOutput>(input, output)));
-			}
-			else if (symbol == "keyboard")
-			{
-				// case 3 - new keyboard
-				// save this keyboard
-				ptrVectorKeyboard->push_back(keyboard);		// store a copy
-															// expect left parenthesis
-				read_char = stream->get();
-				if (read_char != '(') return FALSE;
-				// clean keyboard
-				keyboard.Clear();
-				// read keyboard name
-				if (!ReadKeyboardName(stream, &keyboard)) return FALSE;
-				// expect right parenthesis
-				read_char = stream->get();
-				if (read_char != ')') return FALSE;
-			}
-			// jump line
-			getline(*stream, lineBuffer);
+		if (!ReadSymbol(stream, &symbol))
+		{
+		// save keyboard and close
+		ptrVectorKeyboard->push_back(keyboard);
+		return TRUE;
+		}
+		// evaluate symbol
+		if (symbol == "unicode")
+		{
+		// case 1 - unicode
+		// expect a left parenthesis
+		read_char = stream->get();
+		if (read_char != '(') return FALSE;
+		// first parameter: an input keystroke
+		if (!ReadInputKeystroke(stream, &input)) return FALSE;
+		// expect a comma
+		read_char = stream->get();
+		if (read_char != ',') return FALSE;
+		// second parameter: an output keystroke with a unicode codepoint
+		if (!ReadUnicode(stream, &output)) return FALSE;
+		// expect a right parenthesis
+		read_char = stream->get();
+		if (read_char != ')') return FALSE;
+		// place input and output into current keyboard
+		keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, IKeystrokeOutput>(input, output)));
+		}
+		else if (symbol == "virtual")
+		{
+		// case 2 - virtual key
+		// expect a left parenthesis
+		read_char = stream->get();
+		if (read_char != '(') return FALSE;
+		// first parameter: an input keystroke
+		if (!ReadInputKeystroke(stream, &input)) return FALSE;
+		// expect a comma
+		read_char = stream->get();
+		if (read_char != ')') return FALSE;
+		// second parameter: an output keystroke with a virtual key
+		if (!ReadVirtualkey(stream, &output)) return FALSE;
+		// expect a right parenthesis
+		read_char = stream->get();
+		if (read_char != ')') return FALSE;
+		// place input and output into current keyboard
+		keyboard.remaps.insert((std::pair<KEYSTROKE_INPUT, IKeystrokeOutput>(input, output)));
+		}
+		else if (symbol == "keyboard")
+		{
+		// case 3 - new keyboard
+		// save this keyboard
+		ptrVectorKeyboard->push_back(keyboard);		// store a copy
+		// expect left parenthesis
+		read_char = stream->get();
+		if (read_char != '(') return FALSE;
+		// clean keyboard
+		keyboard.Clear();
+		// read keyboard name
+		if (!ReadKeyboardName(stream, &keyboard)) return FALSE;
+		// expect right parenthesis
+		read_char = stream->get();
+		if (read_char != ')') return FALSE;
+		}
+		// jump line
+		getline(*stream, lineBuffer);
 
 		}	// loop
+		*/
 
 
-}
+	}
 
 
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Multikeys::Remapper::Remapper(std::string filename)					// constructor
+{
+	// Setup a keyboard input simulator
+	inputSimulator = InputSimulator();
+
+	if (!LoadSettings(filename))
+	{
+		
+	}
+	OutputDebugString(L"Initialized.");
+}
+Multikeys::Remapper::Remapper(std::wstring filename)
+{
+	// Setup a keyboard input simulator
+	inputSimulator = InputSimulator();
+
+	if (!LoadSettings(filename))
+	{ }
+	OutputDebugString(L"Initialized.");
+}
+Multikeys::Remapper::Remapper()
+{
+	// InputSimulator is not initialized;
+}
+
+
+
+
+BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
+{
+	std::ifstream file(filename);		// Open file with ANSI filename
+
+	if (!file.is_open())
+		return FALSE;
+
+	BOOL result = Parser::ReadFile(&file, &keyboards);
+	file.close();
+	return result;
+}
+BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
+{
+	std::ifstream file(filename);		// Open file with unicode (UTF-16) filename
+
+	if (!file.is_open())
+		return FALSE;
+
+	BOOL result = Parser::ReadFile(&file, &keyboards);
+	file.close();
+	return result;
+}
+
+
+
+
+
+
+
+BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput ** out_action)
+{
+	// Make an input
+
+	BYTE modifiers = 0;
+	// GetKeyState checks the state of a virtual key at the time of this event, not this very moment
+	// Most significant bit is 1 if key is down
+	modifiers += (GetKeyState(VK_LCONTROL & 0x8000) ? MODIFIER_LCTRL : 0);
+	modifiers += (GetKeyState(VK_RCONTROL & 0x8000) ? MODIFIER_RCTRL : 0);
+	modifiers += (GetKeyState(VK_LSHIFT & 0x8000) ? MODIFIER_LSHIFT : 0);
+	modifiers += (GetKeyState(VK_RSHIFT & 0x8000) ? MODIFIER_RSHIFT : 0);
+	modifiers += (GetKeyState(VK_LMENU & 0x8000) ? MODIFIER_LALT : 0);
+	modifiers += (GetKeyState(VK_RMENU & 0x8000) ? MODIFIER_RALT : 0);
+	modifiers += (GetKeyState(VK_LWIN & 0x8000) ? MODIFIER_LWIN : 0);
+	modifiers += (GetKeyState(VK_RWIN & 0x8000) ? MODIFIER_RWIN : 0);
+	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(modifiers, keypressed->MakeCode, keypressed->Flags);
+	// We'll look for a similar one in our list
+	
+	// Look for correct device; return FALSE (= do not block) otherwise
+	for (auto iterator = keyboards.begin(); iterator != keyboards.end(); iterator++)
+	{
+		if (wcscmp(iterator->device_name, deviceName) == 0)
+		{
+			// found it!
+			// check if the remaps map for this device contains our scancode
+			auto innerIt = iterator->remaps.find(input);
+			if (innerIt != iterator->remaps.end())
+			{
+				*out_action = innerIt->second;
+				return TRUE;
+			}
+			else
+				return FALSE;
+			
+		}
+	}
+
+	return FALSE;
+}
+
+
+// oh, look, wrappers
+BOOL Multikeys::Remapper::SimulateKeystroke(IKeystrokeOutput * key)
+{
+	return inputSimulator.SendKeyboardInput(key);
+}
+
+
+
+
+
+

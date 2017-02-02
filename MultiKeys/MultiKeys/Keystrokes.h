@@ -1,29 +1,5 @@
 #pragma once
 
-/*
-
-// Struct for a simulated shortcut or unicode keypress
-struct IKeystrokeOutput
-{
-	BYTE modifiers;		// Extra keys to be pressed with the virtual key. No effect if using unicode
-	USHORT vKey;		// Virtual key code to be sent; must be 0 if KEYEVENTF_UNICODE is set
-	UINT32 codepoint;	// If KEYEVENTF_UNICODE, send this unicode character instead, ignoring modifiers
-	DWORD flags;		// Extra information: we only really use the KEYEVENTF_UNICODE flag. There's KEYUP too.
-
-						// Constructor for a virtual key with modifiers
-	IKeystrokeOutput(BYTE _modifiers, USHORT _vKey) : modifiers(_modifiers), vKey(_vKey), flags(0)
-	{}
-
-	// Constructor for a unicode character (vKey will be 0)
-	IKeystrokeOutput(UINT32 _codepoint) : codepoint(_codepoint), vKey(0), modifiers(0), flags(KEYEVENTF_UNICODE)
-	{}
-
-
-	IKeystrokeOutput() : vKey(0), modifiers(0), flags(0)
-	{}
-};
-
-*/
 
 
 // enum classes are strongly typed
@@ -35,8 +11,6 @@ enum class KeystrokeOutputType
 	StringOutput,
 	ScriptOutput
 };
-
-
 
 struct IKeystrokeOutput		/*Interface*/
 {
@@ -64,8 +38,7 @@ struct IKeystrokeOutput		/*Interface*/
 
 	// Pure virtual functions
 	virtual KeystrokeOutputType getType() = 0;
-	virtual BOOL simulateKeyDown() = 0;
-	virtual BOOL simulateKeyUp() = 0;
+	virtual BOOL simulate(BOOL keyup, BOOL repeated = FALSE) = 0;
 };
 
 struct UnicodeOutput : IKeystrokeOutput
@@ -76,14 +49,12 @@ struct UnicodeOutput : IKeystrokeOutput
 		return KeystrokeOutputType::UnicodeOutput;
 	}
 
-	BOOL simulateKeyDown()
+	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
-		return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
-	}
-
-	BOOL simulateKeyUp()
-	{
-		return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		if (keyup)
+			return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		else
+			return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
 	}
 
 };
@@ -96,14 +67,12 @@ struct VirtualKeyOutput : IKeystrokeOutput
 		return KeystrokeOutputType::VirtualOutput;
 	}
 
-	BOOL simulateKeyDown()
+	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
-		return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
-	}
-
-	BOOL simulateKeyUp()
-	{
-		return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		if (keyup)
+			return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		else
+			return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
 	}
 };
 
@@ -115,15 +84,15 @@ struct MacroOutput : IKeystrokeOutput
 		return KeystrokeOutputType::MacroOutput;
 	}
 
-	BOOL simulateKeyDown()
+	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
-		return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		if (keyup)
+			return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		else if (!repeated)
+			return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		else return TRUE;
 	}
 
-	BOOL simulateKeyUp()
-	{
-		return FALSE;
-	}
 };
 
 struct StringOutput : IKeystrokeOutput
@@ -134,15 +103,15 @@ struct StringOutput : IKeystrokeOutput
 		return KeystrokeOutputType::StringOutput;
 	}
 
-	BOOL simulateKeyDown()
+	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
-		return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		if (keyup)
+			return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		else if (!repeated)
+			return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		else return TRUE;
 	}
 
-	BOOL simulateKeyUp()
-	{
-		return FALSE;
-	}
 };
 
 struct ScriptOutput : IKeystrokeOutput

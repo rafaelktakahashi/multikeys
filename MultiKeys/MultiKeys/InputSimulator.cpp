@@ -108,14 +108,9 @@ UINT Multikeys::InputSimulator::SendUnicodeCharacter(UINT32 codepoint, BOOL keyu
 
 
 
-UINT Multikeys::InputSimulator::SendKeyboardInput(IKeystrokeOutput key)
+UINT Multikeys::InputSimulator::SendKeyboardInput(IKeystrokeOutput * key)
 {
-	if (key.flags & KEYEVENTF_UNICODE)
-	{
-		// We must send a unicode instead
-		return SendUnicodeCharacter(key.codepoint, key.flags & KEYEVENTF_KEYUP);
-	}
-
-	// Ok, normal virtual key
-	return SendVirtualKey(key.modifiers, key.vKey, key.flags & KEYEVENTF_KEYUP);
+	// This is in the process of being removed
+	key->simulate(FALSE, FALSE);
+	return FALSE;
 }

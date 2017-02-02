@@ -90,7 +90,7 @@ namespace Multikeys
 		BOOL EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput* out_action);
 
 
-		BOOL SimulateKeystroke(IKeystrokeOutput key);
+		BOOL SimulateKeystroke(IKeystrokeOutput * key);
 
 
 
@@ -101,55 +101,7 @@ namespace Multikeys
 
 
 
-	// LoadSettings will use this class (only one of its methods, actually
-	// (making a static class instead of a namespace so that a bunch of its
-	// methods can be private and out of the way)
-	class Parser
-	{
-	private:
-		Parser() {}	// Nobody can make an instance of this.
-
-
-					// Reads alphabetic characters until a non-alphanumeric character is found
-					// The non-alpha is not read and not extracted
-					// Result is stored in the symbol parameter
-					// return value of FALSE means no symbol was found (end-of-file was found instead)
-		static BOOL ReadSymbol(std::ifstream* stream, std::string* symbol);
-		
-
-
-
-		// Read a keyboard name, such as \\?\ACPI#PNP0303#4&231b8599&0#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}
-		// and store it in kb's device_name field
-		// Will only stop at whitespace (including newline) or a right parenthesis
-		static BOOL ReadKeyboardName(std::ifstream* stream, KEYBOARD* kb);
-
-
-		static BOOL ReadModifierHex(std::ifstream* stream, BYTE* modifiers, UINT32* code);
-		
-
-
-		// Read an input keystroke, such as <+<!0x47
-		// (modifiers and a scancode)
-		// and place it into a trigger structure
-		// Returns FALSE upon encountering an unrecognized character
-		static BOOL ReadInputKeystroke(std::ifstream* stream, KEYSTROKE_INPUT* trigger);
-
-
-
-		// Read a virtual key, together with modifiers, such as <^0x41
-		static BOOL ReadVirtualkey(std::ifstream* stream, IKeystrokeOutput* keystroke);
-
-
-		// Expects a hexadecimal value
-		static BOOL ReadUnicode(std::ifstream* stream, IKeystrokeOutput* keystroke);
-
-
-	public:
-
-		// This isn't an interpreter.
-		static BOOL ReadFile(std::ifstream* stream, std::vector<KEYBOARD> * ptrVectorKeyboard);
-	};
+	
 
 	
 }

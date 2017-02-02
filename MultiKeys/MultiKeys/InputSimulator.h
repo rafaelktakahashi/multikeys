@@ -82,7 +82,7 @@ namespace Multikeys
 		// Return value:
 		//		UINT - returns the number of events that were successfully
 		//				inserted into the keyboard stream. Failed when 0.
-		UINT SendKeyboardInput(IKeystrokeOutput key);	// Maybe we'll support Keystrokes with more options in the future.
+		UINT SendKeyboardInput(IKeystrokeOutput * key);	// Maybe we'll support Keystrokes with more options in the future.
 													// A good idea is a IKeystrokeOutput with a string in it.
 	};
 }

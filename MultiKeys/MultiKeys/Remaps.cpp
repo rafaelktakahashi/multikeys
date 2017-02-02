@@ -70,6 +70,8 @@ public:
 
 	static BOOL ReadModifierHex(std::ifstream* stream, BYTE* modifiers, UINT32* code)
 	{
+		return FALSE;
+		/*
 		int input_char = 0;		// buffer for one character
 
 		int sideModifier = 0;	// 0: next modifier applies to left and right
@@ -155,6 +157,7 @@ public:
 				return FALSE;
 			}	// end of switch
 		}	// loop
+		*/
 	}
 
 
@@ -288,7 +291,7 @@ public:
 		/*
 		// having a function explicitly expect such a specific map is not very nice, but that's what I could do.
 
-		// Also, in the future we should consider supporting UTF-16 filenames. I don't know how to do that.
+		// Also, in the future we should consider supporting UTF-16 filenames. I don't know how to do that. // <- that's done
 
 		setlocale(LC_ALL, "");						// Set the locale, just in case
 
@@ -424,11 +427,11 @@ public:
 
 
 
-
+/*
 Multikeys::Remapper::Remapper(std::string filename)					// constructor
 {
 	// Setup a keyboard input simulator
-	inputSimulator = InputSimulator();
+	// inputSimulator = InputSimulator();
 
 	if (!LoadSettings(filename))
 	{
@@ -439,15 +442,14 @@ Multikeys::Remapper::Remapper(std::string filename)					// constructor
 Multikeys::Remapper::Remapper(std::wstring filename)
 {
 	// Setup a keyboard input simulator
-	inputSimulator = InputSimulator();
+	// inputSimulator = InputSimulator();
 
 	if (!LoadSettings(filename))
 	{ }
 	OutputDebugString(L"Initialized.");
-}
+} */
 Multikeys::Remapper::Remapper()
 {
-	// InputSimulator is not initialized;
 }
 
 
@@ -486,18 +488,8 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 {
 	// Make an input
 
-	BYTE modifiers = 0;
-	// GetKeyState checks the state of a virtual key at the time of this event, not this very moment
-	// Most significant bit is 1 if key is down
-	modifiers += (GetKeyState(VK_LCONTROL & 0x8000) ? MODIFIER_LCTRL : 0);
-	modifiers += (GetKeyState(VK_RCONTROL & 0x8000) ? MODIFIER_RCTRL : 0);
-	modifiers += (GetKeyState(VK_LSHIFT & 0x8000) ? MODIFIER_LSHIFT : 0);
-	modifiers += (GetKeyState(VK_RSHIFT & 0x8000) ? MODIFIER_RSHIFT : 0);
-	modifiers += (GetKeyState(VK_LMENU & 0x8000) ? MODIFIER_LALT : 0);
-	modifiers += (GetKeyState(VK_RMENU & 0x8000) ? MODIFIER_RALT : 0);
-	modifiers += (GetKeyState(VK_LWIN & 0x8000) ? MODIFIER_LWIN : 0);
-	modifiers += (GetKeyState(VK_RWIN & 0x8000) ? MODIFIER_RWIN : 0);
-	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(modifiers, keypressed->MakeCode, keypressed->Flags);
+	// Need to deal with modifiers. Not here, the levels thing.
+	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(0, keypressed->MakeCode, keypressed->Flags);
 	// We'll look for a similar one in our list
 	
 	// Look for correct device; return FALSE (= do not block) otherwise
@@ -522,12 +514,6 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 	return FALSE;
 }
 
-
-// oh, look, wrappers
-BOOL Multikeys::Remapper::SimulateKeystroke(IKeystrokeOutput * key)
-{
-	return inputSimulator.SendKeyboardInput(key);
-}
 
 
 

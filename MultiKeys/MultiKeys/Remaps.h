@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 
-#include "InputSimulator.h"
 
 
 // Only the remapper and the parser need to know about this.
@@ -65,15 +64,15 @@ namespace Multikeys
 		
 
 		// Class that will simulate the output for this remapper
-		InputSimulator inputSimulator;
+		// InputSimulator inputSimulator;
 
 	public:
 		
 		// Constructor
 		// Parameters:
 		//		std::string - full path to the configuration file to be read
-		Remapper(std::string filename);
-		Remapper(std::wstring filename);
+		// Remapper(std::string filename);
+		// Remapper(std::wstring filename);
 		// Constructor
 		//
 		// Creates an instance with an empty map. Must be properly initialized with LoadSettings
@@ -103,7 +102,6 @@ namespace Multikeys
 		BOOL EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput** out_action);
 
 
-		BOOL SimulateKeystroke(IKeystrokeOutput * key);
 
 
 

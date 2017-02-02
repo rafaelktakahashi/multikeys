@@ -14,37 +14,17 @@ enum class KeystrokeOutputType
 
 struct IKeystrokeOutput		/*Interface*/
 {
-
-	// Don't get your hopes up, this isn't Java.
-	// These are the public attributes of this interface:
-	INPUT * keystrokesDown;
-	INPUT * keystrokesUp;
-	USHORT inputCount;
-
-	
-
-	IKeystrokeOutput()
-		: keystrokesDown(nullptr), keystrokesUp(nullptr), inputCount(0)
-	{}
-
-	IKeystrokeOutput(INPUT * _keystrokesDown, USHORT _inputCount)
-		: keystrokesDown(_keystrokesDown), keystrokesUp(nullptr), inputCount(_inputCount)
-	{}
-
-	IKeystrokeOutput(INPUT * _keystrokesDown, INPUT * _keystrokesUp, USHORT _inputCount)
-		: keystrokesDown(_keystrokesDown), keystrokesUp(_keystrokesUp), inputCount(inputCount)
-	{}
-
-
-	// Pure virtual functions
 	virtual KeystrokeOutputType getType() = 0;
+
 	virtual BOOL simulate(BOOL keyup, BOOL repeated = FALSE) = 0;
 };
 
 struct UnicodeOutput : IKeystrokeOutput
 {
-	UINT codepoint;
-	// Non-surrogate codepoint is for checking dead keys
+	INPUT * keystrokesDown;
+	INPUT * keystrokesUp;
+	USHORT inputCount;
+	UINT codepoint;			// Non-surrogate codepoint is for checking dead keys
 
 	KeystrokeOutputType getType()
 	{
@@ -63,6 +43,9 @@ struct UnicodeOutput : IKeystrokeOutput
 
 struct VirtualKeyOutput : IKeystrokeOutput
 {
+	INPUT * keystrokesDown;
+	INPUT * keystrokesUp;
+	USHORT inputCount;
 
 	KeystrokeOutputType getType()
 	{
@@ -80,6 +63,8 @@ struct VirtualKeyOutput : IKeystrokeOutput
 
 struct MacroOutput : IKeystrokeOutput
 {
+	INPUT * keystrokesDown;
+	USHORT inputCount;
 
 	KeystrokeOutputType getType()
 	{
@@ -89,7 +74,7 @@ struct MacroOutput : IKeystrokeOutput
 	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
 		if (keyup)
-			return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+			return TRUE;
 		else if (!repeated)
 			return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
 		else return TRUE;
@@ -99,6 +84,8 @@ struct MacroOutput : IKeystrokeOutput
 
 struct StringOutput : IKeystrokeOutput
 {
+	INPUT * keystrokesDown;
+	USHORT inputCount;
 
 	KeystrokeOutputType getType()
 	{
@@ -108,7 +95,7 @@ struct StringOutput : IKeystrokeOutput
 	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
 		if (keyup)
-			return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+			return TRUE;
 		else if (!repeated)
 			return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
 		else return TRUE;

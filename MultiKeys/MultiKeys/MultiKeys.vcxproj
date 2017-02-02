@@ -137,7 +137,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="InputSimulator.h" />
     <ClInclude Include="KeyboardHook.h" />
     <ClInclude Include="Keystrokes.h" />
     <ClInclude Include="MultiKeys.h" />
@@ -147,7 +146,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="InputSimulator.cpp" />
     <ClCompile Include="MultiKeys.cpp" />
     <ClCompile Include="Remaps.cpp" />
     <ClCompile Include="stdafx.cpp">

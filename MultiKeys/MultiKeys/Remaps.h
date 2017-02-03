@@ -3,6 +3,14 @@
 #include "stdafx.h"
 
 
+#define VIRTUAL_MODIFIER_LCTRL		0x80
+#define VIRTUAL_MODIFIER_RCTRL		0x40
+#define VIRTUAL_MODIFIER_LALT		0x20
+#define VIRTUAL_MODIFIER_RALT		0x10
+#define VIRTUAL_MODIFIER_LWIN		0x08
+#define VIRTUAL_MODIFIER_RWIN		0x04
+#define VIRTUAL_MODIFIER_LSHIFT		0x02
+#define VIRTUAL_MODIFIER_RSHIFT		0x01
 
 // Only the remapper and the parser need to know about this.
 // Used to internally store a group of remaps associated to a specific keyboard
@@ -25,6 +33,8 @@ struct KEYBOARD
 	}
 
 	/*				Need to sort this out later
+					// Can't deallocate because keyboards are copied to other places
+					// maybe a function to deallocate everything
 	~KEYBOARD()
 	{
 		delete[] device_name;

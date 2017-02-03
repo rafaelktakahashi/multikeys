@@ -26,6 +26,8 @@ struct UnicodeOutput : IKeystrokeOutput
 	USHORT inputCount;
 	UINT codepoint;			// Non-surrogate codepoint is for checking dead keys
 
+	UnicodeOutput() : IKeystrokeOutput() {}
+
 	KeystrokeOutputType getType()
 	{
 		return KeystrokeOutputType::UnicodeOutput;
@@ -47,6 +49,8 @@ struct VirtualKeyOutput : IKeystrokeOutput
 	INPUT * keystrokesUp;
 	USHORT inputCount;
 
+	VirtualKeyOutput() : IKeystrokeOutput() {}
+
 	KeystrokeOutputType getType()
 	{
 		return KeystrokeOutputType::VirtualOutput;
@@ -63,8 +67,10 @@ struct VirtualKeyOutput : IKeystrokeOutput
 
 struct MacroOutput : IKeystrokeOutput
 {
-	INPUT * keystrokesDown;
+	INPUT * keystrokes;
 	USHORT inputCount;
+
+	MacroOutput() : IKeystrokeOutput() {}
 
 	KeystrokeOutputType getType()
 	{
@@ -76,7 +82,7 @@ struct MacroOutput : IKeystrokeOutput
 		if (keyup)
 			return TRUE;
 		else if (!repeated)
-			return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+			return (SendInput(inputCount, keystrokes, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
 		else return TRUE;
 	}
 
@@ -84,8 +90,10 @@ struct MacroOutput : IKeystrokeOutput
 
 struct StringOutput : IKeystrokeOutput
 {
-	INPUT * keystrokesDown;
+	INPUT * keystrokes;
 	USHORT inputCount;
+
+	StringOutput() : IKeystrokeOutput() {}
 
 	KeystrokeOutputType getType()
 	{
@@ -97,7 +105,7 @@ struct StringOutput : IKeystrokeOutput
 		if (keyup)
 			return TRUE;
 		else if (!repeated)
-			return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+			return (SendInput(inputCount, keystrokes, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
 		else return TRUE;
 	}
 
@@ -121,18 +129,17 @@ public:
 		return KeystrokeOutputType::ScriptOutput;
 	}
 
-	BOOL simulateKeyDown()
+	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
+		if (repeated || keyup) return TRUE;
+
 		// start process at filename
 		
 		ShellExecute(NULL, L"open", filename.c_str(), L"", NULL, SW_SHOWNORMAL);
 
 		// TODO: handle errors
-	}
 
-	BOOL simulateKeyUp()
-	{
-		return FALSE;
+		return TRUE;
 	}
 
 

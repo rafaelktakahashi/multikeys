@@ -3,6 +3,357 @@
 #include "Remaps.h"
 
 
+// Factory class for outputs
+class OutputFactory
+{
+private:
+
+	// Prototypes, so that INPUTs don't need to be manually set everywhere
+
+	INPUT UnicodePrototypeDown;
+	INPUT UnicodePrototypeUp;
+
+	INPUT VirtualKeyPrototypeDown;
+	INPUT VirtualKeyPrototypeUp;
+
+public:
+
+	OutputFactory()
+	{
+		// Initialize prototypes
+
+		// When keyeventf_unicode is set, virtual key must be 0,
+		// and the UTF-16 code value is put into wScan
+		// Surrogate pairs require two consecutive inputs
+		UnicodePrototypeDown.type = INPUT_KEYBOARD;
+		UnicodePrototypeDown.ki.dwExtraInfo = 0;
+		UnicodePrototypeDown.ki.dwFlags = KEYEVENTF_UNICODE;
+		UnicodePrototypeDown.ki.time = 0;
+		UnicodePrototypeDown.ki.wVk = 0;
+
+		UnicodePrototypeUp = UnicodePrototypeDown;
+		UnicodePrototypeUp.ki.dwFlags |= KEYEVENTF_KEYUP;
+
+		// Virtual keys are sent with the scancode e0 00 because the hook
+		// will filter these out (to avoid responding to injected keys)
+		VirtualKeyPrototypeDown.type = INPUT_KEYBOARD;
+		VirtualKeyPrototypeDown.ki.dwExtraInfo = 0;
+		VirtualKeyPrototypeDown.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
+		VirtualKeyPrototypeDown.ki.time = 0;
+		VirtualKeyPrototypeDown.ki.wScan = 0;
+
+		VirtualKeyPrototypeUp = VirtualKeyPrototypeDown;
+		VirtualKeyPrototypeUp.ki.dwFlags |= KEYEVENTF_KEYUP;
+	}
+
+
+	// ----USAGE----
+	// The meaning of _nParam and _lParam change depending on _type:
+	// type UnicodeOutput:
+	//		_nParam contains the Unicode code point to be sent,
+	//		_lParam is not used
+	// type VirtualOutput:
+	//		_nParam contains the virtual-key code to be simulated,
+	//		_lParam contains modifier flags (up to eight) to be simulated as well
+	// type MacroOutput:
+	//		_lParam is a pointer to an array of DWORDs, each containing the virtual-key code
+	//				to be sent, with the high bit (leftmost) on for keyups
+	//		_nParam is the length of the array
+	// type StringOutput:
+	//		_lParam is a pointer to an array of UINTs, each containing the Unicode codepoint
+	//				of the character to be sent
+	//		_nParam is the length of the array
+	// type ScriptOutput:
+	//		_lParam is a pointer to a null-terminated string of WCHAR (WCHAR*) containing
+	//				the full path to the file to execute
+	//		_nParam is unused
+	IKeystrokeOutput * getInstance(KeystrokeOutputType _type, UINT _nParam, ULONG_PTR _lParam)
+	{
+		// 
+		// If casting a pointer to an integer type is necessary, use ptrtolong
+		switch (_type)
+		{
+		case KeystrokeOutputType::UnicodeOutput:
+		{
+			// integer parameter contains the Unicode codepoint
+			// second parameter contains nothing
+			auto unicodeOutput = new UnicodeOutput();
+			UINT codepoint = _nParam;
+			unicodeOutput->codepoint = codepoint;
+
+			if (codepoint <= 0xffff)
+			{
+				// One UTF-16 code unit
+
+				unicodeOutput->inputCount = 1;
+
+				unicodeOutput->keystrokesDown = new INPUT(UnicodePrototypeDown);
+				unicodeOutput->keystrokesDown->ki.wScan = codepoint;
+
+				unicodeOutput->keystrokesUp = new INPUT(UnicodePrototypeUp);
+				unicodeOutput->keystrokesUp->ki.wScan = codepoint;
+
+				return (IKeystrokeOutput*)unicodeOutput;
+			}
+			else
+			{
+				// UTF-16 surrogate pair
+
+				unicodeOutput->inputCount = 2;
+
+				unicodeOutput->keystrokesDown = new INPUT[2];
+				unicodeOutput->keystrokesUp = new INPUT[2];
+				for (int i = 0; i < 2; i++) {
+					unicodeOutput->keystrokesDown[i] = INPUT(UnicodePrototypeDown);
+					unicodeOutput->keystrokesUp[i] = INPUT(UnicodePrototypeUp);
+				}
+
+				codepoint -= 0x10000;
+				unicodeOutput->keystrokesDown[0].ki.wScan
+					= unicodeOutput->keystrokesUp[0].ki.wScan
+					= 0xd800 + (codepoint >> 10);			// High surrogate
+				unicodeOutput->keystrokesDown[1].ki.wScan
+					= unicodeOutput->keystrokesUp[1].ki.wScan
+					= 0xdc00 + (codepoint & 0x3ff);			// Low surrogate
+
+				return (IKeystrokeOutput*)unicodeOutput;
+
+			}
+
+		}	// end case
+		case KeystrokeOutputType::VirtualOutput:
+		{
+			// Integer parameter contains the virtual-key code
+			// Second parameter contains flags for modifiers (only the last byte)
+			// (These are not the modifiers that trigger a remap, but the ones used
+			// for simulating shortcuts
+
+			auto virtualKeyOutput = new VirtualKeyOutput();
+
+			// There are better ways to count the number of set bits
+			// but come on
+			USHORT modifierCount = 0;
+			for (int i = 0; i < 8; i++)
+				if ((_lParam >> i) & 1)
+					modifierCount++;
+			// Above code doesn't modify value of _lParam
+			virtualKeyOutput->inputCount = modifierCount + 1;
+
+			// We need one INPUT for each modifier, plus one for the key itself
+			USHORT currentIndex = 0;
+			virtualKeyOutput->keystrokesDown = new INPUT[modifierCount + 1];
+			virtualKeyOutput->keystrokesUp = new INPUT[modifierCount + 1];
+			for (int i = 0; i < virtualKeyOutput->inputCount; i++) {
+				virtualKeyOutput->keystrokesDown[i] = INPUT(VirtualKeyPrototypeDown);
+				virtualKeyOutput->keystrokesUp[i] = INPUT(VirtualKeyPrototypeUp);
+			}
+
+			// Careful - keystrokes up are in inverse order, with index 0 corresponding to the key itself
+			{
+				if ((_lParam & VIRTUAL_MODIFIER_LCTRL) == VIRTUAL_MODIFIER_LCTRL)
+				{
+					virtualKeyOutput->keystrokesDown[currentIndex].ki.wVk = VK_LCONTROL;
+					virtualKeyOutput->keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_LCONTROL;
+					currentIndex++;
+				}
+				if ((_lParam & VIRTUAL_MODIFIER_RCTRL) == VIRTUAL_MODIFIER_RCTRL)
+				{
+					virtualKeyOutput->keystrokesDown[currentIndex].ki.wVk = VK_RCONTROL;
+					virtualKeyOutput->keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_RCONTROL;
+					currentIndex++;
+				}
+				if ((_lParam & VIRTUAL_MODIFIER_LALT) == VIRTUAL_MODIFIER_LALT)
+				{
+					virtualKeyOutput->keystrokesDown[currentIndex].ki.wVk = VK_LMENU;
+					virtualKeyOutput->keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_LMENU;
+					currentIndex++;
+				}
+				if ((_lParam & VIRTUAL_MODIFIER_RALT) == VIRTUAL_MODIFIER_RALT)
+				{
+					virtualKeyOutput->keystrokesDown[currentIndex].ki.wVk = VK_RMENU;
+					virtualKeyOutput->keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_RMENU;
+					currentIndex++;
+				}
+				if ((_lParam & VIRTUAL_MODIFIER_LWIN) == VIRTUAL_MODIFIER_LWIN)
+				{
+					virtualKeyOutput->keystrokesDown[currentIndex].ki.wVk = VK_LWIN;
+					virtualKeyOutput->keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_LWIN;
+					currentIndex++;
+				}
+				if ((_lParam & VIRTUAL_MODIFIER_RWIN) == VIRTUAL_MODIFIER_RWIN)
+				{
+					virtualKeyOutput->keystrokesDown[currentIndex].ki.wVk = VK_RWIN;
+					virtualKeyOutput->keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_RWIN;
+					currentIndex++;
+				}
+				if ((_lParam & VIRTUAL_MODIFIER_LSHIFT) == VIRTUAL_MODIFIER_RSHIFT)
+				{
+					virtualKeyOutput->keystrokesDown[currentIndex].ki.wVk = VK_LSHIFT;
+					virtualKeyOutput->keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_LSHIFT;
+					currentIndex++;
+				}
+				if ((_lParam & VIRTUAL_MODIFIER_RSHIFT) == VIRTUAL_MODIFIER_RSHIFT)
+				{
+					virtualKeyOutput->keystrokesDown[currentIndex].ki.wVk = VK_RSHIFT;
+					virtualKeyOutput->keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_RSHIFT;
+					currentIndex++;
+				}
+			}
+			virtualKeyOutput->keystrokesDown[currentIndex].ki.wVk = (WORD)_nParam;
+			virtualKeyOutput->keystrokesUp[modifierCount - currentIndex].ki.wVk = (WORD)_nParam;
+
+			return (IKeystrokeOutput*)virtualKeyOutput;
+
+		}	// end case
+
+		case KeystrokeOutputType::MacroOutput:
+		{
+			// second parameter casts to a pointer to an array of DWORD containing the sequence
+			//		of keypresses (each DWORD contains the virtual key code in the last byte, and
+			//		the high bit set for keyups)
+			// first parameter contains the lenght of array pointed to by second parameter.
+			if (_lParam == 0) return nullptr;
+
+			// WORD: 16-bit
+			// DWORD: 32-bit
+			// I think the size of Microsoft words will stay that way until the nth end of the word.
+			auto sequence = (DWORD*)_lParam;
+			UINT seqCount = _nParam;
+
+			auto macroOutput = new MacroOutput();
+			macroOutput->inputCount = seqCount;
+			macroOutput->keystrokes = new INPUT[seqCount];
+
+			BOOL keyup = 0;
+			USHORT virtualKeyCode = 0;
+			for (int i = 0; i < seqCount; i++)
+			{
+				keyup = (sequence[i] >> 31) & 1;
+				virtualKeyCode = sequence[i] & 0xff;
+				macroOutput->keystrokes[i] = INPUT(VirtualKeyPrototypeDown);
+				macroOutput->keystrokes[i].ki.wVk = virtualKeyCode;
+				if (keyup) macroOutput->keystrokes[i].ki.dwFlags |= KEYEVENTF_KEYUP;
+			}
+			return (IKeystrokeOutput*)macroOutput;
+
+		}	// end case
+
+		case KeystrokeOutputType::StringOutput:
+		{
+			// second parameter casts to a pointer to array of UINT containing all
+			// the Unicode code points in string
+			// first parameter contains the length of array pointed to by second parameter
+			if (_lParam == 0) return nullptr;
+
+			auto codepoints = (UINT*)_lParam;
+			UINT seqCount = _nParam;
+
+			auto stringOutput = new StringOutput();
+
+			// number of sent INPUTs is the length of array, plus the amount of code points
+			//		that are larger than 0xffff
+			// Then multiplied by 2 because both keydowns and keyups are sent
+			stringOutput->inputCount = seqCount * 2;
+			for (int i = 0; i < seqCount; i++)
+			{
+				if (codepoints[i] > 0xffff)
+					stringOutput->inputCount += 2;
+			}
+
+			stringOutput->keystrokes = new INPUT[stringOutput->inputCount];
+
+
+
+			// Put each character and surrogate pair into array of inputs
+			UINT currentIndex = 0;
+
+			stringOutput->keystrokes = new INPUT[stringOutput->inputCount];
+
+			for (int i = 0; i < seqCount; i++)
+			{
+				// codepoints = one codepoint per character
+				// seqCount = number of characters
+				// stringOutput->inputCount = number of UTF-16 code values
+				// currentIndex must be incremented manually
+
+				if (codepoints[i] <= 0xffff)
+				{
+					// one UTF-16 code value, one input down, one input up
+					stringOutput->keystrokes[currentIndex] = INPUT(UnicodePrototypeDown);
+					stringOutput->keystrokes[currentIndex].ki.wScan = codepoints[i];
+					currentIndex++;
+					stringOutput->keystrokes[currentIndex] = INPUT(UnicodePrototypeUp);
+					stringOutput->keystrokes[currentIndex].ki.wScan = codepoints[i];
+					currentIndex++;
+					continue;		// next for
+				}
+				else
+				{
+					// UTF-16 surrogate pair, two inputs down, two inputs up
+					USHORT highSurrogate = 0xd800 + ((codepoints[i] - 0x10000) >> 10);
+					USHORT lowSurrogate = 0xdc00 + (codepoints[i] & 0x3ff);
+					stringOutput->keystrokes[currentIndex] = INPUT(UnicodePrototypeDown);
+					stringOutput->keystrokes[currentIndex + 1] = INPUT(UnicodePrototypeDown);
+					stringOutput->keystrokes[currentIndex].ki.wScan = highSurrogate;
+					stringOutput->keystrokes[currentIndex + 1].ki.wScan = lowSurrogate;
+					currentIndex += 2;
+					stringOutput->keystrokes[currentIndex] = INPUT(UnicodePrototypeUp);
+					stringOutput->keystrokes[currentIndex + 1] = INPUT(UnicodePrototypeUp);
+					stringOutput->keystrokes[currentIndex].ki.wScan = highSurrogate;
+					stringOutput->keystrokes[currentIndex + 1].ki.wScan = lowSurrogate;
+					currentIndex += 2;
+					continue;
+				}
+			}	// end for
+			return (IKeystrokeOutput*)stringOutput;
+
+		}	// end case
+
+
+		case KeystrokeOutputType::ScriptOutput:
+		{
+			// second parameter contains a pointer to null-terminated WCHAR string containing filename to execute
+			// first parameter contains nothing
+
+			auto scriptOutput = new ScriptOutput((WCHAR*)_lParam);
+			return (IKeystrokeOutput*)scriptOutput;
+		}	// end case
+
+
+		default: return nullptr;
+		}	// end switch
+
+
+	}
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -229,6 +580,10 @@ public:
 		// Make a dummy object for now to test other things
 
 		// Have this file generate the data structure, and build the parser later.
+
+		// Yeah, this is pretty much working as a test class
+		// because we don't have a proper test setup
+		// sorry
 		ptrVectorKeyboard->clear();
 
 		auto keyboard = KEYBOARD();
@@ -239,50 +594,56 @@ public:
 
 		auto input = KEYSTROKE_INPUT();
 
-		input.scancode = 0x02;
 		input.flags = 0;
 		input.modifiers = 0;
 
-		auto output = new UnicodeOutput();
-		output->codepoint = 0x1f604;
 
-		INPUT * oneSurrogate = new INPUT[2]();
-		INPUT * oneSurrogateUp = new INPUT[2]();
+		OutputFactory factory = OutputFactory();
 
+
+		auto pointerToAnotherOutput = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f605, NULL);
 		
-		oneSurrogate[0].type = INPUT_KEYBOARD;
-		oneSurrogate[0].ki.dwExtraInfo = 0;
-		oneSurrogate[0].ki.dwFlags = KEYEVENTF_UNICODE;
-		oneSurrogate[0].ki.wScan = 0xd83d;
-		oneSurrogate[0].ki.wVk = 0;
-		oneSurrogate[0].ki.time = 0;
+		input.scancode = 0x02;
+		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerToAnotherOutput));
 
-		oneSurrogate[1].type = INPUT_KEYBOARD;
-		oneSurrogate[1].ki.dwExtraInfo = 0;
-		oneSurrogate[1].ki.dwFlags = KEYEVENTF_UNICODE;
-		oneSurrogate[1].ki.wScan = 0xde04;
-		oneSurrogate[1].ki.wVk = 0;
-		oneSurrogate[1].ki.time = 0;
+		auto pointerToYetAnotherOutputButThisTimeItsAVirtualOutput =
+			factory.getInstance(KeystrokeOutputType::VirtualOutput, 0x020, 0);
+		input.scancode = 0x03;
+		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
+			(input, pointerToYetAnotherOutputButThisTimeItsAVirtualOutput));
 
-		oneSurrogateUp[0].type = INPUT_KEYBOARD;
-		oneSurrogateUp[0].ki.dwExtraInfo = 0;
-		oneSurrogateUp[0].ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
-		oneSurrogateUp[0].ki.wScan = 0xd83d;
-		oneSurrogateUp[0].ki.wVk = 0;
-		oneSurrogateUp[0].ki.time = 0;
+		DWORD macro[4];
+		macro[0] = VK_LCONTROL;
+		macro[1] = 0x46;
+		macro[2] = 0x46 | 0x80000000;
+		macro[3] = VK_LCONTROL | 0x80000000;
+		
+		auto pointerThisOneIsAMacro = factory.getInstance(KeystrokeOutputType::MacroOutput, 4, (ULONG_PTR)&macro);
 
-		oneSurrogateUp[1].type = INPUT_KEYBOARD;
-		oneSurrogateUp[1].ki.dwExtraInfo = 0;
-		oneSurrogateUp[1].ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
-		oneSurrogateUp[1].ki.wScan = 0xde04;
-		oneSurrogateUp[1].ki.wVk = 0;
-		oneSurrogateUp[1].ki.time = 0;
+		input.scancode = 0x04;
+		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerThisOneIsAMacro));
 
-		output->keystrokesDown = oneSurrogate;
-		output->keystrokesUp = oneSurrogateUp;
-		output->inputCount = 2;
 
-		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, output));
+
+		UINT unicodeString[4];
+		unicodeString[0] = 0x48;
+		unicodeString[1] = 0x69;
+		unicodeString[2] = 0x2e;
+		unicodeString[3] = 0x1f642;		// prints "Hi." and a smiling emoji.
+		auto pointerStringOfUnicode = factory.getInstance(KeystrokeOutputType::StringOutput, 4, (ULONG_PTR)&unicodeString);
+
+		input.scancode = 0x05;
+		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerStringOfUnicode));
+
+
+		auto wideStringFilename = L"C:\\MultiKeys\\openAppTest.exe";
+		auto pointerThisOneWillOpenAnExecutableWhichOpensChromeIDontCareIfEdgeIsFasterChromeIsStillBetter
+			= factory.getInstance(KeystrokeOutputType::ScriptOutput, 0, (ULONG_PTR)wideStringFilename);
+		input.scancode = 0x06;
+		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
+			(input, pointerThisOneWillOpenAnExecutableWhichOpensChromeIDontCareIfEdgeIsFasterChromeIsStillBetter));
+
+
 
 		ptrVectorKeyboard->push_back(keyboard);
 
@@ -520,226 +881,3 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 
 
 
-// Experimental: factory class for outputs
-class OutputFactory
-{
-private:
-	INPUT UnicodeTemplateDown;
-	INPUT UnicodeTemplateUp;
-
-	INPUT VirtualKeyTemplateDown;
-	INPUT VirtualKeyTemplateUp;
-
-public:
-
-	OutputFactory()
-	{
-		UnicodeTemplateDown.type = INPUT_KEYBOARD;
-		UnicodeTemplateDown.ki.dwExtraInfo = 0;
-		UnicodeTemplateDown.ki.dwFlags = KEYEVENTF_UNICODE;
-		UnicodeTemplateDown.ki.time = 0;
-		UnicodeTemplateDown.ki.wVk = 0;
-
-		UnicodeTemplateUp = UnicodeTemplateDown;
-		UnicodeTemplateUp.ki.dwFlags |= KEYEVENTF_KEYUP;
-
-		VirtualKeyTemplateDown.type = INPUT_KEYBOARD;
-		VirtualKeyTemplateDown.ki.dwExtraInfo = 0;
-		VirtualKeyTemplateDown.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
-		VirtualKeyTemplateDown.ki.time = 0;
-		VirtualKeyTemplateDown.ki.wScan = 0;
-
-		VirtualKeyTemplateUp = VirtualKeyTemplateDown;
-		VirtualKeyTemplateUp.ki.dwFlags |= KEYEVENTF_KEYUP;
-	}
-
-	// Parameter UINT_PTR scales to the size of a pointer (32-bit or 64-bit)
-	// If casting to an integer type is necessary, use ptrtolong
-	IKeystrokeOutput * getInstance(KeystrokeOutputType _type, UINT _nParam, ULONG_PTR _lParam)
-	{
-		switch (_type)
-		{
-		case KeystrokeOutputType::UnicodeOutput:
-		{
-			// integer parameter contains the Unicode codepoint
-			// second parameter contains nothing
-			auto unicodeOutput = new UnicodeOutput();
-			UINT codepoint = _nParam;
-
-			if (codepoint <= 0xffff)
-			{
-				// One UTF-16 code unit
-
-				unicodeOutput->inputCount = 1;
-
-				unicodeOutput->keystrokesDown = new INPUT(UnicodeTemplateDown);
-				unicodeOutput->keystrokesDown->ki.wScan = codepoint;
-
-				unicodeOutput->keystrokesUp = new INPUT(UnicodeTemplateUp);
-				unicodeOutput->keystrokesUp->ki.wScan = codepoint;
-
-				return (IKeystrokeOutput*)&unicodeOutput;
-			}
-			else
-			{
-				// UTF-16 surrogate pair
-
-				unicodeOutput->inputCount = 2;
-
-				unicodeOutput->keystrokesDown = new INPUT[2];
-				unicodeOutput->keystrokesUp = new INPUT[2];
-				for (int i = 0; i < 2; i++) {
-					unicodeOutput->keystrokesDown[i] = INPUT(UnicodeTemplateDown);
-					unicodeOutput->keystrokesUp[i] = INPUT(UnicodeTemplateDown);
-				}
-
-				codepoint -= 0x10000;
-				unicodeOutput->keystrokesDown[0].ki.wScan
-					= unicodeOutput->keystrokesUp[0].ki.wScan
-					= 0xd800 + (codepoint >> 10);			// High surrogate
-				unicodeOutput->keystrokesDown[1].ki.wScan
-					= unicodeOutput->keystrokesUp[1].ki.wScan
-					= 0xdc00 + (codepoint & 0x3ff);			// Low surrogate
-
-				return (IKeystrokeOutput*)&unicodeOutput;
-
-			}
-			
-		}	// end case
-		case KeystrokeOutputType::VirtualOutput:
-		{
-			// Integer parameter contains the virtual-key code
-			// Second parameter contains flags for modifiers (only the last byte)
-			// (These are not the modifiers that trigger a remap, but the ones used
-			// for simulating shortcuts
-
-			auto virtualKeyOutput = VirtualKeyOutput();
-			
-			// There are better ways to count the number of set bits
-			// but come on
-			USHORT modifierCount = 0;
-			virtualKeyOutput.inputCount = modifierCount + 1;
-			for (int i = 0; i < 8; i++)
-				if ((_lParam >> i) & 1)
-					modifierCount++;
-			// Above code doesn't modify value of _lParam
-
-			// We need one INPUT for each modifier, plus one for the key itself
-			USHORT currentIndex = 0;
-			virtualKeyOutput.keystrokesDown = new INPUT[modifierCount + 1];
-			virtualKeyOutput.keystrokesUp = new INPUT[modifierCount + 1];
-			
-			// Careful - keystrokes up are in inverse order, with index 0 corresponding to the key itself
-			if ((_lParam & VIRTUAL_MODIFIER_LCTRL) == VIRTUAL_MODIFIER_LCTRL)
-			{
-				virtualKeyOutput.keystrokesDown[currentIndex].ki.wVk = VK_LCONTROL;
-				virtualKeyOutput.keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_LCONTROL;
-				currentIndex++;
-			}
-			if ((_lParam & VIRTUAL_MODIFIER_RCTRL) == VIRTUAL_MODIFIER_RCTRL)
-			{
-				virtualKeyOutput.keystrokesDown[currentIndex].ki.wVk = VK_RCONTROL;
-				virtualKeyOutput.keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_RCONTROL;
-				currentIndex++;
-			}
-			if ((_lParam & VIRTUAL_MODIFIER_LALT) == VIRTUAL_MODIFIER_LALT)
-			{
-				virtualKeyOutput.keystrokesDown[currentIndex].ki.wVk = VK_LMENU;
-				virtualKeyOutput.keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_LMENU;
-				currentIndex++;
-			}
-			if ((_lParam & VIRTUAL_MODIFIER_RALT) == VIRTUAL_MODIFIER_RALT)
-			{
-				virtualKeyOutput.keystrokesDown[currentIndex].ki.wVk = VK_RMENU;
-				virtualKeyOutput.keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_RMENU;
-				currentIndex++;
-			}
-			if ((_lParam & VIRTUAL_MODIFIER_LWIN) == VIRTUAL_MODIFIER_LWIN)
-			{
-				virtualKeyOutput.keystrokesDown[currentIndex].ki.wVk = VK_LWIN;
-				virtualKeyOutput.keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_LWIN;
-				currentIndex++;
-			}
-			if ((_lParam & VIRTUAL_MODIFIER_RWIN) == VIRTUAL_MODIFIER_RWIN)
-			{
-				virtualKeyOutput.keystrokesDown[currentIndex].ki.wVk = VK_RWIN;
-				virtualKeyOutput.keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_RWIN;
-				currentIndex++;
-			}
-			if ((_lParam & VIRTUAL_MODIFIER_LSHIFT) == VIRTUAL_MODIFIER_RSHIFT)
-			{
-				virtualKeyOutput.keystrokesDown[currentIndex].ki.wVk = VK_LSHIFT;
-				virtualKeyOutput.keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_LSHIFT;
-				currentIndex++;
-			}
-			if ((_lParam & VIRTUAL_MODIFIER_RSHIFT) == VIRTUAL_MODIFIER_RSHIFT)
-			{
-				virtualKeyOutput.keystrokesDown[currentIndex].ki.wVk = VK_RSHIFT;
-				virtualKeyOutput.keystrokesUp[modifierCount - currentIndex].ki.wVk = VK_RSHIFT;
-				currentIndex++;
-			}
-			virtualKeyOutput.keystrokesDown[currentIndex].ki.wVk = (WORD)_nParam;
-			virtualKeyOutput.keystrokesUp[modifierCount - currentIndex].ki.wVk = (WORD)_nParam;
-			
-			return (IKeystrokeOutput*)&virtualKeyOutput;
-
-		}	// end case
-
-		case KeystrokeOutputType::MacroOutput:
-		{
-			// second parameter casts to a pointer to an array of {WORD, BOOL} containing the sequence
-			// of keypresses
-			// first parameter contains the lenght of array pointed to by second parameter.
-			if (_lParam == 0) return nullptr;
-
-			// Need to figure out a data structure for {WORD, BOOL} - maybe an std::pair?
-			auto sequence = (std::pair<WORD, BOOL>*)_lParam;		// <- would this work fine?
-			UINT seqCount = _nParam;
-
-			auto macroOutput = new MacroOutput();
-
-			
-
-
-
-
-			return nullptr;
-		}	// end case
-
-		case KeystrokeOutputType::StringOutput:
-		{
-			// second parameter casts to a pointer to array of UINT containing all
-			// the Unicode code points in string
-			// first parameter contains the length of array pointed to by second parameter
-			if (_lParam == 0) return nullptr;
-
-			auto codepoints = (UINT*)_lParam;
-			UINT seqCount = _nParam;
-
-			auto stringOutput = new StringOutput();
-
-			// number of sent INPUTs is the length of array, plus the amount of code points
-			// that are larger than 0xffff
-			// Then multiplied by 2 because both keydowns and keyups are sent
-			stringOutput->inputCount = seqCount * 2;
-			for (int i = 0; i < seqCount; i++)
-			{
-				if (codepoints[i] > 0xffff)
-					stringOutput->inputCount += 2;
-			}
-
-			stringOutput->keystrokesDown = new INPUT[stringOutput->inputCount];
-
-			// Put each character and surrogate pair into string
-			// Here's a thought: when it's a surrogate pair, do both keyups have to happen
-			// after both keydowns?
-			// Do we even need keyups for unicode characters?
-
-		}	// end case
-
-		}
-
-
-		return nullptr;
-	}
-};

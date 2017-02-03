@@ -32,6 +32,7 @@ struct KEYBOARD
 		device_name = new WCHAR[device_name_sizeof];
 	}
 
+
 	/*				Need to sort this out later
 					// Can't deallocate because keyboards are copied to other places
 					// maybe a function to deallocate everything
@@ -41,7 +42,7 @@ struct KEYBOARD
 		for (auto iterator = remaps.begin(); iterator != remaps.end(); iterator++)
 		{
 			delete[] iterator->second->keystrokesUp;
-			delete[] iterator->second->keystrokesDown;
+			delete[] iterator->second->keystrokes;
 			delete[] iterator->second;
 		}
 	}

@@ -67,17 +67,16 @@ public:
 	//		_lParam is a pointer to a null-terminated string of WCHAR (WCHAR*) containing
 	//				the full path to the file to execute
 	//		_nParam is unused
+	// type NoOutput uses no input, and generates a structure that performs no action when executed.
 	IKeystrokeOutput * getInstance(KeystrokeOutputType _type, UINT _nParam, ULONG_PTR _lParam)
 	{
-		// 
-		// If casting a pointer to an integer type is necessary, use ptrtolong
 		switch (_type)
 		{
 		case KeystrokeOutputType::UnicodeOutput:
 		{
 			// integer parameter contains the Unicode codepoint
 			// second parameter contains nothing
-			auto unicodeOutput = new UnicodeOutput();
+			UnicodeOutput * unicodeOutput = new UnicodeOutput();
 			UINT codepoint = _nParam;
 			unicodeOutput->codepoint = codepoint;
 
@@ -128,12 +127,12 @@ public:
 			// (These are not the modifiers that trigger a remap, but the ones used
 			// for simulating shortcuts
 
-			auto virtualKeyOutput = new VirtualKeyOutput();
+			VirtualKeyOutput * virtualKeyOutput = new VirtualKeyOutput();
 
 			// There are better ways to count the number of set bits
 			// but come on
 			USHORT modifierCount = 0;
-			for (int i = 0; i < 8; i++)
+			for (unsigned int i = 0; i < 8; i++)
 				if ((_lParam >> i) & 1)
 					modifierCount++;
 			// Above code doesn't modify value of _lParam
@@ -217,7 +216,7 @@ public:
 			// WORD: 16-bit
 			// DWORD: 32-bit
 			// I think the size of Microsoft words will stay that way until the nth end of the word.
-			auto sequence = (DWORD*)_lParam;
+			DWORD * sequence = (DWORD*)_lParam;
 			UINT seqCount = _nParam;
 
 			auto macroOutput = new MacroOutput();
@@ -226,7 +225,7 @@ public:
 
 			BOOL keyup = 0;
 			USHORT virtualKeyCode = 0;
-			for (int i = 0; i < seqCount; i++)
+			for (unsigned int i = 0; i < seqCount; i++)
 			{
 				keyup = (sequence[i] >> 31) & 1;
 				virtualKeyCode = sequence[i] & 0xff;
@@ -245,7 +244,7 @@ public:
 			// first parameter contains the length of array pointed to by second parameter
 			if (_lParam == 0) return nullptr;
 
-			auto codepoints = (UINT*)_lParam;
+			UINT * codepoints = (UINT*)_lParam;
 			UINT seqCount = _nParam;
 
 			auto stringOutput = new StringOutput();
@@ -254,7 +253,7 @@ public:
 			//		that are larger than 0xffff
 			// Then multiplied by 2 because both keydowns and keyups are sent
 			stringOutput->inputCount = seqCount * 2;
-			for (int i = 0; i < seqCount; i++)
+			for (unsigned int i = 0; i < seqCount; i++)
 			{
 				if (codepoints[i] > 0xffff)
 					stringOutput->inputCount += 2;
@@ -269,7 +268,7 @@ public:
 
 			stringOutput->keystrokes = new INPUT[stringOutput->inputCount];
 
-			for (int i = 0; i < seqCount; i++)
+			for (unsigned int i = 0; i < seqCount; i++)
 			{
 				// codepoints = one codepoint per character
 				// seqCount = number of characters
@@ -312,11 +311,19 @@ public:
 
 		case KeystrokeOutputType::ScriptOutput:
 		{
-			// second parameter contains a pointer to null-terminated WCHAR string containing filename to execute
+			// second parameter contains a pointer to null-terminated WCHAR string containing filename to executable
 			// first parameter contains nothing
 
-			auto scriptOutput = new ScriptOutput((WCHAR*)_lParam);
+			ScriptOutput * scriptOutput = new ScriptOutput((WCHAR*)_lParam);
 			return (IKeystrokeOutput*)scriptOutput;
+		}	// end case
+
+		
+		case KeystrokeOutputType::NoOutput:
+		{
+			// No inputs
+			NoOutput * noOutput = new NoOutput();
+			return (IKeystrokeOutput*)noOutput;
 		}	// end case
 
 

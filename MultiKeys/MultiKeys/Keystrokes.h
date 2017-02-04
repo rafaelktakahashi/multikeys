@@ -9,7 +9,8 @@ enum class KeystrokeOutputType
 	VirtualOutput,
 	MacroOutput,
 	StringOutput,
-	ScriptOutput
+	ScriptOutput,
+	NoOutput
 };
 
 struct IKeystrokeOutput		/*Interface*/
@@ -143,6 +144,16 @@ public:
 	}
 
 
+};
+
+// Dummy output that performs no action when executed (good for dead keys)
+struct NoOutput : IKeystrokeOutput
+{
+public:
+
+	NoOutput() : IKeystrokeOutput() {}
+	KeystrokeOutputType getType() { return KeystrokeOutputType::NoOutput; }
+	BOOL simulate(BOOL keyup, BOOL repeated = FALSE) { return TRUE; }
 };
 
 

@@ -465,7 +465,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (iterator->keyboardInput.VKey == virtualKeyCode
 					&& iterator->keyboardInput.MakeCode == extractedScancode
 					&& !(iterator->keyboardInput.Flags & RI_KEY_BREAK) == keyPressed
-					&& (iterator->keyboardInput.Flags & RI_KEY_E0) >> 2 == isExtended)		// match!
+					&& ((iterator->keyboardInput.Flags & RI_KEY_E0) >> 2) == isExtended)		// match!
 				{
 					// Actually, this doesn't guarantee a match;
 					// Keys in two different keyboards corresponding to the same virtual key may be pressed in rapid succession

@@ -532,14 +532,14 @@ public:
 
 
 
-
+	/*
 	static BOOL ReadInputKeystroke(std::ifstream* stream, KEYSTROKE_INPUT* trigger)
 	{
 		UINT32 code = 0;
 		BOOL result = ReadModifierHex(stream, NULL, &code);
 		trigger->scancode = (USHORT)code;			// lossy cast, but shouldn't lose any data
 		return result;
-	}
+	}	*/
 
 
 	static BOOL ReadVirtualkey(std::ifstream* stream, IKeystrokeOutput* keystroke)
@@ -601,9 +601,6 @@ public:
 		keyboard.deviceName = L"\\\\?\\HID#VID_0510&PID_0002#7&141e5925&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
 
 
-		auto input = KEYSTROKE_INPUT();
-		input.flags = 0;
-		input.virtualKey = 0;	// While comparing to a map, erase the virtual key to ignore it when matching
 
 		Level level(0);
 
@@ -612,14 +609,12 @@ public:
 
 		auto pointerToAnotherOutput = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f605, NULL);
 
-		input.scancode = 0x02;
-		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerToAnotherOutput));
+		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x02, pointerToAnotherOutput));
 
 		auto pointerToYetAnotherOutputButThisTimeItsAVirtualOutput =
 			factory.getInstance(KeystrokeOutputType::VirtualOutput, 0x020, 0);
-		input.scancode = 0x03;
-		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
-			(input, pointerToYetAnotherOutputButThisTimeItsAVirtualOutput));
+		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>
+			(0x03, pointerToYetAnotherOutputButThisTimeItsAVirtualOutput));
 
 		DWORD macro[4];
 		macro[0] = VK_LCONTROL;
@@ -629,8 +624,7 @@ public:
 
 		auto pointerThisOneIsAMacro = factory.getInstance(KeystrokeOutputType::MacroOutput, 4, (ULONG_PTR)&macro);
 
-		input.scancode = 0x04;
-		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerThisOneIsAMacro));
+		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x04, pointerThisOneIsAMacro));
 
 
 
@@ -641,16 +635,14 @@ public:
 		unicodeString[3] = 0x1f642;		// prints "Hi." and a smiling emoji.
 		auto pointerStringOfUnicode = factory.getInstance(KeystrokeOutputType::StringOutput, 4, (ULONG_PTR)&unicodeString);
 
-		input.scancode = 0x05;
-		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerStringOfUnicode));
+		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x05, pointerStringOfUnicode));
 
 
 		auto wideStringFilename = L"C:\\MultiKeys\\openAppTest.exe";
 		auto pointerThisOneWillOpenAnExecutableWhichOpensChromeIDontCareIfEdgeIsFasterChromeIsStillBetter
 			= factory.getInstance(KeystrokeOutputType::ScriptOutput, 0, (ULONG_PTR)wideStringFilename);
-		input.scancode = 0x06;
-		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
-			(input, pointerThisOneWillOpenAnExecutableWhichOpensChromeIDontCareIfEdgeIsFasterChromeIsStillBetter));
+		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>
+			(0x06, pointerThisOneWillOpenAnExecutableWhichOpensChromeIDontCareIfEdgeIsFasterChromeIsStillBetter));
 
 
 		DWORD macro2[4];
@@ -660,11 +652,22 @@ public:
 		macro2[3] = VK_LWIN | 0x80000000;
 		auto pointerToThingThatWillChangeLanguageWithLeftControlAndSpaceBar =
 			factory.getInstance(KeystrokeOutputType::MacroOutput, 4, (ULONG_PTR)&macro2);
-		input.scancode = 0x07;
-		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
-			(input, pointerToThingThatWillChangeLanguageWithLeftControlAndSpaceBar));
+		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>
+			(0x07, pointerToThingThatWillChangeLanguageWithLeftControlAndSpaceBar));
 
 		keyboard.levels.push_back(level);
+
+		// Add another level:
+		keyboard.addModifier(VK_SHIFT);		// either shift			// need to solve the shift problem
+		level.modifiers = 1;
+		level.layout.clear();
+
+		auto pointerToShiftedUnicode = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f670, NULL);
+		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x02, pointerToShiftedUnicode));
+
+		keyboard.levels.push_back(level);
+
+
 		keyboard.resetModifierState();
 
 		ptrVectorKeyboard->push_back(keyboard);
@@ -874,9 +877,6 @@ BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
 
 BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput ** out_action)
 {
-	// Make an input
-	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(keypressed->MakeCode, keypressed->VKey, keypressed->Flags);
-	// We'll look for a similar one in our list
 	
 	// Look for correct device; return FALSE (= do not block) otherwise
 	for (auto iterator = keyboards.begin(); iterator != keyboards.end(); iterator++)
@@ -885,7 +885,13 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 		{
 			// found the keyboard
 			// ask it for what to do
-			return iterator->evaluateKeystroke(&input, out_action);
+			return iterator->evaluateKeystroke(
+				keypressed->MakeCode,
+				keypressed->VKey,
+				(keypressed->Flags & RI_KEY_E0) == RI_KEY_E0,
+				(keypressed->Flags & RI_KEY_E1) == RI_KEY_E1,
+				(keypressed->Flags & RI_KEY_BREAK) == RI_KEY_BREAK,
+				out_action);
 			
 		}
 	}

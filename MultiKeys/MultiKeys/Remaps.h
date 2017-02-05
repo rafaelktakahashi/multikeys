@@ -18,7 +18,9 @@ struct Level
 	BYTE modifiers;			// combination of modifiers that identify this level
 							// unrelated to virtual modifiers used to simulate output
 							// (we should get rid of those, actually, they do the same as macros)
-	std::unordered_map<KEYSTROKE_INPUT, IKeystrokeOutput*> layout;
+	// DWORD: last two bytes (low WORD) contains the scancode, while the first two bytes (high WORD)
+	// contains the prefix (0xe0 or 0xe1)
+	std::unordered_map<DWORD, IKeystrokeOutput*> layout;
 
 	Level() : modifiers(0)
 	{}
@@ -30,6 +32,57 @@ struct Level
 // Used to internally store a group of remaps associated to a specific keyboard
 struct KEYBOARD
 {
+
+private:
+
+	// Returns true when keypress was a modifier
+	BOOL _updateKeyboardState(USHORT scancode, USHORT vKeyCode, BOOL flag_E0, BOOL flag_E1, BOOL flag_keyup)
+	{
+		for (unsigned short i = 0, e = 1;
+			i < 8;
+			i++, e <<= 1)		// i increments, e bitshifts left
+		{
+			if (modifierVKeyCodes[i] == 0) break;
+
+			if (	// last byte (0xff) is virtual key; first bit (0x8000) is extended key
+				(modifierVKeyCodes[i] & 0xff) == vKeyCode &&
+				(modifierVKeyCodes[i] & 0x8000) == flag_E0
+				)
+			{
+				// found the match, variable e currently holds the (i + 1)-th bit on 
+				// (for example, in the third iteration it will be 0000 0100)
+				if (flag_keyup)
+				{
+					// is keyup - deactivate flag in modifierState
+					if (modifierState & e)
+						modifierState -= e;
+				}
+				else
+				{
+					// is keydown - set flag in modifierState
+					modifierState |= e;
+				}
+
+				// Update the active level according to modifier state
+				activeLevel = nullptr;
+				for (auto iterator = levels.begin(); iterator != levels.end(); iterator++)
+				{
+					if (iterator->modifiers == modifierState)
+					{
+						activeLevel = &(*iterator);		// Iterators are not pointers
+						break;
+					}
+				}
+				// If no matching level was found, it remains null.
+				return TRUE;	// because match was found
+			}
+			// didn't match; next
+		}
+		// none matched; not modifier
+		return FALSE;
+	}
+
+public:
 
 	// NEW:
 	std::wstring deviceName;
@@ -52,53 +105,16 @@ struct KEYBOARD
 	}
 
 
-
-
-	BOOL evaluateKeystroke(KEYSTROKE_INPUT * keypressed, OUT IKeystrokeOutput ** out_action)
+	BOOL evaluateKeystroke(USHORT scancode, USHORT vKeyCode, BOOL flag_E0, BOOL flag_E1, BOOL flag_keyup, OUT IKeystrokeOutput ** out_action)
 	{
 		// Before responding, check if it's a modifier
-		for (unsigned short i = 0, e = 1;
-			i < 8;
-			i++, e <<= 1)		// i increments, e bitshifts left
+		if (_updateKeyboardState(scancode, vKeyCode, flag_E0, flag_E1, flag_keyup))
 		{
-			if (modifierVKeyCodes[i] == 0) break;
-
-			if (	// last byte (0xff) is virtual key; first bit (0x8000) is extended key
-				(modifierVKeyCodes[i] & 0xff) == keypressed->virtualKey &&
-				(modifierVKeyCodes[i] & 0x8000) == ((keypressed->flags & RI_KEY_E0) > 0)
-				)
-			{
-				// found the match, variable e currently holds the (i + 1)-th bit on 
-				// (for example, in the third iteration it will be 0000 0100)
-				if ((keypressed->flags & RI_KEY_BREAK) > 0)
-				{
-					// is keyup - deactivate flag in modifierState
-					if (modifierState & e)
-						modifierState -= e;
-				}
-				else
-				{
-					// is keydown - set flag in modifierState
-					modifierState |= e;
-				}
-
-				// Update the active level according to modifier state
-				activeLevel = nullptr;
-				for (auto iterator = levels.begin(); iterator != levels.end(); iterator++)
-				{
-					if (iterator->modifiers == modifierState)
-					{
-						activeLevel = &(*iterator);		// Iterators are not pointers
-						break;
-					}
-				}
-				// If no matching level was found, it's null.
-
-				*out_action = noAction;	// there is no action associated with this keystroke
-				return TRUE;			// but block it nonetheless
-			}
-			// didn't match; next
+			// If this key is a modifier
+			*out_action = noAction;		// then there is no action associated with this keystroke
+			return TRUE;				// however, we must still block it.
 		}
+
 		// none matched; not modifier
 
 
@@ -109,18 +125,22 @@ struct KEYBOARD
 		{
 			WCHAR* buffer = new WCHAR[200];
 			swprintf_s(buffer, 200, L"Keyboard: looking for sc%x vkey%x ext%d\n",
-				keypressed->scancode, keypressed->virtualKey, ((keypressed->flags & RI_KEY_E0) ? 1 : 0));
+				scancode, vKeyCode, flag_E0);
 			OutputDebugString(buffer);
 			delete[] buffer;
 		}
-		keypressed->flags = 0;		// erase flags because the map doesn't include them
-		keypressed->virtualKey = 0;		// do not compare using virtual key
 
-		// Goddammit we should just map from scancodes and an extended flag instead
-		// of a bunch of stuff that we have to manually remove
+		// make the DWORD key: least significant 16 bits are the scancode;
+		//						most significant 16 bits are the prefix (0xe0 or 0xe1)
+		DWORD key = scancode;
+		if (flag_E0)
+			key |= (0xe0 << 16);
+		else if (flag_E1)
+			key |= (0xe1 << 16);
+
 
 		// Look in currently active level
-		auto iterator = activeLevel->layout.find(*keypressed);
+		auto iterator = activeLevel->layout.find(key);
 		if (iterator != activeLevel->layout.end())
 		{
 			*out_action = iterator->second;		// copy the pointer to IKeystrokeOutput
@@ -128,6 +148,24 @@ struct KEYBOARD
 		}
 		return FALSE;		// do not block the key
 	}
+
+
+	BOOL addModifier(USHORT virtualKeyCode)
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			if (modifierVKeyCodes[i] == 0)
+			{
+				// found an empty spot
+				modifierVKeyCodes[i] = virtualKeyCode;
+				return TRUE;
+			}
+		}
+		// never found a spot
+		return FALSE;
+	}
+
+
 
 	VOID resetModifierState()
 	{

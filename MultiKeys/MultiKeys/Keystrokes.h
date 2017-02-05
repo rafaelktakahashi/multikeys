@@ -44,6 +44,8 @@ struct UnicodeOutput : IKeystrokeOutput
 
 };
 
+// The difference between this and MacroOutput is that this one will keep being sent while user
+// holds down the mapped key. Macros only activate once.
 struct VirtualKeyOutput : IKeystrokeOutput
 {
 	INPUT * keystrokesDown;
@@ -157,6 +159,7 @@ public:
 };
 
 
+/*
 // This struct represents a user keystroke (identified by scancode)
 // and RI_KEY flags (keydown, keyup, and e0/e1 prefixes)
 // that may or may not be mapped to a IKeystrokeOutput
@@ -178,9 +181,10 @@ struct KEYSTROKE_INPUT
 
 	KEYSTROKE_INPUT() : scancode(0xff), flags(0)
 	{}		// caution - scancode ff represents keyboard error
-};
+};		*/
 
 
+/*
 // Since we map from KEYSTROKE_INPUT to IKeystrokeOutput using unordered maps, we need a way to implement a hash
 namespace std
 {
@@ -201,4 +205,4 @@ namespace std
 			return (x.scancode == y.scancode && x.flags == y.flags && x.virtualKey == y.virtualKey);
 		}
 	};
-}
+}		*/

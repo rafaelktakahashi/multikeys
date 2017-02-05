@@ -17,7 +17,6 @@ struct Level
 {
 	BYTE modifiers;			// combination of modifiers that identify this level
 							// unrelated to virtual modifiers used to simulate output
-							// (we should get rid of those, actually, they do the same as macros)
 	// DWORD: last two bytes (low WORD) contains the scancode, while the first two bytes (high WORD)
 	// contains the prefix (0xe0 or 0xe1)
 	std::unordered_map<DWORD, IKeystrokeOutput*> layout;
@@ -26,6 +25,47 @@ struct Level
 	{}
 	Level(BYTE _modifiers) : modifiers(_modifiers)
 	{}
+
+
+	// State of modifiers, in the same order as its keyboard, that identify this level
+	// 0 - modifier needs to be off
+	// 1 - modifier needs to be on
+	// 2 - only one of these modifiers need to be on (be careful with ambiguous levels)
+	BYTE modifiers2[8];
+
+	VOID setModifiers2(BYTE b1, BYTE b2, BYTE b3, BYTE b4, BYTE b5, BYTE b6, BYTE b7, BYTE b8)
+	{
+		modifiers2[0] = b1;		modifiers2[1] = b2;
+		modifiers2[2] = b3;		modifiers2[3] = b4;
+		modifiers2[4] = b5;		modifiers2[5] = b6;
+		modifiers2[6] = b7;		modifiers2[7] = b8;
+	}
+
+	// Returns true if _modifiers should trigger this level
+	BOOL isEqualTo(const BYTE _modifiers)
+	{
+		BOOL twoRequirement = FALSE;
+		for (short i = 0; i < 8; i++)
+		{
+			switch (modifiers2[i])
+			{
+			case 0:
+				if ((_modifiers << i) == 1) return FALSE;
+				break;
+			case 1:
+				if ((_modifiers << i) == 0) return FALSE;
+			case 2:
+				if ((_modifiers << i) == 1) twoRequirement = TRUE;
+			}
+		}
+		// if there were no "2", return true:
+		for (short i = 0; i < 8; i++)
+		{
+			if (modifiers2[i] == 2) return twoRequirement;
+		}
+		return TRUE;
+	}
+
 };
 
 // Only the remapper and the parser need to know about this.
@@ -84,10 +124,11 @@ private:
 
 public:
 
-	// NEW:
+	
 	std::wstring deviceName;
 
 	// high bit means extended key, last byte is the vkey code
+	// Extended key is necessary in case of the arrow keys and the six keys above them
 	WORD modifierVKeyCodes[8];		// initialize to all zeroes
 
 	IKeystrokeOutput * noAction;	// initialize in constructor - corresponds to no action
@@ -242,16 +283,8 @@ namespace Multikeys
 
 
 
-
-
 	};
 
-
-
-
-
-
-	
 
 	
 }

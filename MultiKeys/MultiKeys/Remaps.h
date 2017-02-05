@@ -42,20 +42,22 @@ struct Level
 	}
 
 	// Returns true if _modifiers should trigger this level
-	BOOL isEqualTo(const BYTE _modifiers)
+	BOOL isEqualTo(BYTE _modifiers)
 	{
 		BOOL twoRequirement = FALSE;
-		for (short i = 0; i < 8; i++)
+		for (short i = 0, e = 1; i < 8; i++, e <<= 1)
 		{
 			switch (modifiers2[i])
 			{
 			case 0:
-				if ((_modifiers << i) == 1) return FALSE;
+				if (_modifiers & e) return FALSE;
 				break;
 			case 1:
-				if ((_modifiers << i) == 0) return FALSE;
+				if (!(_modifiers & e)) return FALSE;
+				break;
 			case 2:
-				if ((_modifiers << i) == 1) twoRequirement = TRUE;
+				if (_modifiers & e) twoRequirement = TRUE;
+				break;
 			}
 		}
 		// if there were no "2", return true:
@@ -86,7 +88,7 @@ private:
 
 			if (	// last byte (0xff) is virtual key; first bit (0x8000) is extended key
 				(modifierVKeyCodes[i] & 0xff) == vKeyCode &&
-				(modifierVKeyCodes[i] & 0x8000) == flag_E0
+				((modifierVKeyCodes[i] & 0x8000) > 0) == flag_E0
 				)
 			{
 				// found the match, variable e currently holds the (i + 1)-th bit on 
@@ -107,7 +109,8 @@ private:
 				activeLevel = nullptr;
 				for (auto iterator = levels.begin(); iterator != levels.end(); iterator++)
 				{
-					if (iterator->modifiers == modifierState)
+					// if (iterator->modifiers == modifierState)
+					if (iterator->isEqualTo(modifierState))
 					{
 						activeLevel = &(*iterator);		// Iterators are not pointers
 						break;
@@ -148,12 +151,26 @@ public:
 
 	BOOL evaluateKeystroke(USHORT scancode, USHORT vKeyCode, BOOL flag_E0, BOOL flag_E1, BOOL flag_keyup, OUT IKeystrokeOutput ** out_action)
 	{
-		// Before responding, check if it's a modifier
-		if (_updateKeyboardState(scancode, vKeyCode, flag_E0, flag_E1, flag_keyup))
+		// For the purposes of checking modifiers, we need the specific scancodes for left and right variants of Shift, Ctrl and Alt
+
 		{
-			// If this key is a modifier
-			*out_action = noAction;		// then there is no action associated with this keystroke
-			return TRUE;				// however, we must still block it.
+			USHORT LRvKey = vKeyCode;
+			if (vKeyCode == VK_SHIFT && scancode == 0x2a)
+				LRvKey = VK_LSHIFT;
+			else if (vKeyCode == VK_SHIFT && scancode == 0x36)
+				LRvKey = VK_RSHIFT;
+			else if (vKeyCode == VK_CONTROL)
+				LRvKey = (flag_E0 ? VK_RCONTROL : VK_LCONTROL);
+			else if (vKeyCode == VK_MENU)
+				LRvKey = (flag_E0 ? VK_RMENU : VK_LMENU);
+
+			// Before responding, check if it's a modifier
+			if (_updateKeyboardState(scancode, LRvKey, flag_E0, flag_E1, flag_keyup))
+			{
+				// If this key is a modifier
+				*out_action = noAction;		// then there is no action associated with this keystroke
+				return TRUE;				// however, we must still block it.
+			}
 		}
 
 		// none matched; not modifier
@@ -191,7 +208,7 @@ public:
 	}
 
 
-	BOOL addModifier(USHORT virtualKeyCode)
+	BOOL addModifier(USHORT virtualKeyCode, BOOL isExtended)
 	{
 		for (int i = 0; i < 8; i++)
 		{
@@ -199,6 +216,8 @@ public:
 			{
 				// found an empty spot
 				modifierVKeyCodes[i] = virtualKeyCode;
+				if (isExtended)
+					modifierVKeyCodes[i] |= 0x8000;
 				return TRUE;
 			}
 		}
@@ -213,7 +232,8 @@ public:
 		activeLevel = nullptr;
 		for (auto iterator = levels.begin(); iterator != levels.end(); iterator++)
 		{
-			if (iterator->modifiers == 0)
+			// if (iterator->modifiers == 0)
+			if (iterator->isEqualTo(0))
 				activeLevel = &(*iterator);
 		}
 		modifierState = 0;

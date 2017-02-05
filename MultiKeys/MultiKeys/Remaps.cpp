@@ -418,15 +418,18 @@ public:
 		KEYBOARD keyboard = KEYBOARD();
 
 		keyboard.deviceName = L"\\\\?\\HID#VID_0510&PID_0002#7&141e5925&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
-
+		keyboard.addModifier(VK_RSHIFT, FALSE);
+		keyboard.addModifier(VK_LSHIFT, FALSE);
+		
 
 
 		Level level(0);
+		level.setModifiers2(0, 0, 0, 0, 0, 0, 0, 0);
 
 		OutputFactory factory = OutputFactory();
 
 
-		auto pointerToAnotherOutput = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f605, NULL);
+		auto pointerToAnotherOutput = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f3b5, NULL);
 
 		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x02, pointerToAnotherOutput));
 
@@ -474,18 +477,40 @@ public:
 		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>
 			(0x07, pointerToThingThatWillChangeLanguageWithLeftControlAndSpaceBar));
 
+		
+
+		auto pointerToOneUnicodePerson = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f468, NULL);
+		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x08, pointerToOneUnicodePerson));
+
+		
+
 		keyboard.levels.push_back(level);
 
 		// Add another level:
-		keyboard.addModifier(VK_SHIFT);		// either shift			// need to solve the shift problem
-		level.modifiers = 1;
+		
+		level.modifiers = 0b11;
+		level.setModifiers2(2, 2, 0, 0, 0, 0, 0, 0);
 		level.layout.clear();
 
-		auto pointerToShiftedUnicode = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f670, NULL);
+		auto pointerToShiftedUnicode = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f3b6, NULL);
 		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x02, pointerToShiftedUnicode));
+
+		/*U+1F468 U+200D U+1F469 U+200D U+1F467 U+200D U+1F467 is family*/
+		UINT unicodePeople[7];
+		unicodePeople[0] = 0x1f468;
+		unicodePeople[1] = 0x200d;
+		unicodePeople[2] = 0x1f469;
+		unicodePeople[3] = 0x200d;
+		unicodePeople[4] = 0x1f467;
+		unicodePeople[5] = 0x200d;
+		unicodePeople[6] = 0x1f467;
+		auto pointerToManyUnicodePeople = factory.getInstance(KeystrokeOutputType::StringOutput, 7, (ULONG_PTR)&unicodePeople);
+		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x08, pointerToManyUnicodePeople));
 
 		keyboard.levels.push_back(level);
 
+
+		
 
 		keyboard.resetModifierState();
 

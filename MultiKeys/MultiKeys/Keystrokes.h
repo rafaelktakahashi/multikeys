@@ -157,30 +157,26 @@ public:
 };
 
 
-// This struct represents a user keystroke (identified by scancode, not virtual key)
-// together with modifiers (which have to be virtual keys)
+// This struct represents a user keystroke (identified by scancode)
 // and RI_KEY flags (keydown, keyup, and e0/e1 prefixes)
 // that may or may not be mapped to a IKeystrokeOutput
 struct KEYSTROKE_INPUT
 {
-	BYTE modifiers;		// Necessary modifiers to activate this trigger (Ctrl, Alt, Win and Shift, left and right)
 	USHORT scancode;	// Physical key that activates this trigger
+	USHORT virtualKey;
 	USHORT flags;		// 0 - RI_KEY_MAKE; 1 - RI_KEY_BREAK; 2 - RI_KEY_E0; 4 - RI_KEY_E1
 
-	KEYSTROKE_INPUT(BYTE _modifiers, USHORT _scancode, USHORT _flags)
-		: modifiers(_modifiers), scancode(_scancode), flags(_flags)
+	KEYSTROKE_INPUT(USHORT _scancode, USHORT _virtualKey, USHORT _flags)
+		: scancode(_scancode), virtualKey(_virtualKey), flags(_flags)
 	{}
 
-	KEYSTROKE_INPUT(BYTE _modifiers, USHORT _scancode) : modifiers(_modifiers), scancode(_scancode), flags(0)
+	KEYSTROKE_INPUT(USHORT _scancode) : scancode(_scancode), flags(0)
 	{}
 
-	KEYSTROKE_INPUT(USHORT _scancode, USHORT _flags) : modifiers(0), scancode(_scancode), flags(_flags)
+	KEYSTROKE_INPUT(USHORT _scancode, USHORT _flags) : scancode(_scancode), flags(_flags)
 	{}
 
-	KEYSTROKE_INPUT(USHORT _scancode) : modifiers(0), scancode(_scancode), flags(0)
-	{}
-
-	KEYSTROKE_INPUT() : modifiers(0), scancode(0xff), flags(0)
+	KEYSTROKE_INPUT() : scancode(0xff), flags(0)
 	{}		// caution - scancode ff represents keyboard error
 };
 
@@ -193,7 +189,7 @@ namespace std
 	{
 		size_t operator()(const KEYSTROKE_INPUT& value) const
 		{
-			return value.scancode % 0x10;
+			return value.scancode & 0xff00;
 		}
 	};
 
@@ -202,7 +198,7 @@ namespace std
 	{
 		bool operator()(const KEYSTROKE_INPUT& x, const KEYSTROKE_INPUT& y) const
 		{
-			return (x.scancode == y.scancode && x.flags == y.flags);
+			return (x.scancode == y.scancode && x.flags == y.flags && x.virtualKey == y.virtualKey);
 		}
 	};
 }

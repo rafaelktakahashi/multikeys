@@ -12,48 +12,137 @@
 #define VIRTUAL_MODIFIER_LSHIFT		0x02
 #define VIRTUAL_MODIFIER_RSHIFT		0x01
 
+
+struct Level
+{
+	BYTE modifiers;			// combination of modifiers that identify this level
+							// unrelated to virtual modifiers used to simulate output
+							// (we should get rid of those, actually, they do the same as macros)
+	std::unordered_map<KEYSTROKE_INPUT, IKeystrokeOutput*> layout;
+
+	Level() : modifiers(0)
+	{}
+	Level(BYTE _modifiers) : modifiers(_modifiers)
+	{}
+};
+
 // Only the remapper and the parser need to know about this.
 // Used to internally store a group of remaps associated to a specific keyboard
 struct KEYBOARD
 {
-	// Name of this device
-	WCHAR * device_name;
 
-	// Size of buffer
-	USHORT const device_name_sizeof = 128;
+	// NEW:
+	std::wstring deviceName;
 
-	// The simulator that sends keystrokes
+	// high bit means extended key, last byte is the vkey code
+	WORD modifierVKeyCodes[8];		// initialize to all zeroes
 
-	// Map between inputs and outputs
-	std::unordered_map<KEYSTROKE_INPUT, IKeystrokeOutput*> remaps;
+	IKeystrokeOutput * noAction;	// initialize in constructor - corresponds to no action
 
-	KEYBOARD()
+	std::vector<Level> levels;
+
+	BYTE modifierState;
+
+	Level * activeLevel;
+
+	KEYBOARD() : noAction(new NoOutput()), modifierState(0), activeLevel(nullptr)
 	{
-		device_name = new WCHAR[device_name_sizeof];
+		for (int i = 0; i < 8; i++)
+			modifierVKeyCodes[i] = 0;
 	}
 
 
-	/*				Need to sort this out later
-					// Can't deallocate because keyboards are copied to other places
-					// maybe a function to deallocate everything
-	~KEYBOARD()
+
+
+	BOOL evaluateKeystroke(KEYSTROKE_INPUT * keypressed, OUT IKeystrokeOutput ** out_action)
 	{
-		delete[] device_name;
-		for (auto iterator = remaps.begin(); iterator != remaps.end(); iterator++)
+		// Before responding, check if it's a modifier
+		for (unsigned short i = 0, e = 1;
+			i < 8;
+			i++, e <<= 1)		// i increments, e bitshifts left
 		{
-			delete[] iterator->second->keystrokesUp;
-			delete[] iterator->second->keystrokes;
-			delete[] iterator->second;
-		}
-	}
-	*/
+			if (modifierVKeyCodes[i] == 0) break;
 
-	// Refresh: Will use another space for device name, and clear the map
-	void Clear()
-	{
-		device_name = new WCHAR[device_name_sizeof];
-		remaps.clear();
+			if (	// last byte (0xff) is virtual key; first bit (0x8000) is extended key
+				(modifierVKeyCodes[i] & 0xff) == keypressed->virtualKey &&
+				(modifierVKeyCodes[i] & 0x8000) == ((keypressed->flags & RI_KEY_E0) > 0)
+				)
+			{
+				// found the match, variable e currently holds the (i + 1)-th bit on 
+				// (for example, in the third iteration it will be 0000 0100)
+				if ((keypressed->flags & RI_KEY_BREAK) > 0)
+				{
+					// is keyup - deactivate flag in modifierState
+					if (modifierState & e)
+						modifierState -= e;
+				}
+				else
+				{
+					// is keydown - set flag in modifierState
+					modifierState |= e;
+				}
+
+				// Update the active level according to modifier state
+				activeLevel = nullptr;
+				for (auto iterator = levels.begin(); iterator != levels.end(); iterator++)
+				{
+					if (iterator->modifiers == modifierState)
+					{
+						activeLevel = &(*iterator);		// Iterators are not pointers
+						break;
+					}
+				}
+				// If no matching level was found, it's null.
+
+				*out_action = noAction;	// there is no action associated with this keystroke
+				return TRUE;			// but block it nonetheless
+			}
+			// didn't match; next
+		}
+		// none matched; not modifier
+
+
+		// If current modifier state corresponds to no level, it's null and no keys are blocked:
+		if (activeLevel == nullptr)
+			return FALSE;
+
+		{
+			WCHAR* buffer = new WCHAR[200];
+			swprintf_s(buffer, 200, L"Keyboard: looking for sc%x vkey%x ext%d\n",
+				keypressed->scancode, keypressed->virtualKey, ((keypressed->flags & RI_KEY_E0) ? 1 : 0));
+			OutputDebugString(buffer);
+			delete[] buffer;
+		}
+		keypressed->flags = 0;		// erase flags because the map doesn't include them
+		keypressed->virtualKey = 0;		// do not compare using virtual key
+
+		// Goddammit we should just map from scancodes and an extended flag instead
+		// of a bunch of stuff that we have to manually remove
+
+		// Look in currently active level
+		auto iterator = activeLevel->layout.find(*keypressed);
+		if (iterator != activeLevel->layout.end())
+		{
+			*out_action = iterator->second;		// copy the pointer to IKeystrokeOutput
+			return TRUE;	// block the key
+		}
+		return FALSE;		// do not block the key
 	}
+
+	VOID resetModifierState()
+	{
+		activeLevel = nullptr;
+		for (auto iterator = levels.begin(); iterator != levels.end(); iterator++)
+		{
+			if (iterator->modifiers == 0)
+				activeLevel = &(*iterator);
+		}
+		modifierState = 0;
+	}
+
+	
+
+	
 };
 
 
@@ -65,6 +154,7 @@ namespace Multikeys
 	private:
 		// work variable
 		WCHAR* wcharWork;
+
 
 		// a vector of keyboards
 		std::vector<KEYBOARD> keyboards;
@@ -104,12 +194,12 @@ namespace Multikeys
 		//		RAWKEYBOARD* keypressed - pointer to the structure representing the keyboard input,
 		//				from the Raw Input API.
 		//		WCHAR* deviceName - wide string containing the name of the device that generated the keystroke
-		//		IKeystrokeOutput* out_action - if there is a remap for the keystroke in RAWKEYBOARD* keypressed
+		//		IKeystrokeOutput** out_action - if there is a remap for the keystroke in RAWKEYBOARD* keypressed
 		//				for the keyboard of name WCHAR* deviceName, then this will point to a
-		//				IKeystrokeOutput containing the keystroke or unicode code point to be simulated.
+		//				IKeystrokeOutput pointer pointing to the output to be simulated.
 		// Return value:
 		//		TRUE - There is a remap, and it's been placed in *out_action
-		//		FALSE - There is no remap for this key.
+		//		FALSE - There is no remap for this key; do not block key
 		BOOL EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput** out_action);
 
 

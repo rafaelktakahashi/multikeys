@@ -125,7 +125,8 @@ public:
 			// Integer parameter contains the virtual-key code
 			// Second parameter contains flags for modifiers (only the last byte)
 			// (These are not the modifiers that trigger a remap, but the ones used
-			// for simulating shortcuts
+			// for simulating shortcuts)
+			
 
 			VirtualKeyOutput * virtualKeyOutput = new VirtualKeyOutput();
 
@@ -213,9 +214,11 @@ public:
 			// first parameter contains the lenght of array pointed to by second parameter.
 			if (_lParam == 0) return nullptr;
 
+			// Planned feature: Have this function accept a delay in ms for each keystroke
+
 			// WORD: 16-bit
 			// DWORD: 32-bit
-			// I think the size of Microsoft words will stay that way until the nth end of the word.
+			// I think the size of Microsoft words will stay that way until the nth end of the world.
 			DWORD * sequence = (DWORD*)_lParam;
 			UINT seqCount = _nParam;
 
@@ -417,7 +420,7 @@ public:
 		}
 		if (buffer == "") return FALSE;		// kb name wasn't there
 		wideBuffer = converter.from_bytes(buffer);			// convert and then store it in the wide buffer
-		swprintf_s(kb->device_name, kb->device_name_sizeof, L"%ls", wideBuffer.c_str());
+		// swprintf_s(kb->device_name, kb->device_name_sizeof, L"%ls", wideBuffer.c_str());
 		return TRUE;
 	}
 
@@ -533,7 +536,7 @@ public:
 	static BOOL ReadInputKeystroke(std::ifstream* stream, KEYSTROKE_INPUT* trigger)
 	{
 		UINT32 code = 0;
-		BOOL result = ReadModifierHex(stream, &(trigger->modifiers), &code);
+		BOOL result = ReadModifierHex(stream, NULL, &code);
 		trigger->scancode = (USHORT)code;			// lossy cast, but shouldn't lose any data
 		return result;
 	}
@@ -593,30 +596,29 @@ public:
 		// sorry
 		ptrVectorKeyboard->clear();
 
-		auto keyboard = KEYBOARD();
+		KEYBOARD keyboard = KEYBOARD();
 
-		keyboard.device_name = L"\\\\?\\HID#VID_0510&PID_0002#7&141e5925&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
-		keyboard.remaps.clear();
+		keyboard.deviceName = L"\\\\?\\HID#VID_0510&PID_0002#7&141e5925&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
 
 
 		auto input = KEYSTROKE_INPUT();
-
 		input.flags = 0;
-		input.modifiers = 0;
+		input.virtualKey = 0;	// While comparing to a map, erase the virtual key to ignore it when matching
 
+		Level level(0);
 
 		OutputFactory factory = OutputFactory();
 
 
 		auto pointerToAnotherOutput = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f605, NULL);
-		
+
 		input.scancode = 0x02;
-		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerToAnotherOutput));
+		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerToAnotherOutput));
 
 		auto pointerToYetAnotherOutputButThisTimeItsAVirtualOutput =
 			factory.getInstance(KeystrokeOutputType::VirtualOutput, 0x020, 0);
 		input.scancode = 0x03;
-		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
+		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
 			(input, pointerToYetAnotherOutputButThisTimeItsAVirtualOutput));
 
 		DWORD macro[4];
@@ -624,11 +626,11 @@ public:
 		macro[1] = 0x46;
 		macro[2] = 0x46 | 0x80000000;
 		macro[3] = VK_LCONTROL | 0x80000000;
-		
+
 		auto pointerThisOneIsAMacro = factory.getInstance(KeystrokeOutputType::MacroOutput, 4, (ULONG_PTR)&macro);
 
 		input.scancode = 0x04;
-		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerThisOneIsAMacro));
+		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerThisOneIsAMacro));
 
 
 
@@ -640,17 +642,30 @@ public:
 		auto pointerStringOfUnicode = factory.getInstance(KeystrokeOutputType::StringOutput, 4, (ULONG_PTR)&unicodeString);
 
 		input.scancode = 0x05;
-		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerStringOfUnicode));
+		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>(input, pointerStringOfUnicode));
 
 
 		auto wideStringFilename = L"C:\\MultiKeys\\openAppTest.exe";
 		auto pointerThisOneWillOpenAnExecutableWhichOpensChromeIDontCareIfEdgeIsFasterChromeIsStillBetter
 			= factory.getInstance(KeystrokeOutputType::ScriptOutput, 0, (ULONG_PTR)wideStringFilename);
 		input.scancode = 0x06;
-		keyboard.remaps.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
+		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
 			(input, pointerThisOneWillOpenAnExecutableWhichOpensChromeIDontCareIfEdgeIsFasterChromeIsStillBetter));
 
 
+		DWORD macro2[4];
+		macro2[0] = VK_LWIN;
+		macro2[1] = VK_SPACE;
+		macro2[2] = VK_SPACE | 0x80000000;
+		macro2[3] = VK_LWIN | 0x80000000;
+		auto pointerToThingThatWillChangeLanguageWithLeftControlAndSpaceBar =
+			factory.getInstance(KeystrokeOutputType::MacroOutput, 4, (ULONG_PTR)&macro2);
+		input.scancode = 0x07;
+		level.layout.insert(std::pair<KEYSTROKE_INPUT, IKeystrokeOutput*>
+			(input, pointerToThingThatWillChangeLanguageWithLeftControlAndSpaceBar));
+
+		keyboard.levels.push_back(level);
+		keyboard.resetModifierState();
 
 		ptrVectorKeyboard->push_back(keyboard);
 
@@ -843,6 +858,11 @@ BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
 
 	BOOL result = Parser::ReadFile(&file, &keyboards);
 	file.close();
+	keyboards[0].resetModifierState();		// I do not fully comprehend why this line is necessary
+										// it fixes the pointer to the active level becoming invalid
+									// the only other way to fix it seems to be having the ReadFile
+									// function allocate a keyboard dynamically, but then we lose
+									// the pointer and it stays in memory forever
 	return result;
 }
 
@@ -855,26 +875,17 @@ BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
 BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName, IKeystrokeOutput ** out_action)
 {
 	// Make an input
-
-	// Need to deal with modifiers. Not here, the levels thing.
-	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(0, keypressed->MakeCode, keypressed->Flags);
+	KEYSTROKE_INPUT input = KEYSTROKE_INPUT(keypressed->MakeCode, keypressed->VKey, keypressed->Flags);
 	// We'll look for a similar one in our list
 	
 	// Look for correct device; return FALSE (= do not block) otherwise
 	for (auto iterator = keyboards.begin(); iterator != keyboards.end(); iterator++)
 	{
-		if (wcscmp(iterator->device_name, deviceName) == 0)
+		if (wcscmp(iterator->deviceName.c_str(), deviceName) == 0)
 		{
-			// found it!
-			// check if the remaps map for this device contains our scancode
-			auto pairIterator = iterator->remaps.find(input);
-			if (pairIterator != iterator->remaps.end())
-			{
-				*out_action = pairIterator->second;
-				return TRUE;
-			}
-			else
-				return FALSE;
+			// found the keyboard
+			// ask it for what to do
+			return iterator->evaluateKeystroke(&input, out_action);
 			
 		}
 	}

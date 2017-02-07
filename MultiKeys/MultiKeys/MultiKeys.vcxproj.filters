@@ -39,6 +39,9 @@
     <ClInclude Include="Keystrokes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scancodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

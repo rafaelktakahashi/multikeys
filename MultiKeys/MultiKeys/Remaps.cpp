@@ -423,8 +423,8 @@ public:
 		
 
 
-		Level level(0);
-		level.setModifiers2(0, 0, 0, 0, 0, 0, 0, 0);
+		Level level;
+		level.setModifiers2();
 
 		OutputFactory factory = OutputFactory();
 
@@ -488,14 +488,14 @@ public:
 
 		// Add another level:
 		
-		level.modifiers = 0b11;
-		level.setModifiers2(2, 2, 0, 0, 0, 0, 0, 0);
+		
+		level.setModifiers2(2, 2);		// LShift, RShift, either
 		level.layout.clear();
 
 		auto pointerToShiftedUnicode = factory.getInstance(KeystrokeOutputType::UnicodeOutput, 0x1f3b6, NULL);
 		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x02, pointerToShiftedUnicode));
 
-		/*U+1F468 U+200D U+1F469 U+200D U+1F467 U+200D U+1F467 is family*/
+		/*U+1F468 U+200D U+1F469 U+200D U+1F467 U+200D U+1F467 is family emoji*/
 		UINT unicodePeople[7];
 		unicodePeople[0] = 0x1f468;
 		unicodePeople[1] = 0x200d;

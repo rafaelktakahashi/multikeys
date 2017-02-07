@@ -15,30 +15,30 @@
 
 struct Level
 {
-	BYTE modifiers;			// combination of modifiers that identify this level
+	
 							// unrelated to virtual modifiers used to simulate output
 	// DWORD: last two bytes (low WORD) contains the scancode, while the first two bytes (high WORD)
 	// contains the prefix (0xe0 or 0xe1)
 	std::unordered_map<DWORD, IKeystrokeOutput*> layout;
 
-	Level() : modifiers(0)
-	{}
-	Level(BYTE _modifiers) : modifiers(_modifiers)
-	{}
 
 
 	// State of modifiers, in the same order as its keyboard, that identify this level
 	// 0 - modifier needs to be off
 	// 1 - modifier needs to be on
 	// 2 - only one of these modifiers need to be on (be careful with ambiguous levels)
-	BYTE modifiers2[8];
+	BYTE modifiers[8];
 
-	VOID setModifiers2(BYTE b1, BYTE b2, BYTE b3, BYTE b4, BYTE b5, BYTE b6, BYTE b7, BYTE b8)
+	VOID setModifiers2(
+		BYTE b1 = 0, BYTE b2 = 0,
+		BYTE b3 = 0, BYTE b4 = 0,
+		BYTE b5 = 0, BYTE b6 = 0,
+		BYTE b7 = 0, BYTE b8 = 0)
 	{
-		modifiers2[0] = b1;		modifiers2[1] = b2;
-		modifiers2[2] = b3;		modifiers2[3] = b4;
-		modifiers2[4] = b5;		modifiers2[5] = b6;
-		modifiers2[6] = b7;		modifiers2[7] = b8;
+		modifiers[0] = b1;		modifiers[1] = b2;
+		modifiers[2] = b3;		modifiers[3] = b4;
+		modifiers[4] = b5;		modifiers[5] = b6;
+		modifiers[6] = b7;		modifiers[7] = b8;
 	}
 
 	// Returns true if _modifiers should trigger this level
@@ -47,7 +47,7 @@ struct Level
 		BOOL twoRequirement = FALSE;
 		for (short i = 0, e = 1; i < 8; i++, e <<= 1)
 		{
-			switch (modifiers2[i])
+			switch (modifiers[i])
 			{
 			case 0:
 				if (_modifiers & e) return FALSE;
@@ -63,7 +63,7 @@ struct Level
 		// if there were no "2", return true:
 		for (short i = 0; i < 8; i++)
 		{
-			if (modifiers2[i] == 2) return twoRequirement;
+			if (modifiers[i] == 2) return twoRequirement;
 		}
 		return TRUE;
 	}
@@ -127,21 +127,28 @@ private:
 
 public:
 
-	
+	// Name of this device, in wide string because the Raw Input API returns a wide string
 	std::wstring deviceName;
 
+	// Virtual-key codes of each registered modifier for this keyboard, 0 for none
 	// high bit means extended key, last byte is the vkey code
 	// Extended key is necessary in case of the arrow keys and the six keys above them
 	WORD modifierVKeyCodes[8];		// initialize to all zeroes
 
 	IKeystrokeOutput * noAction;	// initialize in constructor - corresponds to no action
+									// Declared to be readily available to return a dummy action
 
+	// Each set of remaps for each combination of modifiers
 	std::vector<Level> levels;
 
+	// Combination of currently active (physically pressed) modifiers; each bit is a set modifier,
+	// in the same order as modifierVKeyCodes.
 	BYTE modifierState;
 
+	// Current mapping; NULL if current combination of modifiers corresponds to no level
 	Level * activeLevel;
 
+	// Constructor
 	KEYBOARD() : noAction(new NoOutput()), modifierState(0), activeLevel(nullptr)
 	{
 		for (int i = 0; i < 8; i++)
@@ -149,11 +156,15 @@ public:
 	}
 
 
-	BOOL evaluateKeystroke(USHORT scancode, USHORT vKeyCode, BOOL flag_E0, BOOL flag_E1, BOOL flag_keyup, OUT IKeystrokeOutput ** out_action)
+	// Receives information about a keypress, and returns true if the keystroke should be blocked.
+	// If the key should be blocked, pointer pointer by IKeystrokeOutput** points to an action that
+	// should be executed (that command may or may not execute an action).
+	BOOL evaluateKeystroke(USHORT scancode, USHORT vKeyCode, BOOL flag_E0, BOOL flag_E1, BOOL flag_keyup,
+							OUT IKeystrokeOutput ** out_action)
 	{
-		// For the purposes of checking modifiers, we need the specific scancodes for left and right variants of Shift, Ctrl and Alt
-
-		{
+		// For the purposes of checking modifiers, we need the specific scancodes
+		// for left and right variants of Shift, Ctrl and Alt
+		{	// Transform generic into variant-specific
 			USHORT LRvKey = vKeyCode;
 			if (vKeyCode == VK_SHIFT && scancode == 0x2a)
 				LRvKey = VK_LSHIFT;
@@ -162,7 +173,7 @@ public:
 			else if (vKeyCode == VK_CONTROL)
 				LRvKey = (flag_E0 ? VK_RCONTROL : VK_LCONTROL);
 			else if (vKeyCode == VK_MENU)
-				LRvKey = (flag_E0 ? VK_RMENU : VK_LMENU);
+				LRvKey = (flag_E0 ? VK_RMENU : VK_LMENU);			// MENU is Alt key
 
 			// Before responding, check if it's a modifier
 			if (_updateKeyboardState(scancode, LRvKey, flag_E0, flag_E1, flag_keyup))
@@ -176,7 +187,7 @@ public:
 		// none matched; not modifier
 
 
-		// If current modifier state corresponds to no level, it's null and no keys are blocked:
+		// If current modifier state corresponds to no mapping, it's null and no keys are blocked:
 		if (activeLevel == nullptr)
 			return FALSE;
 

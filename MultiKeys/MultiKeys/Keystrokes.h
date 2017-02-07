@@ -148,7 +148,34 @@ public:
 
 };
 
-// Dummy output that performs no action when executed (good for dead keys)
+
+struct DeadKeyOutput : IKeystrokeOutput
+{
+public:
+	INPUT * keystrokeDown;
+	INPUT * keystrokeUp;
+	USHORT inputCount;
+
+	// repacements, codepoint -> output
+	std::unordered_map<UINT, IKeystrokeOutput*> replacements;
+
+
+	DeadKeyOutput() : IKeystrokeOutput() {}
+
+	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)		// similar to unicode
+	{
+		if (keyup)
+			return (SendInput(inputCount, keystrokeUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		else
+			return (SendInput(inputCount, keystrokeDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+	}
+
+
+
+};
+
+
+// Dummy output that performs no action when executed (good for modifier keys)
 struct NoOutput : IKeystrokeOutput
 {
 public:

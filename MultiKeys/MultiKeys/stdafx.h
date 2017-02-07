@@ -36,7 +36,7 @@
 #include <cctype>			// make sure things like hex digit checking will work (that's also in locale)
 #include <shellapi.h>		// to get arguments passed to main
 #include "Keystrokes.h"		// for definitions of input and output keystroke types
-
+#include "Scancodes.h"		// macros for common scancodes
 
 
 

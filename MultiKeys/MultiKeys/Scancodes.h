@@ -5,6 +5,8 @@
 // such as the shift and control keys. Most physical keys change their function depending on
 // keyboard layout.
 
+// All scancodes are from set 1, identical to translated set 2.
+
 // Importantly, these definitions do not take into account the 0xe0 prefix that many keys use.
 
 
@@ -14,19 +16,23 @@
 #define SCANCODE_ESCAPE					0x01
 #define SCANCODE_TAB					0x0f
 #define SCANCODE_ENTER					0x0c
+#define SCANCODE_BACKSPACE				0x0e
 #define SCANCODE_LEFT_SHIFT				0x2a
 #define SCANCODE_RIGHT_SHIFT			0x36
 #define SCANCODE_CONTROL				0x1d		// Right variant has prefix 0xe0
 #define SCANCODE_ALT					0x38		// Right variant has prefix 0xe0
 #define SCANCODE_SPACE					0x39
 #define SCANCODE_CAPS_LOCK				0x3a
-#define SCANCODE_NUM_LOCK				0x45
+#define SCANCODE_NUM_LOCK				0x45		// Preceded with 0xe1 0x1d means Pause
 #define SCANCODE_SCROLL_LOCK			0x46
 #define SCANCODE_PRINT_SCREEN			0x37		// With prefix 0xe0
 #define SCANCODE_SYS_REQ				0x54		// Usually input by pressing Alt+PrintScreen
 #define SCANCODE_LEFT_WINDOWS			0x5b		// With prefix 0xe0
 #define SCANCODE_RIGHT_WINDOWS			0x5c		// With prefix 0xe0
 #define SCANCODE_APPS					0x5d		// With prefix 0xe0
+#define SCANCODE_SLEEP					0x5f		// With prefix 0xe0
+#define SCANCODE_POWER					0x5e		// With prefix 0xe0
+#define SCANCODE_WAKE					0x63		// With prefix 0xe0
 
 #define SCANCODE_HOME					0x47
 #define SCANCODE_ARROW_UP				0x48
@@ -65,21 +71,9 @@
 #define SCANCODE_F11					0x57
 #define SCANCODE_F12					0x58
 
-/*-- The following are present in almost no keyboard: --*/
-
-
-#define SCANCODE_F13					0x5b
-#define SCANCODE_F14					0x5c
-#define SCANCODE_F15					0x5d
-#define SCANCODE_F16					0x63
-#define SCANCODE_F17					0x64
-#define SCANCODE_F18					0x65
-#define SCANCODE_F19					0x66
-#define SCANCODE_F20					0x67
-#define SCANCODE_F21					0x68
-#define SCANCODE_F22					0x69
-#define SCANCODE_F23					0x6a
-#define SCANCODE_F24					0x6b
+// Scancodes for function keys 13 through 24 do not seem to exist. The most compelling evidence says
+// that they correspond to shifted function keys 1 through 12.
+// F13 - F24 only seem to exist as virtual key codes.
 
 
 /*-- Keys present in the Japanese layout: --*/

@@ -152,7 +152,7 @@ public:
 	DeadKeyOutput * activeDeadKey;
 
 	// Constructor
-	KEYBOARD() : noAction(new NoOutput()), modifierState(0), activeLevel(nullptr)
+	KEYBOARD() : noAction(new NoOutput()), modifierState(0), activeLevel(nullptr), activeDeadKey(nullptr)
 	{
 		for (int i = 0; i < 8; i++)
 			modifierVKeyCodes[i] = 0;
@@ -223,7 +223,8 @@ public:
 			*out_action = iterator->second;		// copy the pointer to IKeystrokeOutput
 			returnValue = TRUE;	// block the key
 		}
-		returnValue = FALSE;		// do not block the key
+		else
+			returnValue = FALSE;		// do not block the key
 
 		// If there is an active dead key: this must go through it.
 		// If there is no active dead key: check if this is a dead key, and if it is,

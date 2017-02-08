@@ -10,6 +10,7 @@ enum class KeystrokeOutputType
 	MacroOutput,
 	StringOutput,
 	ScriptOutput,
+	DeadKeyOutput,
 	NoOutput
 };
 
@@ -34,10 +35,11 @@ struct UnicodeOutput : IKeystrokeOutput
 		return KeystrokeOutputType::UnicodeOutput;
 	}
 
+	// It does not seem to be necessary to send keyups when sending unicode characters
 	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
 		if (keyup)
-			return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+			 return (SendInput(inputCount, keystrokesUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
 		else
 			return (SendInput(inputCount, keystrokesDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
 	}
@@ -148,69 +150,67 @@ public:
 
 };
 
-
-struct DeadKeyOutput : IKeystrokeOutput
+struct DeadKeyOutput : UnicodeOutput
 {
 private:
-	BOOL isReplacement;
-
+	// 0 : no next command
+	// 1 : unblocked command
+	// 2 : remapped to unicode without valid substitute
+	// 3 : remapped to non-unicode
+	// 4 : remapped to unicode with a substitute
+	// 5 : another dead key
+	USHORT nextCommandType;
 public:
-	INPUT * keystrokeDown;
-	INPUT * keystrokeUp;
-	USHORT inputCount;
+	// From UnicodeOutput:
+	// INPUT * keystrokeDown, INPUT * keystrokeUp
+	// USHORT inputCount, UINT codepoint
 
-	// Pointer to the character input immediately after this one
-	// Null while no next character has been input
-	UnicodeOutput * nextCharacter;
+	// Pointer to hold the command after this one.
+	// NULL until input is received; remains null if the next input
+	//		is not remapped (i. e. not blocked)
+	IKeystrokeOutput * nextCommand;
 
-	// repacements, codepoint -> output
+	// Replacements from Unicode codepoint to Unicode outputs
 	std::unordered_map<UINT, UnicodeOutput*> replacements;
 
+	// Constructor:
+	DeadKeyOutput() : UnicodeOutput(), nextCommand(nullptr), nextCommandType(0)
+	{}
 
-	// TODO: What if the next pressed key is also a dead key?
 
-
-	DeadKeyOutput() : IKeystrokeOutput(), nextCharacter(nullptr), isReplacement(FALSE) {}
-
-	VOID setNextInput(UnicodeOutput* nextUnicode)
+	// This should be called at the time the next input is received
+	// If the next keystroke is not blocked, vKey must be informed
+	VOID setNextCommand(const IKeystrokeOutput* command, const USHORT vKey = 0)
 	{
-		// Look for a replacement for the next unicode character's codepoint
-		auto replacement = replacements.find(nextUnicode->codepoint);
-		if (replacement != replacements.end())
-		{
-			// There was a replacement
-			nextCharacter = (*replacement).second;
-			isReplacement = TRUE;
-		}
-		else
-		{
-			// There was no replacement
-			nextCharacter = nextUnicode;
-			isReplacement = FALSE;
-		}
 	}
 
+	// Overwrite:
+	KeystrokeOutputType getType()
+	{
+		return KeystrokeOutputType::DeadKeyOutput;
+	}
+
+	// Overwrite:
 	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
-		if (isReplacement)
+		if (nextCommandType == 0)		// Then this key is just being called
+										//		from another dead key
 		{
-			// There is a replacement; send it, and not this one
-			return nextCharacter->simulate(keyup, repeated);
+			// Send just this key's unicode character
+			// Both keydown and keyup
+			if (!keyup)
+			{
+				SendInput(inputCount, keystrokesDown, sizeof(INPUT));
+				SendInput(inputCount, keystrokesUp, sizeof(INPUT));
+			}
 		}
-		else
-		{
-			// There is no replacement; send this character, then send that one
-			if (keyup)
-				SendInput(inputCount, keystrokeUp, sizeof(INPUT));
-			else
-				SendInput(inputCount, keystrokeUp, sizeof(INPUT));
-			return nextCharacter->simulate(keyup, repeated);
-		}
-
 	}
 
-
 };
+
+
+
+
 
 
 // Dummy output that performs no action when executed (good for modifier keys)

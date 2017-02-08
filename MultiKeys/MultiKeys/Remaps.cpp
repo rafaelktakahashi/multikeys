@@ -418,7 +418,10 @@ public:
 
 		KEYBOARD keyboard = KEYBOARD();
 
-		keyboard.deviceName = L"\\\\?\\HID#VID_0510&PID_0002#7&141e5925&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
+		// The only part that seems to really matter is the string between curly brackets;
+		// the characters before it seem to change depending on port
+		// This might actually be useful for identifying keyboard depending either on device or USB port
+		keyboard.deviceName = L"\\\\?\\HID#VID_0510&PID_0002#7&1b748abb&1&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
 		keyboard.addModifier(VK_RSHIFT, FALSE);
 		keyboard.addModifier(VK_LSHIFT, FALSE);
 		
@@ -607,7 +610,6 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 			
 		}
 	}
-
 	return FALSE;
 }
 

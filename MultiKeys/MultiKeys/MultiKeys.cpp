@@ -9,7 +9,6 @@
 #include "MultiKeys.h"
 #include "Remaps.h"
 #include "Keystrokes.h"
-#include "Scancodes.h"
 #include "KeyboardHook.h"
 
 
@@ -327,7 +326,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			memcpy_s(debugTextKeyboardName, DEBUG_TEXT_SIZE, keyboardNameBuffer, keyboardNameBufferSize);
 			text = new WCHAR[200];
 			swprintf_s(text, 200, L"Raw Input: Keyboard name is %ls\n", keyboardNameBuffer);
-			// OutputDebugString(text);
+			 OutputDebugString(text);
 			delete[] text;
 			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE);
 		#endif

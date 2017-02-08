@@ -151,25 +151,63 @@ public:
 
 struct DeadKeyOutput : IKeystrokeOutput
 {
+private:
+	BOOL isReplacement;
+
 public:
 	INPUT * keystrokeDown;
 	INPUT * keystrokeUp;
 	USHORT inputCount;
 
+	// Pointer to the character input immediately after this one
+	// Null while no next character has been input
+	UnicodeOutput * nextCharacter;
+
 	// repacements, codepoint -> output
-	std::unordered_map<UINT, IKeystrokeOutput*> replacements;
+	std::unordered_map<UINT, UnicodeOutput*> replacements;
 
 
-	DeadKeyOutput() : IKeystrokeOutput() {}
+	// TODO: What if the next pressed key is also a dead key?
 
-	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)		// similar to unicode
+
+	DeadKeyOutput() : IKeystrokeOutput(), nextCharacter(nullptr), isReplacement(FALSE) {}
+
+	VOID setNextInput(UnicodeOutput* nextUnicode)
 	{
-		if (keyup)
-			return (SendInput(inputCount, keystrokeUp, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		// Look for a replacement for the next unicode character's codepoint
+		auto replacement = replacements.find(nextUnicode->codepoint);
+		if (replacement != replacements.end())
+		{
+			// There was a replacement
+			nextCharacter = (*replacement).second;
+			isReplacement = TRUE;
+		}
 		else
-			return (SendInput(inputCount, keystrokeDown, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+		{
+			// There was no replacement
+			nextCharacter = nextUnicode;
+			isReplacement = FALSE;
+		}
 	}
 
+	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
+	{
+		if (isReplacement)
+		{
+			// There is a replacement; send it, and not this one
+			return nextCharacter->simulate(keyup, repeated);
+		}
+		else
+		{
+			// There is no replacement; send this character, then send that one
+			if (keyup)
+				SendInput(inputCount, keystrokeUp, sizeof(INPUT));
+			else
+				SendInput(inputCount, keystrokeUp, sizeof(INPUT));
+			return nextCharacter->simulate(keyup, repeated);
+		}
+
+	}
 
 
 };

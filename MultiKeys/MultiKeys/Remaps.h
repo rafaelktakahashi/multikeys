@@ -148,11 +148,16 @@ public:
 	// Current mapping; NULL if current combination of modifiers corresponds to no level
 	Level * activeLevel;
 
+	// Pointer to dead key waiting the next character; NULL if no dead key is active
+	DeadKeyOutput * activeDeadKey;
+
 	// Constructor
 	KEYBOARD() : noAction(new NoOutput()), modifierState(0), activeLevel(nullptr)
 	{
 		for (int i = 0; i < 8; i++)
 			modifierVKeyCodes[i] = 0;
+
+		activeDeadKey = nullptr;
 	}
 
 
@@ -191,6 +196,7 @@ public:
 		if (activeLevel == nullptr)
 			return FALSE;
 
+	#if DEBUG
 		{
 			WCHAR* buffer = new WCHAR[200];
 			swprintf_s(buffer, 200, L"Keyboard: looking for sc%x vkey%x ext%d\n",
@@ -198,6 +204,7 @@ public:
 			OutputDebugString(buffer);
 			delete[] buffer;
 		}
+	#endif
 
 		// make the DWORD key: least significant 16 bits are the scancode;
 		//						most significant 16 bits are the prefix (0xe0 or 0xe1)
@@ -208,14 +215,22 @@ public:
 			key |= (0xe1 << 16);
 
 
+		BOOL returnValue;
 		// Look in currently active level
 		auto iterator = activeLevel->layout.find(key);
 		if (iterator != activeLevel->layout.end())
 		{
 			*out_action = iterator->second;		// copy the pointer to IKeystrokeOutput
-			return TRUE;	// block the key
+			returnValue = TRUE;	// block the key
 		}
-		return FALSE;		// do not block the key
+		returnValue = FALSE;		// do not block the key
+
+		// If there is an active dead key: this must go through it.
+		// If there is no active dead key: check if this is a dead key, and if it is,
+		//								have the active dead key pointer point here,
+		//								and return a dummy action.
+
+		return returnValue;
 	}
 
 

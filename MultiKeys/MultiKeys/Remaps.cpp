@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "Remaps.h"
+#include "Keystrokes.h"
 
 
 // Factory class for outputs

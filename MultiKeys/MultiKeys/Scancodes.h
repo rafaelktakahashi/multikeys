@@ -1,5 +1,6 @@
 #pragma once
 
+#include "stdafx.h"
 
 // This header defines macros for common scancodes that always correspond to a certain function,
 // such as the shift and control keys. Most physical keys change their function depending on

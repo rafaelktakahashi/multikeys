@@ -8,7 +8,6 @@
 #include "stdafx.h"
 #include "MultiKeys.h"
 #include "Remaps.h"
-#include "Keystrokes.h"
 #include "KeyboardHook.h"
 
 

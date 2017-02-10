@@ -6,7 +6,7 @@
 #pragma once
 
 #include "resource.h"
-
+#include "Keystrokes.h"
 
 
 // Structure of a single record that will be saved in the decisionBuffer

@@ -40,6 +40,7 @@ struct Level
 		BOOL twoRequirement = FALSE;
 		for (short i = 0, e = 1; i < 8; i++, e <<= 1)
 		{
+			// I wish trits were a thing
 			switch (modifiers[i])
 			{
 			case 0:
@@ -59,6 +60,17 @@ struct Level
 			if (modifiers[i] == 2) return twoRequirement;
 		}
 		return TRUE;
+	}
+
+	VOID insertPair(WORD scancode, IKeystrokeOutput* command)
+	{
+		layout.insert(std::pair<DWORD, IKeystrokeOutput*>
+			(scancode, command));
+	}
+	VOID insertPair(WORD scancodePrefix, WORD scancode, IKeystrokeOutput* command)
+	{
+		layout.insert(std::pair<DWORD, IKeystrokeOutput*>
+			(scancode | scancodePrefix, command));
 	}
 
 };
@@ -118,6 +130,22 @@ private:
 		return FALSE;
 	}
 
+	// utility function to evaluate, roughly, whether a virtual-key code is printable
+	BOOL vKeyIsPrintable(USHORT vKey)
+	{
+		// These ranges are not infallible. Correct if necessary.
+		// If in doubt, check a virtual key table
+		return (
+			(vKey >= 0x30 && vKey <= 0x5a)
+			||
+			(vKey >= 0x60 && vKey <= 0x6f)
+			||
+			(vKey >= 0xba && vKey <= 0xe4)
+			||
+			vKey == VK_RETURN
+			);
+	}
+
 public:
 
 	// Name of this device, in wide string because the Raw Input API returns a wide string
@@ -155,14 +183,19 @@ public:
 
 
 	// Receives information about a keypress, and returns true if the keystroke should be blocked.
-	// If the key should be blocked, pointer pointer by IKeystrokeOutput** points to an action that
-	// should be executed (that command may or may not execute an action).
+	// USHORT scancode - scancode for the keypress to be evaluated
+	// USHORT vKeyCode - virtual key code for the keypress to be evaluated
+	// BOOL flag_E0 - TRUE if the scancode has the 0xe0 prefix
+	// BOOL flag_E1 - TRUE if the scancode has the 0xe1 prefix
+	// BOOL flag_keyup - TRUE if the keypress is a keypress up
+	// OUT IKeystrokeOutput**const out_action - pointer to an IKeystrokeOutput*; if this function
+	//		returns TRUE, that pointer will become a pointer to the remapped command.
 	BOOL evaluateKeystroke(USHORT scancode, USHORT vKeyCode, BOOL flag_E0, BOOL flag_E1, BOOL flag_keyup,
-							OUT IKeystrokeOutput ** out_action)
+							OUT IKeystrokeOutput**const out_action)
 	{
-		// For the purposes of checking modifiers, we need the specific scancodes
+		// For the purposes of checking modifiers, we need the specific virtual key codes
 		// for left and right variants of Shift, Ctrl and Alt
-		{	// Transform generic into variant-specific
+		{	// brackets for locality
 			USHORT LRvKey = vKeyCode;
 			if (vKeyCode == VK_SHIFT && scancode == 0x2a)
 				LRvKey = VK_LSHIFT;
@@ -173,7 +206,7 @@ public:
 			else if (vKeyCode == VK_MENU)
 				LRvKey = (flag_E0 ? VK_RMENU : VK_LMENU);			// MENU is Alt key
 
-			// Before responding, check if it's a modifier
+			// First thing, check if it's a modifier
 			if (_updateKeyboardState(scancode, LRvKey, flag_E0, flag_E1, flag_keyup))
 			{
 				// If this key is a modifier
@@ -185,46 +218,92 @@ public:
 		// none matched; not modifier
 
 
-		// If current modifier state corresponds to no mapping, it's null and no keys are blocked:
-		if (activeLevel == nullptr)
-			return FALSE;
-
 	#if DEBUG
-		{
-			WCHAR* buffer = new WCHAR[200];
-			swprintf_s(buffer, 200, L"Keyboard: looking for sc%x vkey%x ext%d\n",
-				scancode, vKeyCode, flag_E0);
-			OutputDebugString(buffer);
-			delete[] buffer;
-		}
+		WCHAR* buffer = new WCHAR[200];
+		swprintf_s(buffer, 200, L"Keyboard: looking for sc%x vkey%x ext%d\n",
+			scancode, vKeyCode, flag_E0);
+		OutputDebugString(buffer);
+		delete[] buffer;
 	#endif
 
-		// make the DWORD key: least significant 16 bits are the scancode;
-		//						most significant 16 bits are the prefix (0xe0 or 0xe1)
-		DWORD key = scancode;
-		if (flag_E0)
-			key |= (0xe0 << 16);
-		else if (flag_E1)
-			key |= (0xe1 << 16);
+		// If current level is non-empty, we must find the key
+		BOOL remapExists = FALSE;
+		IKeystrokeOutput* remappedCommand;
 
-
-		BOOL returnValue;
-		// Look in currently active level
-		auto iterator = activeLevel->layout.find(key);
-		if (iterator != activeLevel->layout.end())
+		if (activeLevel != nullptr)
 		{
-			*out_action = iterator->second;		// copy the pointer to IKeystrokeOutput
-			returnValue = TRUE;	// block the key
+			// must find a remap if there is any
+
+			// make the DWORD key: least significant 16 bits are the scancode;
+			//						most significant 16 bits are the prefix (0xe0 or 0xe1)
+			DWORD key = scancode;
+			if (flag_E0)
+				key |= (0xe0 << 16);
+			else if (flag_E1)
+				key |= (0xe1 << 16);
+
+			// look in currently active level
+			auto iterator = activeLevel->layout.find(key);
+			if (iterator != activeLevel->layout.end())
+			{
+				remapExists = TRUE;
+				remappedCommand = iterator->second;
+			}
+		}
+
+		// is dead key active?
+		if (activeDeadKey != nullptr)
+		{
+			// if the new input is a keystroke that generates a character,
+			// XOR the new input is remapped to a unicode output
+			//		then the new input is given to the dead key, and the dead
+			//		key is returned
+			if (remapExists)
+			{
+				if (remappedCommand->getType() == KeystrokeOutputType::UnicodeOutput
+					|| remappedCommand->getType() == KeystrokeOutputType::DeadKeyOutput)
+				{
+					activeDeadKey->setNextCommand(remappedCommand);
+					*out_action = activeDeadKey;
+					activeDeadKey = nullptr;
+					return TRUE;
+				}
+			}
+			else		// !remapExists
+			{
+				if (vKeyIsPrintable(vKeyCode))
+				{
+					activeDeadKey->setNextCommand(vKeyCode);
+					*out_action = activeDeadKey;
+					activeDeadKey = nullptr;
+					return TRUE;
+				}
+			}
 		}
 		else
-			returnValue = FALSE;		// do not block the key
+		{
+			// no dead key is active
+			// if new input maps to a dead key,
+			//		then new input is set as active dead key
+			if (remapExists)
+				if (remappedCommand->getType() == KeystrokeOutputType::DeadKeyOutput)
+				{
+					activeDeadKey = (DeadKeyOutput*)remappedCommand;
+					*out_action = noAction;
+					return TRUE;
+				}
+		}
 
-		// If there is an active dead key: this must go through it.
-		// If there is no active dead key: check if this is a dead key, and if it is,
-		//								have the active dead key pointer point here,
-		//								and return a dummy action.
 
-		return returnValue;
+		// At this point:
+		// 1: new input is not a printable virtual key code
+		// 2: new input is not mapped to a unicode output
+		// 3: new input is not a dead key itself
+		// place remapped command in the out parameter if there was any
+		if (remapExists)
+			*out_action = remappedCommand;
+		// return whether a remap was found
+		return remapExists;
 	}
 
 

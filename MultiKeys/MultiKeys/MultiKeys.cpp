@@ -24,7 +24,7 @@ HWND mainHwnd;
 // Windows message for communication between main executable and DLL module
 UINT const WM_HOOK = WM_APP + 1;
 // How long should hook processing wait for the matching Raw Input message (in ms)
-DWORD maxWaitingTime = 100;		// Hopefully no legitimate keystroke should have a delay as long as 0.1s
+DWORD maxWaitingTime = 50;		// Hopefully no legitimate keystroke should have a delay as long as 0.05s
 
 // Flag for AltGr. Used in the AltGr fix.
 BOOL AltGrBlockNextLCtrl = FALSE;

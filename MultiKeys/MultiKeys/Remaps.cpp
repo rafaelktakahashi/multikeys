@@ -99,18 +99,17 @@ public:
 
 
 		UINT characterArray[1];
-		characterArray[0] = 0x1f3b5;
-		auto pointer1 = new StringOutput(characterArray, 1);
+		characterArray[0] = 0x2200;
+		auto pointer1 = new UnicodeOutput(characterArray, 1, true);
 
-		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x02, pointer1));
+		level.insertPair(0x02, pointer1);
 
 		
-		DWORD macro0[2];
-		macro0[0] = VK_SPACE;
-		macro0[1] = VK_SPACE | 0x80000000;
-		auto pointer2 = new MacroOutput(macro0, 4);
-		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>
-			(0x03, pointer2));
+		UINT anotherCharacterArray[1];
+		anotherCharacterArray[0] = 0x2203;
+		auto pointer2 = new UnicodeOutput(anotherCharacterArray, 1, true);
+		
+		level.insertPair(0x03, pointer2);
 
 		DWORD macro1[4];
 		macro1[0] = VK_LCONTROL;
@@ -118,9 +117,9 @@ public:
 		macro1[2] = 0x46 | 0x80000000;
 		macro1[3] = VK_LCONTROL | 0x80000000;
 
-		auto pointer3 = new MacroOutput(macro1, 4);
+		auto pointer3 = new MacroOutput(macro1, 4, true);
 
-		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x04, pointer3));
+		level.insertPair(0x04, pointer3);
 
 
 
@@ -129,15 +128,15 @@ public:
 		unicodeString[1] = 0x69;
 		unicodeString[2] = 0x2e;
 		unicodeString[3] = 0x1f642;		// prints "Hi." and a smiling emoji.
-		auto pointer4 = new StringOutput(unicodeString, 4);
+		auto pointer4 = new UnicodeOutput(unicodeString, 4, false);
 
-		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x05, pointer4));
+		level.insertPair(0x05, pointer4);
 
 
-		auto wideStringFilename = L"C:\\MultiKeys\\openAppTest.exe";
-		auto pointer5 = new ScriptOutput(wideStringFilename);
-		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>
-			(0x06, pointer5));
+		auto pointer5 =
+			new ScriptOutput(L"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
+
+		level.insertPair(0x06, pointer5);
 
 
 		DWORD macro2[4];
@@ -145,14 +144,25 @@ public:
 		macro2[1] = VK_SPACE;
 		macro2[2] = VK_SPACE | 0x80000000;
 		macro2[3] = VK_LWIN | 0x80000000;
-		auto pointer6 = new MacroOutput(macro2, 4);
-		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x07, pointer6));
+		auto pointer6 = new MacroOutput(macro2, 4, false);
+
+		level.insertPair(0x07, pointer6);
 
 		
 		UINT unicodeString2[1];
 		unicodeString2[0] = 0x1f468;
-		auto pointer7 = new StringOutput(unicodeString2, 1);
-		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x08, pointer7));
+		auto pointer7 = new UnicodeOutput(unicodeString2, 1, true);
+		level.insertPair(0x08, pointer7);
+
+		UINT unicodeString3[1];
+		unicodeString3[0] = 0x1F3FE;
+		auto pointer8 = new UnicodeOutput(unicodeString3, 1, true);
+		level.insertPair(0x09, pointer8);
+
+		UINT unicodeString4[1];
+		unicodeString4[0] = 0x1F3FD;
+		auto pointer9 = new UnicodeOutput(unicodeString4, 1, true);
+		level.insertPair(0x0a, pointer9);
 
 		
 		// Save this level
@@ -164,10 +174,22 @@ public:
 		level.setModifiers2(2, 2);		// LShift, RShift, either
 		level.layout.clear();
 
-		UINT unicodeString3[1];
-		unicodeString3[0] = 0x1f3b6;
-		auto pointerShift1 = new StringOutput(unicodeString3, 1);
-		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x02, pointerShift1));
+		UINT unicodeString5[1];
+		unicodeString5[0] = 0x2201;
+		auto pointerShift1 = new UnicodeOutput(unicodeString5, 1, true);
+		level.insertPair(0x02, pointerShift1);
+
+		UINT unicodeString6[1];
+		unicodeString6[0] = 0x2204;
+		auto pointerShift2 = new UnicodeOutput(unicodeString6, 1, true);
+		level.insertPair(0x03, pointerShift2);
+
+		
+		auto pointerShift5 = new ScriptOutput(
+				L"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+				L"https://www.sigacentropaulasouza.com.br/aluno/login.aspx");
+
+		level.insertPair(0x06, pointerShift5);
 
 		/*U+1F468 U+200D U+1F469 U+200D U+1F467 U+200D U+1F467 is family emoji*/
 		UINT unicodePeople[7];
@@ -178,8 +200,8 @@ public:
 		unicodePeople[4] = 0x1f467;
 		unicodePeople[5] = 0x200d;
 		unicodePeople[6] = 0x1f467;
-		auto pointerShift7 = new StringOutput(unicodePeople, 7);
-		level.layout.insert(std::pair<DWORD, IKeystrokeOutput*>(0x08, pointerShift7));
+		auto pointerShift7 = new UnicodeOutput(unicodePeople, 7, true);
+		level.insertPair(0x08, pointerShift7);
 
 		// Save shifted level
 		keyboard.levels.push_back(level);

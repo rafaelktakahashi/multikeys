@@ -59,7 +59,7 @@ protected:
 
 public:
 
-	virtual KeystrokeOutputType getType() = 0;
+	virtual KeystrokeOutputType getType() const = 0;
 
 	virtual BOOL simulate(BOOL keyup, BOOL repeated) = 0;
 };
@@ -104,7 +104,7 @@ public:
 		
 	}	// end of constructor
 
-	KeystrokeOutputType getType()
+	KeystrokeOutputType getType() const
 	{
 		return KeystrokeOutputType::MacroOutput;
 	}
@@ -176,7 +176,7 @@ public:
 
 	}	// end constructor
 
-	KeystrokeOutputType getType()
+	KeystrokeOutputType getType() const
 	{
 		return KeystrokeOutputType::UnicodeOutput;
 	}
@@ -190,7 +190,7 @@ public:
 		else return TRUE;
 	}
 
-	inline bool operator=(UnicodeOutput& const rhs)
+	inline bool operator==(UnicodeOutput& const rhs) const
 	{
 		if (inputCount != rhs.inputCount) return false;
 		// One by one, compare the keystroke inputs by codepoint.
@@ -201,6 +201,7 @@ public:
 		return true;
 	}
 };
+
 
 struct ScriptOutput : IKeystrokeOutput
 {
@@ -220,7 +221,7 @@ public:
 		: IKeystrokeOutput(), filename(filename), argument(argument)
 	{}
 
-	KeystrokeOutputType getType()
+	KeystrokeOutputType getType() const
 	{
 		return KeystrokeOutputType::ScriptOutput;
 	}
@@ -272,7 +273,9 @@ private:
 		}
 		else
 		{
-			// first, make sure that the command is unicode:
+			// first, make sure that the command is unicode (dead keys inherit from it):
+
+			// All those that are not unicode are just placed as next command
 			if (command->getType() != KeystrokeOutputType::UnicodeOutput
 				&& command->getType() != KeystrokeOutputType::DeadKeyOutput)
 			{
@@ -281,15 +284,17 @@ private:
 				return;
 			}
 
-			// then, compare its input sequence with the replacement list
+			// It's a unicode (or dead key):
+			// compare its input sequence with the replacement list
 			for (auto iterator = replacements.begin(); iterator != replacements.end(); iterator++)
 			{
-				// try to find the correct one
-				if (iterator->first == command)
+				// try to find the correct one (dereference pointers before comparing)
+				if (*(iterator->first) == *((UnicodeOutput*)command) )
 				{
 					// replace it
 					_nextCommand = iterator->second;
 					_nextCommandType = 4;
+					return;
 				}
 			}
 			// didn't find a suitable replacement
@@ -307,7 +312,7 @@ public:
 
 	// UINT* independentCodepoints - the Unicode character for this dead key
 	// UINT independentCodepointCount - the number of unicode characters for this dead key
-	// UnicodeOutput ** replacements_from - array of commands that consist valid sequences
+	// UnicodeOutput** replacements_from - array of commands that consist valid sequences
 	// UnicodeOutput** replacements_to - array of commands that the codepoints map to
 	// UINT replacements_count - number of items in the previous arrays
 	DeadKeyOutput(UINT*const independentCodepoints, UINT const independentCodepointsCount,
@@ -338,7 +343,7 @@ public:
 
 
 	// Overwrite:
-	KeystrokeOutputType getType()
+	KeystrokeOutputType getType() const
 	{
 		return KeystrokeOutputType::DeadKeyOutput;
 	}
@@ -347,14 +352,35 @@ public:
 	// Overwrite:
 	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
-		if (_nextCommandType == 0)		// Then this key is just being called
-										//		from another dead key
+		if (keyup) return TRUE;	// because unicode keyups do nothing
+
+		// First, check for an edge case: If the next input is this one
+		// That means infinite recursion because there's only one instance
+		// of each given dead key
+		if (_nextCommand == (IKeystrokeOutput*)this)
 		{
-			// Send just this key's unicode character
-			if (!keyup)
-				SendInput(inputCount, keystrokes, sizeof(INPUT));
+			// just send this key twice
+			SendInput(inputCount, keystrokes, sizeof(INPUT));
+			SendInput(inputCount, keystrokes, sizeof(INPUT));
+			// then clear the next pointer
+			_nextCommand = nullptr;
 		}
+		
+		// there is a replacement:
+		if (_nextCommandType == 4)
+		{
+			return (_nextCommand->simulate(keyup, repeated));
+		}
+
+		// Situation is normal; send this key, then the next
+		SendInput(inputCount, keystrokes, sizeof(INPUT));
+		if (_nextCommand != nullptr)
+			return (_nextCommand->simulate(keyup, repeated));
+		else
+			return TRUE;
 	}
+
+
 
 };
 
@@ -369,7 +395,7 @@ struct NoOutput : IKeystrokeOutput
 public:
 
 	NoOutput() : IKeystrokeOutput() {}
-	KeystrokeOutputType getType() { return KeystrokeOutputType::NoOutput; }
+	KeystrokeOutputType getType() const { return KeystrokeOutputType::NoOutput; }
 	BOOL simulate(BOOL keyup, BOOL repeated = FALSE) { return TRUE; }
 };
 

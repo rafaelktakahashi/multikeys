@@ -81,17 +81,28 @@ public:
 		// Yeah, this is pretty much working as a test class
 		// because we don't have a proper test setup
 		// sorry
+		testMethod(ptrVectorKeyboard);
+
+		return TRUE;
+
+
+
+	}
+
+	
+	static VOID testMethod(std::vector<KEYBOARD> * ptrVectorKeyboard)
+	{
 		ptrVectorKeyboard->clear();
 
 		KEYBOARD keyboard = KEYBOARD();
 
-		// The only part that seems to really matter is the string between curly brackets;
-		// the characters before it seem to change depending on port
-		// This might actually be useful for identifying keyboard depending either on device or USB port
-		keyboard.deviceName = L"\\\\?\\HID#VID_0510&PID_0002#7&1b748abb&1&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
+		// The part of a device name in brackets identify the device itself,
+		// while the characters before it change depending on port
+		// Storing the entire device name will cause the check to fail for different ports
+		keyboard.deviceName = L"{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
 		keyboard.addModifier(VK_RSHIFT, FALSE);
 		keyboard.addModifier(VK_LSHIFT, FALSE);
-		
+
 
 
 		Level level;
@@ -104,11 +115,11 @@ public:
 
 		level.insertPair(0x02, pointer1);
 
-		
+
 		UINT anotherCharacterArray[1];
 		anotherCharacterArray[0] = 0x2203;
 		auto pointer2 = new UnicodeOutput(anotherCharacterArray, 1, true);
-		
+
 		level.insertPair(0x03, pointer2);
 
 		DWORD macro1[4];
@@ -148,7 +159,7 @@ public:
 
 		level.insertPair(0x07, pointer6);
 
-		
+
 		UINT unicodeString2[1];
 		unicodeString2[0] = 0x1f468;
 		auto pointer7 = new UnicodeOutput(unicodeString2, 1, true);
@@ -164,13 +175,13 @@ public:
 		auto pointer9 = new UnicodeOutput(unicodeString4, 1, true);
 		level.insertPair(0x0a, pointer9);
 
-		
+
 		// Save this level
 		keyboard.levels.push_back(level);
 
 		// Add another level:
-		
-		
+
+
 		level.setModifiers2(2, 2);		// LShift, RShift, either
 		level.layout.clear();
 
@@ -184,10 +195,10 @@ public:
 		auto pointerShift2 = new UnicodeOutput(unicodeString6, 1, true);
 		level.insertPair(0x03, pointerShift2);
 
-		
+
 		auto pointerShift5 = new ScriptOutput(
-				L"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-				L"https://www.sigacentropaulasouza.com.br/aluno/login.aspx");
+			L"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+			L"http://stackoverflow.com/");
 
 		level.insertPair(0x06, pointerShift5);
 
@@ -203,21 +214,42 @@ public:
 		auto pointerShift7 = new UnicodeOutput(unicodePeople, 7, true);
 		level.insertPair(0x08, pointerShift7);
 
+		UINT greekOxia[1];
+		greekOxia[0] = 0x1ffd;
+		UINT remapFrom[1];
+		remapFrom[0] = 0x2200;		// the first remap
+		UINT remapTo[1];		// For all
+		remapTo[0] = 0x1fbb;	// A with oxia
+		auto pointerRemapFrom = new UnicodeOutput(remapFrom, 1, true);
+		auto pointerRemapTo = new UnicodeOutput(remapTo, 1, true);
+
+		// another replacement:
+		UINT remapFrom2[1];
+		remapFrom2[0] = 0x1ffd;
+		UINT remapTo2[1];
+		remapTo2[0] = 0x1f10;
+		auto pointerRemapFrom2 = new UnicodeOutput(remapFrom2, 1, true);
+		auto pointerRemapTo2 = new UnicodeOutput(remapTo2, 1, true);
+
+		UnicodeOutput* allRemapsFrom[2];
+		allRemapsFrom[0] = pointerRemapFrom;
+		allRemapsFrom[1] = pointerRemapFrom2;
+		UnicodeOutput* allRemapsTo[2];
+		allRemapsTo[0] = pointerRemapTo;
+		allRemapsTo[1] = pointerRemapTo2;
+
+		auto pointerShift8 = new DeadKeyOutput(greekOxia, 1, allRemapsFrom, allRemapsTo, 2);
+		level.insertPair(0x09, pointerShift8);
+
 		// Save shifted level
 		keyboard.levels.push_back(level);
-		
+
 		// Refresh keyboard's state
 		keyboard.resetModifierState();
 
 		// Save keyboard
 		ptrVectorKeyboard->push_back(keyboard);
-
-		return TRUE;
-
-
-
 	}
-
 
 
 };
@@ -257,6 +289,7 @@ BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 
 	BOOL result = Parser::ReadFile(&file, &keyboards);
 	file.close();
+	keyboards[0].resetModifierState();
 	return result;
 }
 BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
@@ -288,7 +321,8 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 	// Look for correct device; return FALSE (= do not block) otherwise
 	for (auto iterator = keyboards.begin(); iterator != keyboards.end(); iterator++)
 	{
-		if (wcscmp(iterator->deviceName.c_str(), deviceName) == 0)
+		// checks if iterator->deviceName exists in deviceName (which includes port + device names)
+		if (wcsstr(deviceName, iterator->deviceName.c_str()) != nullptr)
 		{
 			// found the keyboard
 			// ask it for what to do

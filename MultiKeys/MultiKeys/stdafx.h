@@ -28,6 +28,7 @@
 #include <deque>			// double-ended queues for holding decision records
 #include <string>			// std::string and std::wstring
 #include <vector>			// contiguous, iterable containers for keyboard structures
+#include <map>				// maps for dead keys
 #include <unordered_map>	// hash maps for storing the set of remaps for each keyboard
 #include <fstream>			// for reading the configuration file
 #include <Windows.h>		// for the Windows API

@@ -251,6 +251,17 @@ public:
 			}
 		}
 
+		// Before even this part
+		// If the new keypress is a keyup, do not trigger any dead key,
+		//		nor set this as a dead key. Just send it.
+		if (flag_keyup)
+		{
+			if (remapExists)
+				*out_action = remappedCommand;
+			// return whether a remap was found
+			return remapExists;
+		}
+
 		// is dead key active?
 		if (activeDeadKey != nullptr)
 		{

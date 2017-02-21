@@ -102,6 +102,7 @@ public:
 		keyboard.deviceName = L"{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
 		keyboard.addModifier(VK_RSHIFT, FALSE);
 		keyboard.addModifier(VK_LSHIFT, FALSE);
+		keyboard.addModifier(VK_LCONTROL, FALSE);
 
 
 
@@ -242,6 +243,15 @@ public:
 		level.insertPair(0x09, pointerShift8);
 
 		// Save shifted level
+		keyboard.levels.push_back(level);
+
+		level.setModifiers2(0, 0, 1);
+		level.layout.clear();
+
+		auto pointerInfty = new ScriptOutput(
+			L"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+			L"http://www.hellointernet.fm/");
+		level.insertPair(0x02, pointerInfty);
 		keyboard.levels.push_back(level);
 
 		// Refresh keyboard's state

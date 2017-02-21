@@ -1,6 +1,10 @@
 // Implementation of BOOL Multikeys::Remapper::ParseSettings
 // Uses MSXML to read an xml file with remapping configurations
 
+// If anyone knows how to parse xml files with more elegance,
+//		do try and replace this entire thing with a better
+//		implementation. For now, hell will have to do.
+
 #include "stdafx.h"
 #include "Remaps.h"
 // #include <comutil.h>
@@ -118,10 +122,12 @@ CleanUp:
 
 
 // Prototypes
-HRESULT ParseKeyboard(XmlNodePtr _kbNode, std::vector<KEYBOARD> _vectorKeyboards);
+HRESULT ParseKeyboard(XmlNodePtr _kbNode, std::vector<KEYBOARD> * _vectorKeyboards);
 HRESULT ParseModifier(XmlNodePtr _modNode, KEYBOARD* _keyboard);
 HRESULT ParseLevel(XmlNodePtr _levelNode, KEYBOARD* _keyboard);
-HRESULT ParseUnicode(XmlNodePtr _levelNode, Level* _level);
+HRESULT ParseUnicode(XmlNodePtr _unicodeNode, Level* _level);
+HRESULT ParseMacro(XmlNodePtr _macroNode, Level* _level);
+HRESULT ParseScript(XmlNodePtr _scriptNode, Level* _level);
 
 
 
@@ -166,7 +172,7 @@ BOOL Multikeys::Remapper::ParseSettings(std::wstring filename)
 		CHK_HR(kbNodeList->get_item(i, &kbNode));
 
 		// Call function to evaluate it, using this object's vector of keyboards
-		CHK_HR(ParseKeyboard(kbNode, vectorKeyboards));
+		CHK_HR(ParseKeyboard(kbNode, &vectorKeyboards));
 	}
 
 	// retVal is only ever true if this line is reached
@@ -191,7 +197,7 @@ CleanUp:
 
 // Reads a single IXMLDOMNode, puts its data into a KEYBOARD structure, and adds
 //		it to the vector of keyboards
-HRESULT ParseKeyboard(XmlNodePtr _kbNode, std::vector<KEYBOARD> _vectorKeyboards)
+HRESULT ParseKeyboard(XmlNodePtr _kbNode, std::vector<KEYBOARD> * _vectorKeyboards)
 {
 	// For use with CHK_HR
 	HRESULT hr = S_OK;
@@ -225,6 +231,7 @@ HRESULT ParseKeyboard(XmlNodePtr _kbNode, std::vector<KEYBOARD> _vectorKeyboards
 	VARIANT_BOOL variantBool;
 
 
+
 	// Instantiate a new KEYBOARD to fill with data
 	auto keyboard = new KEYBOARD();
 
@@ -241,20 +248,37 @@ HRESULT ParseKeyboard(XmlNodePtr _kbNode, std::vector<KEYBOARD> _vectorKeyboards
 	// and we do not read it here.
 	OutputDebugString((L"Parser: Reading keyboard " + keyboard->deviceName + L'\n').c_str());
 
-	// Get all Modifier child nodes:
-	CHK_HR(pNode->hasChildNodes(&variantBool));
+	// Get all child nodes:
+	CHK_HR(_kbNode->hasChildNodes(&variantBool));
 	if (!variantBool) { retVal = S_OK; goto CleanUp; }
 
-	CHK_HR(pNode->get_childNodes(&pNodeList));
+	CHK_HR(_kbNode->get_childNodes(&pNodeList));
 	CHK_HR(pNodeList->get_length(&length));
+	
 	// loop through node list, first looking for modifiers
 	for (long i = 0; i < length; i++)
 	{
 		CHK_HR(pNodeList->get_item(i, &pNode));
 		CHK_HR(pNode->get_nodeName(&workBSTR));
-		
+		if (wcscmp(workBSTR, xmlTag_modifier) == 0)
+		{
+			ParseModifier(pNode, keyboard);
+		}
 	}
 
+	// Then again, looking for levels
+	for (long i = 0; i < length; i++)
+	{
+		CHK_HR(pNodeList->get_item(i, &pNode));
+		CHK_HR(pNode->get_nodeName(&workBSTR));
+		if (wcscmp(workBSTR, xmlTag_level) == 0)
+		{
+			ParseLevel(pNode, keyboard);
+		}
+	}
+
+	keyboard->resetModifierState();
+	_vectorKeyboards->push_back(*keyboard);
 
 
 
@@ -273,62 +297,85 @@ CleanUp:
 
 
 
-// Inserts the virtual keys in _vKeys into _keyboard, returns false if
-//		either more than eight modifiers are being inserted, or a
-//		parsing error has occured.
-bool insertModifiers(KEYBOARD*const _keyboard, char * _vKeys)
-{
-	int valueCount = 0;
-	int values[8] = {0,0,0,0,0,0,0,0};
-	char * pch;
-	pch = strtok(_vKeys, ",");
-	values[valueCount] = std::stoi(pch, nullptr, 10);
-	valueCount++;
-	while (pch != NULL)
-	{
-		pch = strtok(NULL, ",");
-		values[valueCount] = std::stoi(pch, nullptr, 10);
-		valueCount++;
-	}
-	
-	for (int i = 0; i < valueCount; i++)
-	{
-		_keyboard->addModifier(values[i], FALSE);
-	}
-	// Modifiers should be reworked.
-}
-
 
 
 // Receives a node that represents a modifier, and places that modifier in _keyboard.
-// Some nodes may have multiple scancodes associated to them; in that case, multiple
-//		modifiers will be added.
 HRESULT ParseModifier(XmlNodePtr _modNode, KEYBOARD* _keyboard)
 {
 	HRESULT hr = S_OK;
+	HRESULT retValue = E_FAIL;
 
+	std::wstring wideString;
+	XmlNamedNodeMapPtr pNamedNodeMap = NULL;
+	XmlNodePtr pNode = NULL;
 	BSTR xmlTagVKey = SysAllocString(L"vKey");
 	CHK_ALLOC(&xmlTagVKey);
 	BSTR xmlTagName = SysAllocString(L"Name");
 	CHK_ALLOC(&xmlTagName);
 
 	BSTR workBSTR;
-	// For looping
-	long length = 0;
 	// Variants for retrieving data
 	VARIANT variant;
 	VARIANT_BOOL variantBool;
 
-	XmlNamedNodeMapPtr pNamedNodeMap;
-	XmlNodePtr pNode;
-
-	// All that matters in a modifier tag are the attributes
-	CHK_HR(_modNode->get_attributes(&pNamedNodeMap));
-	CHK_HR(pNamedNodeMap->getNamedItem(xmlTagVKey, &pNode));
-
+	// Get the text value of this node
+	CHK_HR(_modNode->get_text(&workBSTR));
+	wideString = std::wstring(workBSTR, SysStringLen(workBSTR));
+	OutputDebugString((L"Parser: Adding modifier " + wideString + L"\n").c_str());
+	try {
+		_keyboard->addModifier(std::stoi(wideString, nullptr, 16), FALSE);
+	}
+	catch (std::exception ex) {
+		goto CleanUp;
+	}
 	
-
+	retValue = S_OK;
 CleanUp:
-	;
-	return 0;
+	SysFreeString(xmlTagVKey);
+	SysFreeString(xmlTagName);
+	SysFreeString(workBSTR);
+	SAFE_RELEASE(pNamedNodeMap);
+	SAFE_RELEASE(pNode);
+	return retValue;
+}
+
+
+
+
+// Level can have <unicode>, <macro> and <script> nodes.
+HRESULT ParseLevel(XmlNodePtr _levelNode, KEYBOARD* _keyboard)
+{
+	HRESULT hr = S_OK;
+	HRESULT retVal = E_FAIL;
+
+	std::wstring wideString;
+	XmlNamedNodeMapPtr pNamedNodeMap = NULL;
+	XmlNodePtr pNode = NULL;
+	BSTR workBSTR;
+	BSTR xmlAttributeModifiers = SysAllocString(L"Modifiers");
+	CHK_ALLOC(xmlAttributeModifiers);
+	BSTR xmlTagUnicode = SysAllocString(L"Unicode");
+	CHK_ALLOC(xmlTagUnicode);
+	BSTR xmlTagMacro = SysAllocString(L"Macro");
+	CHK_ALLOC(xmlTagMacro);
+	BSTR xmlTagScript = SysAllocString(L"Script");
+	CHK_ALLOC(xmlTagScript);
+	
+	// Check its attribute Modifiers
+	CHK_HR(_levelNode->get_attributes(&pNamedNodeMap));
+	CHK_HR(pNamedNodeMap->getNamedItem(xmlAttributeModifiers, &pNode));
+	CHK_HR(pNode->get_text(&workBSTR));
+	wideString = std::wstring(workBSTR, SysStringLen(workBSTR));
+	// Now, I must split a string using C code.
+	// O, what ungodly task has befallen me
+
+	retVal = S_OK;
+CleanUp:
+	SysFreeString(xmlAttributeModifiers);
+	SysFreeString(xmlTagUnicode);
+	SysFreeString(xmlTagMacro);
+	SysFreeString(xmlTagScript);
+	SAFE_RELEASE(pNamedNodeMap);
+	SAFE_RELEASE(pNode);
+	return retVal;
 }

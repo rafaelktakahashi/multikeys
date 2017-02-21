@@ -110,6 +110,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 	}
 
+	// Testing a parser
+	Multikeys::Remapper remapper2;
+	remapper2.ParseSettings(L"C:\\MultiKeys\\MultiKeys.xml");
+
 	// return of CommandLineToArgvW is a contiguous memory of pointers
 	LocalFree(szArgList);			// return it to the abyss (sort of)
 

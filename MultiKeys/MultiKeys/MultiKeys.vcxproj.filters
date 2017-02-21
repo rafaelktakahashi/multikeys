@@ -53,6 +53,9 @@
     <ClCompile Include="Remaps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RemapsConfigParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MultiKeys.rc">

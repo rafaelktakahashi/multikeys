@@ -366,7 +366,7 @@ namespace Multikeys
 
 
 		// a vector of keyboards
-		std::vector<KEYBOARD> keyboards;
+		std::vector<KEYBOARD> vectorKeyboards;
 		// to hold each keyboard
 		// It would be possible to make a map between keyboard name and keyboard
 		// but we won't have that many at once to require such a thing
@@ -393,6 +393,8 @@ namespace Multikeys
 		// Loads the settings in file at filename into memory
 		BOOL LoadSettings(std::string filename);
 		BOOL LoadSettings(std::wstring filename);
+
+		BOOL ParseSettings(std::wstring filename);
 
 		// EvaluateKey
 		//

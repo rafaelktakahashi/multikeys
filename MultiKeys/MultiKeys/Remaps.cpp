@@ -287,9 +287,9 @@ BOOL Multikeys::Remapper::LoadSettings(std::string filename)		// parser
 	if (!file.is_open())
 		return FALSE;
 
-	BOOL result = Parser::ReadFile(&file, &keyboards);
+	BOOL result = Parser::ReadFile(&file, &vectorKeyboards);
 	file.close();
-	keyboards[0].resetModifierState();
+	vectorKeyboards[0].resetModifierState();
 	return result;
 }
 BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
@@ -299,9 +299,9 @@ BOOL Multikeys::Remapper::LoadSettings(std::wstring filename)
 	if (!file.is_open())
 		return FALSE;
 
-	BOOL result = Parser::ReadFile(&file, &keyboards);
+	BOOL result = Parser::ReadFile(&file, &vectorKeyboards);
 	file.close();
-	keyboards[0].resetModifierState();		// I do not fully comprehend why this line is necessary
+	vectorKeyboards[0].resetModifierState();		// I do not fully comprehend why this line is necessary
 										// it fixes the pointer to the active level becoming invalid
 									// the only other way to fix it seems to be having the ReadFile
 									// function allocate a keyboard dynamically, but then we lose
@@ -319,7 +319,9 @@ BOOL Multikeys::Remapper::EvaluateKey(RAWKEYBOARD* keypressed, WCHAR* deviceName
 {
 	
 	// Look for correct device; return FALSE (= do not block) otherwise
-	for (auto iterator = keyboards.begin(); iterator != keyboards.end(); iterator++)
+	for (std::vector<KEYBOARD>::iterator iterator = vectorKeyboards.begin();
+		iterator != vectorKeyboards.end(); 
+		iterator++)
 	{
 		// checks if iterator->deviceName exists in deviceName (which includes port + device names)
 		if (wcsstr(deviceName, iterator->deviceName.c_str()) != nullptr)

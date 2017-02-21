@@ -104,11 +104,13 @@ public:
 		
 	}	// end of constructor
 
+	// Override
 	KeystrokeOutputType getType() const
 	{
 		return KeystrokeOutputType::MacroOutput;
 	}
 
+	// Override
 	BOOL simulate(BOOL keyup, BOOL repeated)
 	{
 		if (keyup)
@@ -137,7 +139,7 @@ public:
 	// UINT _inputCount - number of elements in codepoints
 	// BOOL _triggerOnRepeat - true if this command should be triggered multiple times if user
 	//		holds down the key
-	UnicodeOutput(const UINT * codepoints, const UINT _inputCount, const BOOL _triggerOnRepeat)
+	UnicodeOutput(const UINT * const codepoints, const UINT _inputCount, const BOOL _triggerOnRepeat)
 		: IKeystrokeOutput(), inputCount(_inputCount), triggerOnRepeat(_triggerOnRepeat)
 	{
 		if (codepoints == nullptr) return;
@@ -176,11 +178,13 @@ public:
 
 	}	// end constructor
 
+	// Override
 	KeystrokeOutputType getType() const
 	{
 		return KeystrokeOutputType::UnicodeOutput;
 	}
 
+	// Override
 	BOOL simulate(BOOL keyup, BOOL repeated)
 	{
 		if (keyup)
@@ -221,11 +225,13 @@ public:
 		: IKeystrokeOutput(), filename(filename), argument(argument)
 	{}
 
+	// Override
 	KeystrokeOutputType getType() const
 	{
 		return KeystrokeOutputType::ScriptOutput;
 	}
 
+	// Override
 	BOOL simulate(BOOL keyup, BOOL repeated)
 	{
 		if (repeated || keyup) return TRUE;
@@ -342,14 +348,14 @@ public:
 	{ _setNextCommand(nullptr, vKey); }
 
 
-	// Overwrite:
+	// Override
 	KeystrokeOutputType getType() const
 	{
 		return KeystrokeOutputType::DeadKeyOutput;
 	}
 
 
-	// Overwrite:
+	// Override
 	BOOL simulate(BOOL keyup, BOOL repeated = FALSE)
 	{
 		if (keyup) return TRUE;	// because unicode keyups do nothing

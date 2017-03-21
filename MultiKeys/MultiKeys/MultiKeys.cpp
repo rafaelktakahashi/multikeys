@@ -86,33 +86,29 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-	// Evaluate argument (path to configuration file)
+	// Evaluate arguments (path to configuration file)
 	LPWSTR * szArgList;			// to hold arguments (0: name of exe, 1: path to config file)
 	int argCount;
 	szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount);
 	if (szArgList == NULL)
 	{					// Eventually we'll have to make these fail cases just fail.
 		OutputDebugString(L"No arguments found. Initializing with default file");
-		remapper.LoadSettings("C:\\MultiKeys\\Multi");
+		remapper.ParseSettings(L"C:\\MultiKeys\\MultiKeys.xml");
 	}
 	else if (argCount != 2)
 	{
 		OutputDebugString(L"Incorrect number of arguments. Initializing with default file");
-		remapper.LoadSettings("C:\\MultiKeys\\Multi");
+		remapper.ParseSettings(L"C:\\MultiKeys\\MultiKeys.xml");
 	}
 	else
 	{
 		// try this
-		if (!remapper.LoadSettings(std::wstring(szArgList[1])))
+		if (!remapper.ParseSettings(std::wstring(szArgList[1])))
 		{
 			OutputDebugString(L"Failed to open file. Initializing with default file");
-			remapper.LoadSettings("C:\\MultiKeys\\Multi");
+			remapper.ParseSettings(L"C:\\MultiKeys\\MultiKeys.xml");
 		}
 	}
-
-	// Testing a parser
-	Multikeys::Remapper remapper2;
-	remapper2.ParseSettings(L"C:\\MultiKeys\\MultiKeys.xml");
 
 	// return of CommandLineToArgvW is a contiguous memory of pointers
 	LocalFree(szArgList);			// return it to the abyss (sort of)
@@ -472,7 +468,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if (iterator->keyboardInput.VKey == virtualKeyCode
 					&& iterator->keyboardInput.MakeCode == extractedScancode
 					&& !(iterator->keyboardInput.Flags & RI_KEY_BREAK) == keyPressed
-					&& ((iterator->keyboardInput.Flags & RI_KEY_E0) >> 2) == isExtended)		// match!
+					&& ((iterator->keyboardInput.Flags & RI_KEY_E0) == RI_KEY_E0) == (isExtended > 0))		// match!
 				{
 					// Actually, this doesn't guarantee a match;
 					// Keys in two different keyboards corresponding to the same virtual key may be pressed in rapid succession
@@ -483,6 +479,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					else if (iterator->decision == FALSE) OutputDebugString(L"Hook: Must let this key through.\n");
 				#endif
 
+
+					// If the keypress was an Alt or Ctrl, undo it:
+					if (virtualKeyCode == VK_CONTROL) {
+						Multikeys::SendKeyUp(VK_CONTROL);
+#if DEBUG
+						OutputDebugString(L"Correcting for Ctrl.\n");
+#endif
+					}
+					else if (virtualKeyCode == VK_MENU) {
+						Multikeys::SendKeyUp(VK_LMENU);
+#if DEBUG
+						OutputDebugString(L"Correcting for Alt.\n");
+						if (GetKeyState(VK_MENU))
+							OutputDebugString(L"Alt key was down!\n");
+#endif
+					}
 					
 					// Now, if the decision was to block the hook, we must act on it at this point, just before popping it
 					if (iterator->decision)
@@ -631,7 +643,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (virtualKeyCode != raw->data.keyboard.VKey
 				|| extractedScancode != raw->data.keyboard.MakeCode
 				|| keyPressed != (raw->data.keyboard.Flags & RI_KEY_BREAK ? 1 : 0)
-				|| isExtended != (raw->data.keyboard.Flags & RI_KEY_E0) >> 1)						// Plenty of checks here
+				|| (isExtended > 0) != ((raw->data.keyboard.Flags & RI_KEY_E0) == RI_KEY_E0))	// Plenty of checks here
 			{
 				// Turns out this raw input message wasn't the one we were looking for.
 				// Put it in the queue just like we did in the WM_INPUT case, and keep waiting.
@@ -687,8 +699,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				IKeystrokeOutput * possibleOutput;
 				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleOutput);
 				// Immediately act on the input if there is one, since this decision won't be stored in the buffer
-				if (blockThisHook)
-					possibleOutput->simulate(!keyPressed, previousStateFlagWasDown && keyPressed);
+				if (blockThisHook) {
+					// If the keypress was an Alt or Ctrl, undo it:
+					if (virtualKeyCode == VK_CONTROL) {
+						Multikeys::SendKeyUp(VK_CONTROL);
+#if DEBUG
+						OutputDebugString(L"Correcting for Ctrl.\n");
+#endif
+					}
+					else if (virtualKeyCode == VK_MENU) {
+						Multikeys::SendKeyUp(VK_MENU);
+#if DEBUG
+						OutputDebugString(L"Correcting for Alt.\n");
+#endif
+					}
+
+					BOOL result = possibleOutput->simulate(!keyPressed, previousStateFlagWasDown && keyPressed);
+#if DEBUG
+					if (result == FALSE)
+						OutputDebugString(L"WndProc: Command execution failed!\n");
+#endif
+				}
 			}
 
 		}

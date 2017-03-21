@@ -22,7 +22,7 @@ struct Level
 	// 2 - only one of these modifiers need to be on (be careful with ambiguous levels)
 	BYTE modifiers[8];
 
-	VOID setModifiers2(
+	VOID setModifiers(
 		BYTE b1 = 0, BYTE b2 = 0,
 		BYTE b3 = 0, BYTE b4 = 0,
 		BYTE b5 = 0, BYTE b6 = 0,
@@ -62,15 +62,23 @@ struct Level
 		return TRUE;
 	}
 
+	// Prefix must be bitshifted left 16 bits
+	VOID insertPair(DWORD prefixedScancode, IKeystrokeOutput* command)
+	{
+		layout.insert(std::pair<DWORD, IKeystrokeOutput*>
+			(prefixedScancode, command));
+	}
+
 	VOID insertPair(WORD scancode, IKeystrokeOutput* command)
 	{
 		layout.insert(std::pair<DWORD, IKeystrokeOutput*>
 			(scancode, command));
 	}
+
 	VOID insertPair(WORD scancodePrefix, WORD scancode, IKeystrokeOutput* command)
 	{
 		layout.insert(std::pair<DWORD, IKeystrokeOutput*>
-			(scancode | scancodePrefix, command));
+			(scancode | (scancodePrefix << 16), command));
 	}
 
 };
@@ -91,12 +99,13 @@ private:
 		{
 			if (modifierVKeyCodes[i] == 0) break;
 
-			if (	// last byte (0xff) is virtual key; first bit (0x8000) is extended key
+			// Look for the modifier that matched the received keystroke
+			if (	// last byte (0xff) is virtual key; first bit (0x8000) is extended flag
 				(modifierVKeyCodes[i] & 0xff) == vKeyCode &&
 				((modifierVKeyCodes[i] & 0x8000) > 0) == flag_E0
 				)
 			{
-				// found the match, variable e currently holds the (i + 1)-th bit on 
+				// found the modifier that changed, variable e currently holds the (i + 1)-th bit on 
 				// (for example, in the third iteration it will be 0000 0100)
 				if (flag_keyup)
 				{
@@ -118,10 +127,19 @@ private:
 					if (iterator->isEqualTo(modifierState))
 					{
 						activeLevel = &(*iterator);		// Iterators are not pointers
+#if DEBUG
+						OutputDebugString(L"Shifting level!\n");
+#endif
 						break;
 					}
 				}
 				// If no matching level was found, it remains null.
+#if DEBUG
+				if (activeLevel == nullptr)
+				{
+					OutputDebugString(L"Current level is null!\n");
+				}
+#endif
 				return TRUE;	// because match was found
 			}
 			// didn't match; next
@@ -197,18 +215,28 @@ public:
 		// for left and right variants of Shift, Ctrl and Alt
 		{	// brackets for locality
 			USHORT LRvKey = vKeyCode;
+			BOOL newFlag_E0 = flag_E0;
 			if (vKeyCode == VK_SHIFT && scancode == 0x2a)
 				LRvKey = VK_LSHIFT;
 			else if (vKeyCode == VK_SHIFT && scancode == 0x36)
 				LRvKey = VK_RSHIFT;
 			else if (vKeyCode == VK_CONTROL)
+			{
 				LRvKey = (flag_E0 ? VK_RCONTROL : VK_LCONTROL);
+				newFlag_E0 = 0;
+			}
 			else if (vKeyCode == VK_MENU)
-				LRvKey = (flag_E0 ? VK_RMENU : VK_LMENU);			// MENU is Alt key
+			{
+				LRvKey = (flag_E0 ? VK_RMENU : VK_LMENU);
+				newFlag_E0 = 0;
+			}			// MENU is Alt key
 
 			// First thing, check if it's a modifier
-			if (_updateKeyboardState(scancode, LRvKey, flag_E0, flag_E1, flag_keyup))
+			if (_updateKeyboardState(scancode, LRvKey, newFlag_E0, flag_E1, flag_keyup))
 			{
+#if DEBUG
+				OutputDebugString(L"Keyboard: Identified a modifier keystroke.\n");
+#endif
 				// If this key is a modifier
 				*out_action = noAction;		// then there is no action associated with this keystroke
 				return TRUE;				// however, we must still block it.
@@ -378,21 +406,8 @@ namespace Multikeys
 
 	public:
 		
-		// Constructor
-		// Parameters:
-		//		std::string - full path to the configuration file to be read
-		// Remapper(std::string filename);
-		// Remapper(std::wstring filename);
-		// Constructor
-		//
-		// Creates an instance with an empty map. Must be properly initialized with LoadSettings
-		//
-		// Parameters: none
-		Remapper();
+		Remapper() {}
 
-		// Loads the settings in file at filename into memory
-		BOOL LoadSettings(std::string filename);
-		BOOL LoadSettings(std::wstring filename);
 
 		BOOL ParseSettings(std::wstring filename);
 
@@ -417,6 +432,26 @@ namespace Multikeys
 
 	};
 
+
+	static BOOL SendKeyUp(WORD vKeyCode)
+	{
+		// Bits 0-15: Repeat count
+		LPARAM lParam = 1;
+		// Bits 16-23: Scan code
+		// ...
+		// Bit 24: On for extended keys
+		// ...
+		// Bits 25-28: Reserved; do not use
+		// ...
+		// Bit 29: Context code
+		// ...
+		// Bit 30: Previous key state
+		lParam |= (1 << 30);
+		// Bit 31: Transition state
+		lParam |= (1 << 31);
+		PostMessage(NULL, WM_KEYUP, vKeyCode, lParam);
+		return TRUE;
+	}
 
 	
 }

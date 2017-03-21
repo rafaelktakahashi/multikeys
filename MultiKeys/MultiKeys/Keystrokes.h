@@ -136,6 +136,7 @@ public:
 	// UINT codepoints - array of UINTs, each containing a single Unicode code point
 	//		identifying the character to be sent. All characters in this array will
 	//		be sent in order on execution.
+	//		This array may be deleted after this function is called.
 	// UINT _inputCount - number of elements in codepoints
 	// BOOL _triggerOnRepeat - true if this command should be triggered multiple times if user
 	//		holds down the key
@@ -213,17 +214,18 @@ struct ScriptOutput : IKeystrokeOutput
 protected:
 
 	std::wstring filename;
-	std::wstring argument;
+	std::wstring arguments;
 
 public:
 
 	// std::wstring filename - The UTF-16 string containing a full path to the executable to be
 	//		opened when this command is executed. This command does not close the executable.
-	// std::wstring argument - argument to be passed to executable; currently, it mostly exists
-	//		for opening URLs with a browser, but multiple arguments might be supported in the future.
-	ScriptOutput(std::wstring filename, std::wstring argument = std::wstring())
-		: IKeystrokeOutput(), filename(filename), argument(argument)
+	// std::wstring arguments - arguments to be passed to executable; multiple arguments must be
+	//		separated by space
+	ScriptOutput(std::wstring filename, std::wstring arguments = std::wstring())
+		: IKeystrokeOutput(), filename(filename), arguments(arguments)
 	{}
+
 
 	// Override
 	KeystrokeOutputType getType() const
@@ -239,10 +241,11 @@ public:
 		// start process at filename
 		
 		HINSTANCE retVal =
-			ShellExecute(NULL, L"open", filename.c_str(), argument.c_str(), NULL, SW_SHOWNORMAL);
+			ShellExecute(NULL, L"open", filename.c_str(), arguments.c_str(), NULL, SW_SHOWNORMAL);
 		if ((LONG)retVal <= 32)
 			return FALSE;
 		// TODO: handle errors
+		
 
 		return TRUE;
 	}
@@ -317,9 +320,13 @@ public:
 
 
 	// UINT* independentCodepoints - the Unicode character for this dead key
+	//								Array may be deleted after passing
 	// UINT independentCodepointCount - the number of unicode characters for this dead key
+	//								Array may be deleted after passing
 	// UnicodeOutput** replacements_from - array of commands that consist valid sequences
+	//								Array may be deleted after passing, but not each pointer
 	// UnicodeOutput** replacements_to - array of commands that the codepoints map to
+	//								Array may be deleted after passing, but not each pointer
 	// UINT replacements_count - number of items in the previous arrays
 	DeadKeyOutput(UINT*const independentCodepoints, UINT const independentCodepointsCount,
 		UnicodeOutput**const replacements_from,  UnicodeOutput**const replacements_to,

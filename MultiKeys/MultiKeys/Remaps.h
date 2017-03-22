@@ -433,24 +433,59 @@ namespace Multikeys
 	};
 
 
+	// USAGE: When a remap includes a modifier key (Ctrl, Alt or Shift), sending keystrokes normally
+	// would cause the new commands to be affected by the modifier key being held down. For example,
+	// mapping Alt+a to send the string "abc" would instead send Alt+a, Alt+b and Alt+c.
+	// This function is used to unpress a key, by both setting its thread keyboard state and sending
+	// a release INPUT. It does not seem to work everywhere; namely, Google Chrome's URL bar does not
+	// recognize characters sent this way. Since behavior is inconsistent, I think it's better to keep
+	// both methods of unpressing keys in this function.
+	// A few things need to be sorted out still, like the problem with AltGr.
 	static BOOL SendKeyUp(WORD vKeyCode)
 	{
-		// Bits 0-15: Repeat count
-		LPARAM lParam = 1;
-		// Bits 16-23: Scan code
-		// ...
-		// Bit 24: On for extended keys
-		// ...
-		// Bits 25-28: Reserved; do not use
-		// ...
-		// Bit 29: Context code
-		// ...
-		// Bit 30: Previous key state
-		lParam |= (1 << 30);
-		// Bit 31: Transition state
-		lParam |= (1 << 31);
-		PostMessage(NULL, WM_KEYUP, vKeyCode, lParam);
+
+		// Use setkeyboard state to unpress vKeyCode
+		BYTE kbState[256];
+		GetKeyboardState((PBYTE)&kbState);
+
+		// In each BYTE of kbState, if the high bit (0x80) is on, key is down
+		kbState[vKeyCode] &= ~0x80;				// unset it
+
+		// If vKeyCode is left/right specific, also update the state of the neutral key:
+		switch (vKeyCode) {
+		case VK_LCONTROL:
+		case VK_RCONTROL:
+			if ((kbState[VK_LCONTROL] & 0x80) || (kbState[VK_RCONTROL] & 0x80))
+				kbState[VK_CONTROL] |= 0x80;
+			else
+				kbState[VK_CONTROL] &= ~0x80;
+			break;
+		case VK_LSHIFT:
+		case VK_RSHIFT:
+			if ((kbState[VK_LSHIFT] & 0x80) || (kbState[VK_RSHIFT] & 0x80))
+				kbState[VK_SHIFT] |= 0x80;
+			else
+				kbState[VK_SHIFT] &= ~0x80;
+			break;
+		case VK_LMENU:
+		case VK_RMENU:
+			if ((kbState[VK_LMENU] & 0x80) || (kbState[VK_RMENU] & 0x80))
+				kbState[VK_MENU] |= 0x80;
+			else
+				kbState[VK_MENU] &= ~0x80;
+			break;
+		}
+
+		INPUT unPress;
+		unPress.type = INPUT_KEYBOARD;
+		unPress.ki.wVk = vKeyCode;
+		unPress.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY;
+		unPress.ki.wScan = 0;
+		unPress.ki.time = 0;
+		SendInput(1, &unPress, sizeof(INPUT));
+		
 		return TRUE;
+		
 	}
 
 	

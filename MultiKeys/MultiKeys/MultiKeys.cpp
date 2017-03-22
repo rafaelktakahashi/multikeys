@@ -205,6 +205,23 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+// Utility function that resets modifiers
+BOOL ResetModifiers() {
+	// Reset both sides of Control and Alt keys, as well as send their up keystrokes
+	BYTE kbState[256];
+	GetKeyboardState((PBYTE)&kbState);
+
+	kbState[VK_LCONTROL] &= ~0x80;
+	kbState[VK_RCONTROL] &= ~0x80;
+	kbState[VK_CONTROL] &= ~0x80;
+	kbState[VK_LMENU] &= ~0x80;
+	kbState[VK_RMENU] &= ~0x80;
+	kbState[VK_MENU] &= ~0x80;
+
+	return SetKeyboardState((PBYTE)&kbState);
+}
+
+
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -479,29 +496,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					else if (iterator->decision == FALSE) OutputDebugString(L"Hook: Must let this key through.\n");
 				#endif
 
-
-					// If the keypress was an Alt or Ctrl, undo it:
-					if (virtualKeyCode == VK_CONTROL) {
-						Multikeys::SendKeyUp(VK_CONTROL);
-#if DEBUG
-						OutputDebugString(L"Correcting for Ctrl.\n");
-#endif
-					}
-					else if (virtualKeyCode == VK_MENU) {
-						Multikeys::SendKeyUp(VK_LMENU);
-#if DEBUG
-						OutputDebugString(L"Correcting for Alt.\n");
-						if (GetKeyState(VK_MENU))
-							OutputDebugString(L"Alt key was down!\n");
-#endif
-					}
 					
 					// Now, if the decision was to block the hook, we must act on it at this point, just before popping it
-					if (iterator->decision)
-						if (iterator->mappedAction->simulate(!keyPressed, previousStateFlagWasDown && keyPressed) == FALSE)
-					#if	DEBUG					 
-							OutputDebugString(L"Hook: Simulation failed!\n");
-					#endif
+					if (iterator->decision) {
+
+						if (iterator->mappedAction->simulate(!keyPressed, previousStateFlagWasDown && keyPressed) == FALSE) {
+						#if DEBUG
+							OutputDebugString(L"Simulation failed!!\n");
+						#endif
+						}
+					}
 
 					recordFound = TRUE;		// set the flags
 					blockThisHook = iterator->decision;
@@ -700,25 +704,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleOutput);
 				// Immediately act on the input if there is one, since this decision won't be stored in the buffer
 				if (blockThisHook) {
-					// If the keypress was an Alt or Ctrl, undo it:
-					if (virtualKeyCode == VK_CONTROL) {
-						Multikeys::SendKeyUp(VK_CONTROL);
-#if DEBUG
-						OutputDebugString(L"Correcting for Ctrl.\n");
-#endif
-					}
-					else if (virtualKeyCode == VK_MENU) {
-						Multikeys::SendKeyUp(VK_MENU);
-#if DEBUG
-						OutputDebugString(L"Correcting for Alt.\n");
-#endif
-					}
 
-					BOOL result = possibleOutput->simulate(!keyPressed, previousStateFlagWasDown && keyPressed);
+					if (!possibleOutput->simulate(!keyPressed, previousStateFlagWasDown && keyPressed)) {
 #if DEBUG
-					if (result == FALSE)
-						OutputDebugString(L"WndProc: Command execution failed!\n");
+						OutputDebugString(L"WndProc: Command failed!!\n");
 #endif
+					}
 				}
 			}
 

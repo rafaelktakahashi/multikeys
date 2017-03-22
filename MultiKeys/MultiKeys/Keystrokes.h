@@ -191,7 +191,7 @@ public:
 		if (keyup)
 			return TRUE;
 		else if (!repeated || (repeated && triggerOnRepeat))
-			return (SendInput(inputCount, keystrokes, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
+			return (SendInput(inputCount, keystrokes, sizeof(INPUT)) == inputCount ? TRUE : FALSE)
 		else return TRUE;
 	}
 

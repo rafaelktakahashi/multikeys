@@ -3,7 +3,7 @@
 
 // If anyone knows how to parse xml files with more elegance,
 //		do try and replace this entire thing with a better
-//		implementation. For now, hell will have to do.
+//		implementation.
 
 #include "stdafx.h"
 #include "Remaps.h"
@@ -588,7 +588,7 @@ HRESULT ParseUnicode(XmlNodePtr _unicodeNode, Level* _level)
 		}
 	}
 
-	auto pUnicodeCommand = new UnicodeOutput(codepoints, codepointCount, triggerOnRepeat);
+	auto pUnicodeCommand = new UnicodeCommand(codepoints, codepointCount, triggerOnRepeat);
 	_level->insertPair(scancode, pUnicodeCommand);
 #if DEBUG
 	OutputDebugString(L"Parser: Inserted a new unicode remap.\n");
@@ -688,7 +688,7 @@ HRESULT ParseMacro(XmlNodePtr _macroNode, Level* _level)
 		if (keypressUp) keypresses[i] |= 0x80000000;
 	}
 
-	auto pMacro = new MacroOutput(keypresses, keypressCount, triggerOnRepeat);
+	auto pMacro = new MacroCommand(keypresses, keypressCount, triggerOnRepeat);
 	_level->insertPair(scancode, pMacro);
 #if DEBUG
 	OutputDebugString(L"Parser: Inserted a new macro remap.\n");
@@ -776,14 +776,14 @@ HRESULT ParseScript(XmlNodePtr _scriptNode, Level* _level)
 
 	if (hasPath)
 	{
-		ScriptOutput* scrPointer;
+		ExecutableCommand* scrPointer;
 		if (hasParameter)
 		{
-			scrPointer = new ScriptOutput(wstrPath, wstrParameter);
+			scrPointer = new ExecutableCommand(wstrPath, wstrParameter);
 		}
 		else
 		{
-			scrPointer = new ScriptOutput(wstrPath);
+			scrPointer = new ExecutableCommand(wstrPath);
 		}
 		_level->insertPair(scancode, scrPointer);
 #if DEBUG
@@ -809,7 +809,7 @@ HRESULT ParseIndependentCodepoints(
 	XmlNodePtr _independentNode, UINT**codepoints, UINT*codepointCount);
 
 HRESULT ParseReplacement(XmlNodePtr _replacementNode,
-	UnicodeOutput** unicodeFrom, UnicodeOutput** unicodeTo);
+	UnicodeCommand** unicodeFrom, UnicodeCommand** unicodeTo);
 
 HRESULT ParseDeadkey(XmlNodePtr _keyNode, Level* _level)
 {
@@ -841,8 +841,8 @@ HRESULT ParseDeadkey(XmlNodePtr _keyNode, Level* _level)
 	UINT* independents = NULL;
 	UINT independentCount = 0;
 	// Replacements:
-	UnicodeOutput** replacementsFrom = NULL;
-	UnicodeOutput** replacementsTo = NULL;
+	UnicodeCommand** replacementsFrom = NULL;
+	UnicodeCommand** replacementsTo = NULL;
 	UINT replacementCount = 0;
 	// Work:
 	long length = 0;
@@ -885,8 +885,8 @@ HRESULT ParseDeadkey(XmlNodePtr _keyNode, Level* _level)
 	}
 
 	// ReplacementCount contains the amount of replacements
-	replacementsFrom = new UnicodeOutput*[replacementCount];
-	replacementsTo = new UnicodeOutput*[replacementCount];
+	replacementsFrom = new UnicodeCommand*[replacementCount];
+	replacementsTo = new UnicodeCommand*[replacementCount];
 
 	// Go through list again, this time initializing each element
 	for (long i = 0, currentIndex = 0; i < length; i++)
@@ -902,8 +902,8 @@ HRESULT ParseDeadkey(XmlNodePtr _keyNode, Level* _level)
 		}
 	}
 
-	// All elements are initialized to actual instances of UnicodeOutput
-	auto deadKeyPointer = new DeadKeyOutput(independents, independentCount,
+	// All elements are initialized to actual instances of UnicodeCommand
+	auto deadKeyPointer = new DeadKeyCommand(independents, independentCount,
 		replacementsFrom, replacementsTo, replacementCount);
 	_level->insertPair(scancode, deadKeyPointer);
 	// Everything stays in memory
@@ -967,7 +967,7 @@ CleanUp:
 }
 
 HRESULT ParseReplacement(XmlNodePtr _replacementNode,
-	UnicodeOutput** unicodeFrom, UnicodeOutput** unicodeTo)
+	UnicodeCommand** unicodeFrom, UnicodeCommand** unicodeTo)
 {
 	HRESULT hr = S_OK;
 	HRESULT retVal = E_FAIL;
@@ -1003,7 +1003,7 @@ HRESULT ParseReplacement(XmlNodePtr _replacementNode,
 			UINT * codepoints;
 			UINT codepointCount = 0;
 			ParseIndependentCodepoints(pNode, &codepoints, &codepointCount);
-			(*unicodeFrom) = new UnicodeOutput(codepoints, codepointCount, true);
+			(*unicodeFrom) = new UnicodeCommand(codepoints, codepointCount, true);
 			delete[] codepoints;
 		}
 		else if (VarBstrCmp(workBSTR, xmlTagTo, 0, 0) == VARCMP_EQ)
@@ -1012,7 +1012,7 @@ HRESULT ParseReplacement(XmlNodePtr _replacementNode,
 			UINT * codepoints;
 			UINT codepointCount = 0;
 			ParseIndependentCodepoints(pNode, &codepoints, &codepointCount);
-			(*unicodeTo) = new UnicodeOutput(codepoints, codepointCount, true);
+			(*unicodeTo) = new UnicodeCommand(codepoints, codepointCount, true);
 			delete[] codepoints;
 		}
 		else goto CleanUp;

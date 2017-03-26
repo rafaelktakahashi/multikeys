@@ -24,14 +24,14 @@ enum class KeystrokeOutputType
 	NoOutput
 };
 
-struct IKeystrokeOutput		/*Interface*/
+struct IKeystrokeCommand		/*Interface*/
 {
 protected:
 	INPUT unicodePrototype;
 	INPUT VirtualKeyPrototypeDown;
 	INPUT VirtualKeyPrototypeUp;
 
-	IKeystrokeOutput()
+	IKeystrokeCommand()
 	{
 		// Initialize prototypes
 
@@ -66,7 +66,7 @@ public:
 
 
 
-struct MacroOutput : IKeystrokeOutput
+struct MacroCommand : IKeystrokeCommand
 {
 
 protected:
@@ -83,8 +83,8 @@ public:
 	// USHORT _inputCount - number of elements in keypressSequence
 	// BOOL _triggerOnRepeat - true if this command should be triggered multiple times if user
 	//		holds down the key
-	MacroOutput(const DWORD * keypressSequence, const USHORT _inputCount, const BOOL _triggerOnRepeat)
-		: IKeystrokeOutput(), inputCount(_inputCount), triggerOnRepeat(_triggerOnRepeat)
+	MacroCommand(const DWORD * keypressSequence, const USHORT _inputCount, const BOOL _triggerOnRepeat)
+		: IKeystrokeCommand(), inputCount(_inputCount), triggerOnRepeat(_triggerOnRepeat)
 	{
 		if (keypressSequence == nullptr)
 			return;
@@ -122,7 +122,7 @@ public:
 
 };
 
-struct UnicodeOutput : IKeystrokeOutput
+struct UnicodeCommand : IKeystrokeCommand
 {
 	
 protected:
@@ -140,8 +140,8 @@ public:
 	// UINT _inputCount - number of elements in codepoints
 	// BOOL _triggerOnRepeat - true if this command should be triggered multiple times if user
 	//		holds down the key
-	UnicodeOutput(const UINT * const codepoints, const UINT _inputCount, const BOOL _triggerOnRepeat)
-		: IKeystrokeOutput(), inputCount(_inputCount), triggerOnRepeat(_triggerOnRepeat)
+	UnicodeCommand(const UINT * const codepoints, const UINT _inputCount, const BOOL _triggerOnRepeat)
+		: IKeystrokeCommand(), inputCount(_inputCount), triggerOnRepeat(_triggerOnRepeat)
 	{
 		if (codepoints == nullptr) return;
 
@@ -195,7 +195,7 @@ public:
 		else return TRUE;
 	}
 
-	inline bool operator==(UnicodeOutput& const rhs) const
+	inline bool operator==(UnicodeCommand& const rhs) const
 	{
 		if (inputCount != rhs.inputCount) return false;
 		// One by one, compare the keystroke inputs by codepoint.
@@ -208,7 +208,7 @@ public:
 };
 
 
-struct ScriptOutput : IKeystrokeOutput
+struct ExecutableCommand : IKeystrokeCommand
 {
 
 protected:
@@ -222,8 +222,8 @@ public:
 	//		opened when this command is executed. This command does not close the executable.
 	// std::wstring arguments - arguments to be passed to executable; multiple arguments must be
 	//		separated by space
-	ScriptOutput(std::wstring filename, std::wstring arguments = std::wstring())
-		: IKeystrokeOutput(), filename(filename), arguments(arguments)
+	ExecutableCommand(std::wstring filename, std::wstring arguments = std::wstring())
+		: IKeystrokeCommand(), filename(filename), arguments(arguments)
 	{}
 
 
@@ -253,9 +253,9 @@ public:
 
 };
 
-struct DeadKeyOutput : UnicodeOutput
+struct DeadKeyCommand : UnicodeCommand
 {
-	// Inherits keystrokes, keystroke count and trigger on repeat from UnicodeOutput
+	// Inherits keystrokes, keystroke count and trigger on repeat from UnicodeCommand
 private:
 	// 0 : no next command
 	// 1 : unblocked command
@@ -268,9 +268,9 @@ private:
 	// Pointer to hold the command after this one.
 	// NULL until input is received; remains null if the next input
 	//		is not remapped (i. e. not blocked)
-	IKeystrokeOutput * _nextCommand;
+	IKeystrokeCommand * _nextCommand;
 
-	VOID _setNextCommand(IKeystrokeOutput*const command, const USHORT vKey)
+	VOID _setNextCommand(IKeystrokeCommand*const command, const USHORT vKey)
 	{
 		if (command == nullptr)
 		{
@@ -298,7 +298,7 @@ private:
 			for (auto iterator = replacements.begin(); iterator != replacements.end(); iterator++)
 			{
 				// try to find the correct one (dereference pointers before comparing)
-				if (*(iterator->first) == *((UnicodeOutput*)command) )
+				if (*(iterator->first) == *((UnicodeCommand*)command) )
 				{
 					// replace it
 					_nextCommand = iterator->second;
@@ -316,27 +316,27 @@ public:
 
 	
 	// Replacements from Unicode codepoint sequence to Unicode outputs
-	std::unordered_map<UnicodeOutput*, UnicodeOutput*> replacements;
+	std::unordered_map<UnicodeCommand*, UnicodeCommand*> replacements;
 
 
 	// UINT* independentCodepoints - the Unicode character for this dead key
 	//								Array may be deleted after passing
 	// UINT independentCodepointCount - the number of unicode characters for this dead key
 	//								Array may be deleted after passing
-	// UnicodeOutput** replacements_from - array of commands that consist valid sequences
+	// UnicodeCommand** replacements_from - array of commands that consist valid sequences
 	//								Array may be deleted after passing, but not each pointer
-	// UnicodeOutput** replacements_to - array of commands that the codepoints map to
+	// UnicodeCommand** replacements_to - array of commands that the codepoints map to
 	//								Array may be deleted after passing, but not each pointer
 	// UINT replacements_count - number of items in the previous arrays
-	DeadKeyOutput(UINT*const independentCodepoints, UINT const independentCodepointsCount,
-		UnicodeOutput**const replacements_from,  UnicodeOutput**const replacements_to,
+	DeadKeyCommand(UINT*const independentCodepoints, UINT const independentCodepointsCount,
+		UnicodeCommand**const replacements_from,  UnicodeCommand**const replacements_to,
 		UINT const replacements_count)
-		: UnicodeOutput(independentCodepoints, independentCodepointsCount, true),
+		: UnicodeCommand(independentCodepoints, independentCodepointsCount, true),
 		_nextCommand(nullptr), _nextCommandType(0)
 	{
 		for (unsigned int i = 0; i < replacements_count; i++) {
 			replacements.insert(
-				std::pair<UnicodeOutput*, UnicodeOutput*>(replacements_from[i], replacements_to[i])
+				std::pair<UnicodeCommand*, UnicodeCommand*>(replacements_from[i], replacements_to[i])
 			);
 		}
 	}	// end of constructor
@@ -346,7 +346,7 @@ public:
 	// Call when next input is received, before using this dead key
 	// IkeystrokeOutput* const command - pointer to the command to be executed right after this key;
 	//		might be replaced if a match exists
-	VOID setNextCommand(IKeystrokeOutput*const command)
+	VOID setNextCommand(IKeystrokeCommand*const command)
 	{ _setNextCommand(command, 0); }
 
 	// Call when next input is received, before using this dead key
@@ -370,7 +370,7 @@ public:
 		// First, check for an edge case: If the next input is this one
 		// That means infinite recursion because there's only one instance
 		// of each given dead key
-		if (_nextCommand == (IKeystrokeOutput*)this)
+		if (_nextCommand == (IKeystrokeCommand*)this)
 		{
 			// just send this key twice
 			SendInput(inputCount, keystrokes, sizeof(INPUT));
@@ -403,11 +403,11 @@ public:
 
 
 // Dummy output that performs no action when executed (good for modifier keys)
-struct NoOutput : IKeystrokeOutput
+struct EmptyCommand : IKeystrokeCommand
 {
 public:
 
-	NoOutput() : IKeystrokeOutput() {}
+	EmptyCommand() : IKeystrokeCommand() {}
 	KeystrokeOutputType getType() const { return KeystrokeOutputType::NoOutput; }
 	BOOL simulate(BOOL keyup, BOOL repeated = FALSE) { return TRUE; }
 };

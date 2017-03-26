@@ -314,7 +314,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Instead of storing the decision for this keystroke, store the decision for both a
 			// left shift and a right shift, since we don't know which one produced this message
 			OutputDebugString(L"Raw Input: Fake shift detected, storing two shift decisions.\n");
-			IKeystrokeOutput * possibleAction;
+			IKeystrokeCommand * possibleAction;
 
 			// keyup and keydown is wrong
 			if (raw->data.keyboard.Flags & RI_KEY_BREAK)
@@ -352,7 +352,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Store that decision in the decisionBuffer; look for it when the hook asks.
 
 		// Check whether to block this key, and store the decision for when the hook asks for it
-		IKeystrokeOutput * possibleAction = nullptr;		// <- we don't know yet is our key maps to anything
+		IKeystrokeCommand * possibleAction = nullptr;		// <- we don't know yet is our key maps to anything
 		BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 
 	#if DEBUG
@@ -651,7 +651,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				// Turns out this raw input message wasn't the one we were looking for.
 				// Put it in the queue just like we did in the WM_INPUT case, and keep waiting.
-				IKeystrokeOutput * possibleInput;
+				IKeystrokeCommand * possibleInput;
 				BOOL doBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleInput);
 				decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleInput, doBlock));
 
@@ -700,7 +700,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				recordFound = TRUE;		// This will get us out of the loop.
 										// (the other way to exit the loop is by timing out)
 				// But we still didn't evaluate the raw message (it just arrived!)
-				IKeystrokeOutput * possibleOutput;
+				IKeystrokeCommand * possibleOutput;
 				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleOutput);
 				// Immediately act on the input if there is one, since this decision won't be stored in the buffer
 				if (blockThisHook) {

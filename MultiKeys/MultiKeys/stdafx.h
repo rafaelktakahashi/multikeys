@@ -14,8 +14,6 @@
 #define DEBUG_TEXT_SIZE		128
 
 
-// Windows Header Files:
-#include <windows.h>
 
 // C RunTime Header Files
 #include <stdlib.h>

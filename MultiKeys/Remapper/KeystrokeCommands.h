@@ -77,6 +77,12 @@ namespace Multikeys
 
 	public:
 
+		// STL constructor
+		MacroCommand(std::vector<unsigned short> * const keypresses, bool triggerOnRepeat)
+		{
+			MacroCommand(keypresses->data(), keypresses->size(), triggerOnRepeat);
+		}
+
 		// unsigned short * keypressSequence - array of 16-bit values, each containing the virtual key code to be
 		//		sent (1 byte value), and also the high bit (most significant) set in case of a keyup. Every keypress
 		//		in this array will be sent in order on execution.
@@ -136,6 +142,12 @@ namespace Multikeys
 		BOOL triggerOnRepeat;
 
 	public:
+
+		// STL constructor
+		UnicodeCommand(std::vector<unsigned int> * const codepoints, const bool triggerOnRepeat)
+		{
+			UnicodeCommand(codepoints->data(), codepoints->size(), triggerOnRepeat);
+		}
 
 		// UINT codepoints - array of UINTs, each containing a single Unicode code point
 		//		identifying the character to be sent. All characters in this array will
@@ -327,8 +339,17 @@ namespace Multikeys
 
 
 		// Replacements from Unicode codepoint sequence to Unicode outputs
-		std::unordered_map<UnicodeCommand*, UnicodeCommand*> replacements;
+		std::map<UnicodeCommand*, UnicodeCommand*> replacements;
 
+
+		// STL constructor
+		DeadKeyCommand(std::vector<unsigned int> * const independentCodepoints,
+			std::map<UnicodeCommand*, UnicodeCommand*> * const replacements)
+			: UnicodeCommand(independentCodepoints, true),
+			replacements(*replacements)
+		{
+			;
+		}
 
 		// UINT* independentCodepoints - the Unicode character for this dead key
 		//								Array may be deleted after passing

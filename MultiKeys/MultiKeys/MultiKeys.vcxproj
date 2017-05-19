@@ -139,7 +139,10 @@
   <ItemGroup>
     <ClInclude Include="KeyboardHook.h" />
     <ClInclude Include="Keystrokes.h" />
-    <ClInclude Include="MultiKeys.h" />
+    <ClInclude Include="MultiKeys.h">
+      <DependentUpon>..\..\..\..\..\Desktop\Multikeys.xsd</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="Multikeys.h" />
     <ClInclude Include="Remaps.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scancodes.h" />
@@ -168,6 +171,12 @@
     <ProjectReference Include="..\HookRawInput\HookRawInput.vcxproj">
       <Project>{906018c9-41bf-4658-9a3f-55ca9954ad30}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\..\..\..\..\MultiKeys\Multikeys.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\..\..\..\..\Desktop\Multikeys.xsd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

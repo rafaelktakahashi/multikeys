@@ -451,9 +451,36 @@ namespace Multikeys
 		return true;
 	}
 
+	bool ParseIndependentCodepoints(
+		PXmlElement indElement,
+		OUT std::vector<unsigned short>* codepoints);
+	bool ParseReplacements(
+		PXmlElement replElement,
+		OUT std::map<UnicodeCommand*, UnicodeCommand*>* replacements);
 	bool ParseDeadKey(PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand)
 	{
-		return false;
+		std::vector<unsigned short> codepointVector;
+		// These two make a lot more sense if they're maps, but there's no good way of
+		// passing a c-style map (?) to a function
+		std::vector<UnicodeCommand*> replacementsFromVector;
+		std::vector<UnicodeCommand*> replacementsToVector;
+		
+		PXmlNodeList workList;
+
+		workList = rmpElement->getElementsByTagName(L"independent");
+		if (workList->getLength() != 1)
+			return false;
+		if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+			return false;
+		if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &codepointVector))
+			return false;
+
+		;
+
+
+		
+		// set dead key pointer
+		return true;
 	}
 
 

@@ -52,12 +52,20 @@ namespace Multikeys
 		Scancode* scanArray;
 		unsigned short scanCount;
 	public:
+		
+		// Classic C constructor
 		CompositeModifier(std::wstring name, unsigned short scancodeCount, Scancode* scancodeArray) :
 			AbstractModifier(name), scanCount(scancodeCount), scanArray(scancodeArray)
-		{}
+		{ }
+
+		// STL constructor
+		CompositeModifier(std::wstring name, std::vector<Scancode> scancodeVector) :
+			AbstractModifier(name), scanCount(scancodeVector.size()), scanArray(scancodeVector.data())
+		{ }
 
 		bool matches(Scancode sc) const override
 		{
+			// An incoming scancode only needs to match one of this modifier's scancodes.
 			for (unsigned short i = 0; i < scanCount; i++)
 			{
 				if (scanArray[i] == sc)
@@ -74,8 +82,8 @@ namespace Multikeys
 
 
 	// This class is used for two purposes:
-	//		In a Keyboard to represent the internal state of its modifiers
-	//		In a Level (as a const object) to represent the required modifiers to trigger it
+	//		In a Keyboard to represent the internal state of its modifiers (mutable)
+	//		In a Level to represent the required modifiers to trigger it (const)
 	class ModifierStateMap
 	{
 	private:
@@ -84,16 +92,16 @@ namespace Multikeys
 
 	public:
 
+		// Copy constructor
 		ModifierStateMap(const ModifierStateMap& original)
 		{
-			// copy constructor; also sets all modifiers to false
+			// copy constructor also sets all modifiers to false
 			this->modifiers =
 				original.modifiers;
 			for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
 			{
 				it->second = false;
 			}
-
 		}
 
 		// All modifiers are set to not pressed down
@@ -104,8 +112,12 @@ namespace Multikeys
 				modifiers.insert(std::pair<PModifier, bool>(modifierArray[i], false));
 			}
 		}
+		// STL constructor; sets all modifiers to unpressed
+		ModifierStateMap(std::vector<PModifier> modifiers)
+			: ModifierStateMap(modifiers.size(), modifiers.data()) { }
 
 		
+		// Constructor with states
 		ModifierStateMap(unsigned short modifierCount, PModifier* modifierArray, bool* states)
 		{
 			// Could use an initializer list, but I don't know if that works for a map
@@ -114,6 +126,9 @@ namespace Multikeys
 				modifiers.insert(std::pair<PModifier, bool>(modifierArray[i], states[i]));
 			}
 		}
+		// STL constructor with states (vector<bool> is not really STL and can't be used)
+		ModifierStateMap(std::vector<PModifier> modifiers, bool* states)
+			: ModifierStateMap(modifiers.size(), modifiers.data(), states) { }
 
 		// This method should not be used by a level (not const)
 		bool updateState(Scancode sc, bool keyDown)

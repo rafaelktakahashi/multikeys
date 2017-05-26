@@ -346,10 +346,7 @@ namespace Multikeys
 		DeadKeyCommand(std::vector<unsigned int> * const independentCodepoints,
 			std::map<UnicodeCommand*, UnicodeCommand*> * const replacements)
 			: UnicodeCommand(independentCodepoints, true),
-			replacements(*replacements)
-		{
-			;
-		}
+			replacements(*replacements) { }
 
 		// UINT* independentCodepoints - the Unicode character for this dead key
 		//								Array may be deleted after passing

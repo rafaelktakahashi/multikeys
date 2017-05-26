@@ -70,14 +70,5 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
-  <ItemGroup>
-    <Xml Include="..\..\..\..\..\..\..\MultiKeys\Multikeys.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-  </ItemGroup>
-  <ItemGroup>
-    <Xsd Include="..\..\..\..\..\Desktop\Multikeys.xsd">
-      <Filter>Resource Files</Filter>
-    </Xsd>
-  </ItemGroup>
+  
 </Project>

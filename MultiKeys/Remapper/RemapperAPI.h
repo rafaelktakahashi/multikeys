@@ -63,4 +63,5 @@ namespace Multikeys
 		delete (*instance);
 		*instance = nullptr;
 	}
+	// TODO: Move implementation of these factory methods into Remappper.h
 }

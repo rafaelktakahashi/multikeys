@@ -27,7 +27,7 @@ namespace Multikeys
 	// Modifiers identified by a single scancode
 	class SimpleModifier : public AbstractModifier
 	{
-	private:
+	protected:
 		Scancode sc;
 	public:
 		SimpleModifier(std::wstring name, Scancode scancode) :
@@ -45,10 +45,10 @@ namespace Multikeys
 	};
 
 
-	// Modifiers identified by more than one scancode (ex. Shift)
+	// Modifiers identified by multiple scancodes (ex. Shift)
 	class CompositeModifier : public AbstractModifier
 	{
-	private:
+	protected:
 		Scancode* scanArray;
 		unsigned short scanCount;
 	public:
@@ -86,7 +86,7 @@ namespace Multikeys
 	//		In a Level to represent the required modifiers to trigger it (const)
 	class ModifierStateMap
 	{
-	private:
+	protected:
 
 		std::map<PModifier, bool> modifiers;
 

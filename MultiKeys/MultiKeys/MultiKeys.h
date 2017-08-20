@@ -1,4 +1,4 @@
-// Based on code by Vít Blecha, developed by Rafael Takahashi
+// This header based on code by Vít Blecha, developed by Rafael Takahashi
 
 // MultiKeys allows you to selectively remap keys on multiple keyboards, with
 // an intuitive interface and no need to learn a scripting language.
@@ -6,7 +6,6 @@
 #pragma once
 
 #include "resource.h"
-#include "Keystrokes.h"
 
 
 // Structure of a single record that will be saved in the decisionBuffer

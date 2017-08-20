@@ -2,9 +2,12 @@
 
 #include "stdafx.h"
 
+// This is the only header that should be exposed in this library.
+// Due to being a static library, no explicit exports are necessary.
+
 namespace Multikeys
 {
-	// Class that represents a sequence of keystrokes or character
+	// Class that represents a sequence of keystrokes or characters
 	// or an executable file.
 	typedef class IKeystrokeCommand
 	{
@@ -42,26 +45,17 @@ namespace Multikeys
 		virtual bool evaluateKey(
 			RAWKEYBOARD* const keypressed,
 			WCHAR* const deviceName,
-			OUT PKeystrokeCommand* const out_action) const = 0;
+			OUT PKeystrokeCommand* const out_action
+		) const = 0;
 
 		virtual ~IRemapper() = 0;
 
 	} *PRemapper;
 
 
-	// Places a new instance of a Remapper class into pointer
-	//	pointed to by instance.
-	void Create(OUT PRemapper* instance)
-	{
-		*instance = new Remapper();
-	}
+	// Places a new instance of a Remapper class at *instance
+	void Create(OUT PRemapper* instance);
 
-	// Deletes the object located at the pointer pointed to by
-	//	instance; then, that pointer becomes null.
-	void Destroy(PRemapper* instance)
-	{
-		delete (*instance);
-		*instance = nullptr;
-	}
-	// TODO: Move implementation of these factory methods into Remappper.h
+	// Deletes the object located at *instance, then that pointer becomes null
+	void Destroy(PRemapper* instance);
 }

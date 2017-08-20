@@ -1,4 +1,4 @@
-// Made by Rafael Kenji Takahashi
+// Author: Rafael Kenji Takahashi, FATEC Mogi das Cruzes
 
 #include "stdafx.h"
 
@@ -138,9 +138,8 @@ namespace Multikeys
 
 		for (XMLSize_t i = 0; i < keyboardElements->getLength(); i++)
 		{
-			// Someone told me "if your program needs to know what class an object is,
-			//		that usually indicates a design flaw". We do this cast here because
-			//		Xerces' getElementsByTagName returns Nodes that are all Elements.
+			// We do this cast here because
+			// Xerces' getElementsByTagName returns Nodes that are all Elements.
 			if (keyboardElements->item(i)->getNodeType() != xercesc::DOMNode::ELEMENT_NODE)
 				return false;
 			PXmlElement keyboardElement = (PXmlElement)keyboardElements->item(i);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "stdafx.h"
 #include "RemapperAPI.h"
 #include "KeystrokeCommands.h"
 #include "Keyboard.h"
@@ -60,7 +61,24 @@ namespace Multikeys
 				delete (*it);
 			}
 		}
+
+
 	};
+
+
+	// Implementation of factory methods in this class' header.
+	// 
+
+	void Create(OUT PRemapper* instance)
+	{
+		*instance = new Remapper();
+	}
+
+	void Destroy(PRemapper* instance)
+	{
+		delete (*instance);
+		*instance = nullptr;
+	}
 
 
 

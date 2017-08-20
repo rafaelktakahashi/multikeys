@@ -22,6 +22,11 @@ namespace Multikeys
 		ModifierStateMap *const ptrModifierStateMap;
 		// Const objects can only call const methods
 
+		// Update: This identifies the combination of modifiers that trigger this level,
+		// by name of the modifiers. Each modifier listed must be on,
+		// and every other must be off.
+		std::vector<std::wstring> modifierCombination;
+
 	public:
 
 		// Constructor
@@ -48,6 +53,6 @@ namespace Multikeys
 		// Destructor
 		~Level();
 
-	} *PLevel;
+	};
 
 }

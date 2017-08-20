@@ -19,7 +19,7 @@ namespace Multikeys
 		IKeystrokeCommand* noAction;
 
 		// All levels belonging to this keyboard's layout
-		const std::vector<PLevel> levels;
+		const std::vector<Level*> levels;
 		// Const containers return const references.
 
 		// Currently active level; null if the current combination of modifiers corresponds
@@ -46,7 +46,7 @@ namespace Multikeys
 		// levels - array of Level pointers. May delete after calling this.
 		// modifiers - structure of ModifierStateMap already filled with Modifiers
 		//				ownership is transferred to this Keyboard object.
-		Keyboard(unsigned int levelCount, const PLevel* levels, ModifierStateMap* modifiers);
+		Keyboard(unsigned int levelCount, Level**const levels, ModifierStateMap* modifiers);
 		// : levels(levels, levels+levelCount)		<-- use in implementation
 
 		// Receives information about a keypress, and returns true if the keystroke should

@@ -28,6 +28,11 @@ namespace Multikeys
 		BaseKeystrokeCommand()
 		{
 			// Initialize prototypes
+			//
+			// Prototypes exist to remove the derived classes' responsability to initialize their own INPUT
+			// structure every time. This means every derived class contains these prototypes, even if they
+			// don't need them; however, if everything goes correctly, the initialization of this class
+			// should never occur at runtime.
 
 			// When keyeventf_unicode is set, virtual key must be 0,
 			// and the UTF-16 code value is put into wScan
@@ -39,7 +44,7 @@ namespace Multikeys
 			unicodePrototype.ki.wVk = 0;
 
 
-			// Virtual keys are sent with the scancode e0 00 because the hook
+			// Virtual keys are sent with the scancode e0 00 because our hook
 			// will filter these out (to avoid responding to injected keys)
 			VirtualKeyPrototypeDown.type = INPUT_KEYBOARD;
 			VirtualKeyPrototypeDown.ki.dwExtraInfo = 0;
@@ -55,7 +60,6 @@ namespace Multikeys
 
 		virtual KeystrokeOutputType getType() const = 0;
 
-		// Can't be const because dead keys have internal state.
 		virtual BOOL execute(BOOL keyup, BOOL repeated) const override = 0;
 
 		virtual ~BaseKeystrokeCommand() override = 0;
@@ -85,7 +89,7 @@ namespace Multikeys
 
 		// unsigned short * keypressSequence - array of 16-bit values, each containing the virtual key code to be
 		//		sent (1 byte value), and also the high bit (most significant) set in case of a keyup. Every keypress
-		//		in this array will be sent in order on execution.
+		//		in this array will be sent in order of execution.
 		// USHORT _inputCount - number of elements in keypressSequence
 		// BOOL _triggerOnRepeat - true if this command should be triggered multiple times if user
 		//		holds down the key
@@ -195,7 +199,6 @@ namespace Multikeys
 
 		}	// end constructor
 
-			// Override
 		KeystrokeOutputType getType() const override
 		{
 			return KeystrokeOutputType::UnicodeCommand;
@@ -203,13 +206,14 @@ namespace Multikeys
 
 		BOOL execute(BOOL keyup, BOOL repeated) const override
 		{
-			if (keyup)
+			if (keyup)	// Unicode keystrokes do not activate on release
 				return TRUE;
 			else if (!repeated || (repeated && triggerOnRepeat))
 				return (SendInput(inputCount, keystrokes, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
 			else return TRUE;
 		}
 
+		// Comparing unicode keystrokes is important for a dead key.
 		inline bool operator==(UnicodeCommand& const rhs) const
 		{
 			if (inputCount != rhs.inputCount) return false;
@@ -242,6 +246,7 @@ namespace Multikeys
 		//		opened when this command is executed. This command does not close the executable.
 		// std::wstring arguments - arguments to be passed to executable; multiple arguments must be
 		//		separated by space
+		// In practice, the file does not need to be an .exe executable specifically.
 		ExecutableCommand(std::wstring filename, std::wstring arguments = std::wstring())
 			: BaseKeystrokeCommand(), filename(filename), arguments(arguments)
 		{}
@@ -269,15 +274,15 @@ namespace Multikeys
 		}
 
 		~ExecutableCommand() override
-		{
-			;
-		}
+		{ }
 
 	};
 
+	// Dead keys are pressed before the key it modifies
 	class DeadKeyCommand : public UnicodeCommand
 	{
 		// Inherits keystrokes, keystroke count and trigger on repeat from UnicodeCommand
+		// Those fields describe this dead key as a standalone
 	private:
 		// 0 : no next command
 		// 1 : unblocked command
@@ -293,6 +298,12 @@ namespace Multikeys
 		mutable BaseKeystrokeCommand * _nextCommand;
 		// mutable because this class's execute() is a const method that needs to modify it.
 
+		// If this command is being remembered as active, then the next keystroke will cause
+		// this method to be called.
+		// command - The next command pressed on the same keyboard, null if the key pressed
+		//		does not correspond to a remap.
+		// vKey - Virtual key code of the keystroke that generated this. Only for checking
+		//		special keys (esc, tab), and only present (non-zero) if command is null.
 		void _setNextCommand(BaseKeystrokeCommand*const command, const USHORT vKey)
 		{
 			if (command == nullptr)
@@ -318,9 +329,12 @@ namespace Multikeys
 
 				// It's a unicode (or dead key):
 				// compare its input sequence with the replacement list
+				// The map of replacements contains pointers, so using find() would actually
+				//		search by pointer. That doesn't work.
 				for (auto iterator = replacements.begin(); iterator != replacements.end(); iterator++)
 				{
 					// try to find the correct one (dereference pointers before comparing)
+					// The actual UnicodeCommand objects are different, so comparing pointers won't work.
 					if (*(iterator->first) == *((UnicodeCommand*)command))
 					{
 					// replace it
@@ -339,12 +353,12 @@ namespace Multikeys
 
 
 		// Replacements from Unicode codepoint sequence to Unicode outputs
-		std::map<UnicodeCommand*, UnicodeCommand*> replacements;
+		std::unordered_map<UnicodeCommand*, UnicodeCommand*> replacements;
 
 
 		// STL constructor
 		DeadKeyCommand(std::vector<unsigned int> * const independentCodepoints,
-			std::map<UnicodeCommand*, UnicodeCommand*> * const replacements)
+			std::unordered_map<UnicodeCommand*, UnicodeCommand*> * const replacements)
 			: UnicodeCommand(independentCodepoints, true),
 			replacements(*replacements) { }
 
@@ -364,17 +378,16 @@ namespace Multikeys
 			_nextCommand(nullptr), _nextCommandType(0)
 		{
 			for (unsigned int i = 0; i < replacements_count; i++) {
-				replacements.insert(
-					std::pair<UnicodeCommand*, UnicodeCommand*>(replacements_from[i], replacements_to[i])
-				);
+				replacements[replacements_from[i]] = replacements_to[i];
 			}
 		}	// end of constructor
 
 
 
-			// Call when next input is received, before using this dead key
-			// IkeystrokeOutput* const command - pointer to the command to be executed right after this key;
-			//		might be replaced if a match exists
+		// Call when next input is received. This object needs to know the next key, in order to decide
+		//		what action to take when execute() is called on it.
+		// IkeystrokeOutput* const command - pointer to the command to be executed right after this key;
+		//		might be replaced if a match exists.
 		void setNextCommand(BaseKeystrokeCommand*const command)
 		{
 			_setNextCommand(command, 0);
@@ -400,7 +413,7 @@ namespace Multikeys
 
 									// First, check for an edge case: If the next input is this one
 									// That means infinite recursion because there's only one instance
-									// of each given dead key
+									// of each given dead key (so every of its pointers will point there)
 			if (_nextCommand == (BaseKeystrokeCommand*)this)
 			{
 				// just send this key twice

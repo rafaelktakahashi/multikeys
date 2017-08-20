@@ -54,14 +54,27 @@ namespace Multikeys
 	public:
 		
 		// Classic C constructor
+		// name - name of this modifier, should be unique across different modifiers.
+		// scancodeCount - Number of different scancodes that are part of this composite modifier.
+		// scancodeArray - c-style array that contains all Scancodes that are part of this modifier.
+		//				the caller may free scancodeArray after this call.
 		CompositeModifier(std::wstring name, unsigned short scancodeCount, Scancode* scancodeArray) :
-			AbstractModifier(name), scanCount(scancodeCount), scanArray(scancodeArray)
-		{ }
+			AbstractModifier(name), scanCount(scancodeCount)
+		{
+			scanArray = new Scancode[scancodeCount];
+			for (size_t i = 0; i < scancodeCount; i++)
+			{
+				scanArray[i] = scancodeArray[i];
+			}
+		}
 
 		// STL constructor
+		// The caller may free scancodeVector afterwards or let it go out of scope.
 		CompositeModifier(std::wstring name, std::vector<Scancode> scancodeVector) :
-			AbstractModifier(name), scanCount(scancodeVector.size()), scanArray(scancodeVector.data())
-		{ }
+			AbstractModifier(name), scanCount(scancodeVector.size())
+		{
+			std::copy(scancodeVector.begin(), scancodeVector.end(), &scanArray[0]);
+		}
 
 		bool matches(Scancode sc) const override
 		{
@@ -153,7 +166,7 @@ namespace Multikeys
 				if (it->first->name.compare(name) == 0)
 				{
 					it->second = state;
-					return;
+					return true;
 				}
 			}
 			return false;

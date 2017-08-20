@@ -49,7 +49,7 @@ namespace Multikeys
 
 	// Parses a level element and places its data in a Level class;
 	// pLevel - (pointer to) level structure that will hold this node's data
-	bool ParseLevel(const PXmlElement lvlElement, OUT PLevel *const pLevel, ModifierStateMap *const pModifiers);
+	bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel, ModifierStateMap *const pModifiers);
 	bool ParseUnicode(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
 	bool ParseMacro(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
 	bool ParseExecutable(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
@@ -64,7 +64,7 @@ namespace Multikeys
 		}
 		catch (const xercesc::XMLException& e)
 		{
-			OutputDebugString(L"Error during initialization of Xerces: " + e.getMessage + L"\n");
+			// OutputDebugString(L"Error during initialization of Xerces: " + e.getMessage() + L"\n");
 			return false;
 		}
 
@@ -79,11 +79,11 @@ namespace Multikeys
 		// Load the xml file at filename and generate a tree
 		try
 		{
-			parser->parse(filename.c_str());
+			parser->parse(filename.c_str());	// xerces expects a wchar_t*, not wstring
 		}
 		catch (const xercesc::XMLException& e)
 		{
-			OutputDebugString(L"Error at Xerces, failed to parse file: " + e.getMessage + L"\n");
+			// OutputDebugString(L"Error at Xerces, failed to parse file: " + e.getMessage() + L"\n");
 			return false;
 		}
 
@@ -95,11 +95,15 @@ namespace Multikeys
 		PKeyboard* keyboards = nullptr;
 		unsigned int keyboardCount = 0;
 		ParseDocument(document, &keyboards, &keyboardCount);
-		if (keyboards == nullptr) return false;
+		if (keyboards == nullptr)
+		{
+			OutputDebugString(L"No keyboard found!");
+			return false;
+		}
 
 		// Set!
-		this->keyboards.clear();
-		this->keyboards.assign(keyboards, keyboards + keyboardCount);
+		this->keyboards.clear();		// Remember that this method is an implementation of Remapper::loadSettings()
+		this->keyboards.assign(keyboards, keyboards + keyboardCount);	// and thus "this" is the remapper
 
 		// At the very end
 		document->release();
@@ -111,7 +115,7 @@ namespace Multikeys
 		}
 		catch (xercesc::XMLException& e)
 		{
-			OutputDebugString(L"Xerces teardown error: " + e.getMessage + L"\n");
+			// OutputDebugString(L"Xerces teardown error: " + e.getMessage() + L"\n");
 			return false;
 		}
 
@@ -130,7 +134,10 @@ namespace Multikeys
 		// Get all children elements named "keyboard"
 		PXmlNodeList keyboardElements = document->getElementsByTagName(L"keyboard");
 
-		// keyboardArray is Keyboard***const :)
+		// keyboardArray is Keyboard***const
+		// first pointer is because it's an out parameter; where it points to is changed
+		// second pointer is an array
+		// third pointer is because the array contains pointers to Keyboard objects
 		*keyboardCount = keyboardElements->getLength();
 		*keyboardArray = new PKeyboard[*keyboardCount];
 		// At this point, *keyboardArray is array of PKeyboard,
@@ -170,7 +177,7 @@ namespace Multikeys
 		if (modifierElements->getLength() != 1)
 			return false;
 		PXmlNode modifierElement = modifierElements->item(0);
-		if (modifierElement->getNodeType != XmlNode::ELEMENT_NODE)
+		if (modifierElement->getNodeType() != XmlNode::ELEMENT_NODE)
 			return false;
 		// Get pointer to modifier state map
 		ModifierStateMap * ptrModStateMap;
@@ -185,7 +192,7 @@ namespace Multikeys
 		PXmlNodeList levelElements = kbElement->getElementsByTagName(L"level");
 
 		// Allocate memory for levels
-		PLevel* levelArray = new PLevel[levelElements->getLength()];
+		Level** levelArray = new Level*[levelElements->getLength()];
 
 		for (XMLSize_t i = 0; i < levelElements->getLength(); i++)
 		{
@@ -217,7 +224,7 @@ namespace Multikeys
 		for (XMLSize_t i = 0; i < modifierElements->getLength(); i++)
 		{
 			// for each element, place a pair in the multimap containing its name and value
-			if (modifierElements->item(i)->getNodeType != XmlNode::ELEMENT_NODE)
+			if (modifierElements->item(i)->getNodeType() != XmlNode::ELEMENT_NODE)
 				return false;		// there was a "modifier" that's not an element
 			PXmlElement thisElement = (PXmlElement)modifierElements->item(i);
 			// get name
@@ -247,6 +254,7 @@ namespace Multikeys
 
 		std::vector<PModifier> modVector;		// getting a list of modifiers
 		decltype(modMultimap.equal_range(L"")) range;	// range is of whatever type equal_range returns
+			// range will become an std::pair of unknown.
 		// range.second points to the first element that does not have a key of the specified parameter
 		for (auto it = modMultimap.begin(); it != modMultimap.end(); it = range.second)
 		{
@@ -278,7 +286,7 @@ namespace Multikeys
 					else					// Two byte scancode
 						scVector.push_back(Scancode(d->second >> 8, d->second & 0xff));
 				}
-				pModifier = new CompositeModifier(it->first, length, scVector.data());
+				pModifier = new CompositeModifier(it->first, scVector);
 			}
 
 			// add to the vector
@@ -296,7 +304,7 @@ namespace Multikeys
 	//		object (in which to write data), this method takes as argument a mutable modifier
 	//		state map (only its pointer is constant). This level reuses that state map to represent
 	//		which of those modifiers need to be on and which need to be off to trigger this level.
-	bool ParseLevel(const PXmlElement lvlElement, OUT PLevel *const pLevel, ModifierStateMap *const pModifiers)
+	bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel, ModifierStateMap *const pModifiers)
 	{
 		// Get a copy of the modifier state map
 		ModifierStateMap * ptrLevelModMap = new ModifierStateMap(*pModifiers);
@@ -308,7 +316,7 @@ namespace Multikeys
 			PXmlNode modifier = modifierList->item(i);
 			if (modifier->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
 				return false;		// there was a non-element "modifier"
-			std::wstring modifierName = std::wstring(modifier->getNodeValue);
+			std::wstring modifierName = std::wstring(modifier->getNodeValue());
 			ptrLevelModMap->setState(modifierName, true);
 		}
 
@@ -317,13 +325,13 @@ namespace Multikeys
 		std::vector<Scancode> allScancodes;
 		std::vector<PKeystrokeCommand> allCommands;
 
-		for (XMLSize_t i = 0; i < modifierList->getLength; i++)
+		for (XMLSize_t i = 0; i < modifierList->getLength(); i++)
 		{
 			PXmlNode child = allChildren->item(i);
 			if (child->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
 				continue;
 
-			std::wstring childTagName = std::wstring(child->getNodeName);
+			std::wstring childTagName = std::wstring(child->getNodeName());
 			PKeystrokeCommand commandPointer = nullptr;
 			
 			if (childTagName.compare(L"unicode") == 0)
@@ -476,7 +484,7 @@ namespace Multikeys
 		PXmlNodeList parameterElementList = rmpElement->getElementsByTagName(L"parameter");
 		if (parameterElementList->getLength() == 1)
 		{
-			if (parameterElementList->item(0)->getNodeType != XmlNode::NodeType::ELEMENT_NODE)
+			if (parameterElementList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
 				return false;
 			std::wstring parameter = parameterElementList->item(0)->getNodeValue();
 
@@ -524,12 +532,12 @@ namespace Multikeys
 	}
 	bool ParseReplacements(
 		const PXmlNodeList replList,
-		OUT std::map<UnicodeCommand*, UnicodeCommand*>* replacements)
+		OUT std::unordered_map<UnicodeCommand*, UnicodeCommand*>* replacements)	// <-should not be null
 	{
 		PXmlNodeList workList;
 		// Each node in replList is an element containing one <from> tag and a <to> tag.
 
-		*replacements = std::map<UnicodeCommand*, UnicodeCommand*>();
+		replacements->clear();
 		for (XMLSize_t i = 0; i < replList->getLength(); i++)
 		{
 			if (replList->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
@@ -553,7 +561,7 @@ namespace Multikeys
 			// make both Unicode commands, store them in the map
 			UnicodeCommand * pFromCommand = new UnicodeCommand(pFromCodepoints, true);
 			UnicodeCommand * pToCommand = new UnicodeCommand(pToCodepoints, true);
-			replacements->insert(pFromCommand, pToCommand);
+			(*replacements)[pFromCommand] = pToCommand;		// These UnicodeCommands don't die
 		}
 		// replacements have already been inserted
 		return true;
@@ -564,7 +572,7 @@ namespace Multikeys
 		std::vector<unsigned int> codepointVector;
 
 		// Map that contains all replacements this dead key can make
-		std::map<UnicodeCommand*, UnicodeCommand*> replacementsMap;
+		std::unordered_map<UnicodeCommand*, UnicodeCommand*> replacementsMap;
 
 		// Retrieve independent codepoints
 		PXmlNodeList workList;

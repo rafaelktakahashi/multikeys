@@ -31,24 +31,29 @@ namespace Multikeys
 		Scancode(BYTE makeCode) : Scancode(false, false, makeCode)
 		{}
 
-		inline bool operator==(Scancode& const rhs) const
-		{
-			return (
-				flgE0 != rhs.flgE0 ? false :
-				flgE1 != rhs.flgE1 ? false :
-				makeCode != rhs.makeCode
-				);
-		}
-		inline bool operator!=(Scancode& const rhs) const
-		{
-			return (
-				flgE0 == rhs.flgE0 ? false :
-				flgE1 == rhs.flgE1 ? false :
-				makeCode == rhs.makeCode
-				);
-		}
-
 	};
+
+	// operators
+	inline bool operator==(const Scancode& lhs, const Scancode& rhs)
+	{
+		return (
+			lhs.flgE0 != rhs.flgE0 ? false :
+			lhs.flgE1 != rhs.flgE1 ? false :
+			lhs.makeCode != rhs.makeCode
+			);
+	}
+	inline bool operator!=(const Scancode& lhs, const Scancode& rhs)
+	{
+		return (
+			lhs.flgE0 == rhs.flgE0 ? false :
+			lhs.flgE1 == rhs.flgE1 ? false :
+			lhs.makeCode == rhs.makeCode
+			);
+	}
+	inline bool operator<(const Scancode& lhs, const Scancode& rhs) { return lhs.makeCode < rhs.makeCode; }
+	inline bool operator>(const Scancode& lhs, const Scancode& rhs) { return lhs.makeCode > rhs.makeCode; }
+	inline bool operator<=(const Scancode& lhs, const Scancode& rhs) { return !operator>(lhs, rhs); }
+	inline bool operator>=(const Scancode& lhs, const Scancode& rhs) { return !operator<(lhs, rhs); }
 
 	// Scancode hasher so that it may be used in a hash map.
 	// It's okay to change. Maps are constructed every time a config file is read.

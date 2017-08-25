@@ -13,7 +13,7 @@ namespace Multikeys
 		{}
 	public:
 
-		// not strictly necessary, but convenient to have (for the remapper)
+		// This name should uniquely identify each modifier.
 		std::wstring name;
 
 		// Check if a given scancode triggers this modifier
@@ -99,9 +99,13 @@ namespace Multikeys
 	//		In a Level to represent the required modifiers to trigger it (const)
 	class ModifierStateMap
 	{
-	protected:
+	private:
 
+		// ordered map allows for easy iteration
+		// The boolean value of each modifier is true if the key is currently pressed.
 		std::map<PModifier, bool> modifiers;
+
+		
 
 	public:
 
@@ -117,33 +121,17 @@ namespace Multikeys
 			}
 		}
 
-		// All modifiers are set to not pressed down
-		ModifierStateMap(unsigned short modifierCount, PModifier* modifierArray)
-		{
-			for (unsigned short i = 0; i < modifierCount; i++)
-			{
-				modifiers.insert(std::pair<PModifier, bool>(modifierArray[i], false));
-			}
-		}
 		// STL constructor; sets all modifiers to unpressed
-		ModifierStateMap(std::vector<PModifier> modifiers)
-			: ModifierStateMap(modifiers.size(), modifiers.data()) { }
-
-		
-		// Constructor with states
-		ModifierStateMap(unsigned short modifierCount, PModifier* modifierArray, bool* states)
+		ModifierStateMap(const std::vector<PModifier>& modifiers)
 		{
-			// Could use an initializer list, but I don't know if that works for a map
-			for (unsigned short i = 0; i < modifierCount; i++)
-			{
-				modifiers.insert(std::pair<PModifier, bool>(modifierArray[i], states[i]));
-			}
+			for (size_t i = 0; i < modifiers.size(); i++)
+			{ this->modifiers.insert(std::pair<PModifier, bool>(modifiers[i], false)); }
 		}
-		// STL constructor with states (vector<bool> is not really STL and can't be used)
-		ModifierStateMap(std::vector<PModifier> modifiers, bool* states)
-			: ModifierStateMap(modifiers.size(), modifiers.data(), states) { }
+		
 
-		// This method should not be used by a level (not const)
+		// Receives a scancode, and a flag for keypress up or down.
+		// If sc is a modifier contained in this object, its state is updated and true is returned
+		// otherwise, false is returned.
 		bool updateState(Scancode sc, bool keyDown)
 		{
 			for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
@@ -157,7 +145,7 @@ namespace Multikeys
 			return false;
 		}
 
-		// (not const)
+		// Do we really need this function?
 		bool setState(std::wstring name, bool state)
 		{
 			// loop through this map; if a modifier with this name is found, update its state
@@ -171,6 +159,46 @@ namespace Multikeys
 			}
 			return false;
 		}
+
+		// Returns true if level is triggered by the current combination of modifiers in this object.
+		bool checkState(Level* const level) const
+		{
+			// 1. Every name present in modNames must be set to true in this->modifiers
+			// 2. Every name not present in modNames must be set to false in this->modifiers
+			// Satified those conditions, this method must return true
+			// Not satified those conditions, this method must return false.
+			size_t i = 0;
+			bool found = false;
+
+			// Loop through list of all modifiers
+			for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
+			{
+				// Determine whether or not this modifier is present in the Level's modifiers
+				// Look for it by name
+				for (i = 0, found = false; i < level->modifierCombination.size(); i++)
+				{
+					if (level->modifierCombination[i] == it->first->name)
+					{
+						found = true;
+						break;	// get out of for loop
+					}
+				}
+				// Presence in the Level's modifers must be equal to the modifier's current state
+				if (found != it->second)
+				{
+					return false;
+				}
+			}
+			// Looped and never returned false, then succeeded.
+			return true;
+		}
+
+		void resetAllModifiers()
+		{
+			for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
+				it->second = false;
+		}
+
 
 		inline bool operator==(const ModifierStateMap& rhs) const
 		{

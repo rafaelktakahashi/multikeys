@@ -49,7 +49,7 @@ namespace Multikeys
 
 	// Parses a level element and places its data in a Level class;
 	// pLevel - (pointer to) level structure that will hold this node's data
-	bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel, ModifierStateMap *const pModifiers);
+	bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel);
 	bool ParseUnicode(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
 	bool ParseMacro(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
 	bool ParseExecutable(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
@@ -184,7 +184,7 @@ namespace Multikeys
 		// Pass it to the function that will instantiate it
 		if ( !ParseModifier((PXmlElement)modifierElement, &ptrModStateMap) )
 			return false;
-		// modStateMap should now contain an instantiated a modifier state map.
+		// ptrModStateMap should now point to an instantiated modifier state map.
 		// We'll instantiate it after making all levels
 
 
@@ -200,7 +200,7 @@ namespace Multikeys
 				return false;	// there was a "level" that's not an element
 			PXmlElement levelElement = (PXmlElement)levelElements->item(i);
 
-			if ( !ParseLevel(levelElement, &(levelArray[i]), ptrModStateMap) )
+			if ( !ParseLevel(levelElement, &(levelArray[i])) )
 				return false;
 		}
 
@@ -293,21 +293,23 @@ namespace Multikeys
 			modVector.push_back(pModifier);
 		}
 
-		ModifierStateMap* modStateMap = new ModifierStateMap(modVector.size(), modVector.data());
+		*pModifiers =
+			new ModifierStateMap(modVector);
 
 		return true;
 	}
 
 
 
-	// Details - In addition to the node (from which to extract data) and a pointer to a level
-	//		object (in which to write data), this method takes as argument a mutable modifier
-	//		state map (only its pointer is constant). This level reuses that state map to represent
-	//		which of those modifiers need to be on and which need to be off to trigger this level.
-	bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel, ModifierStateMap *const pModifiers)
+	bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel)
 	{
 		// Get a copy of the modifier state map
-		ModifierStateMap * ptrLevelModMap = new ModifierStateMap(*pModifiers);
+		// ModifierStateMap * ptrLevelModMap = new ModifierStateMap(*pModifiers);
+		// no longer necessary to create a modifier state map
+
+		// This will contain the modifiers that are necessary to trigger this level,
+		// identified only by name.
+		std::vector<std::wstring> modifierCombination;
 
 		// Get all modifiers that are required to trigger this level
 		PXmlNodeList modifierList = lvlElement->getElementsByTagName(L"modifier");
@@ -317,13 +319,15 @@ namespace Multikeys
 			if (modifier->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
 				return false;		// there was a non-element "modifier"
 			std::wstring modifierName = std::wstring(modifier->getNodeValue());
-			ptrLevelModMap->setState(modifierName, true);
+			modifierCombination.push_back(modifierName);		// <- adds new modifier name to necessary modifiers
 		}
+
+		// At this point, modifierCombination contains the modifiers and will only go out of scope at
+		// the end of this function.
 
 		// Read all remaps
 		PXmlNodeList allChildren = lvlElement->getChildNodes();
-		std::vector<Scancode> allScancodes;
-		std::vector<PKeystrokeCommand> allCommands;
+		std::unordered_map<Scancode, PKeystrokeCommand> layout;
 
 		for (XMLSize_t i = 0; i < modifierList->getLength(); i++)
 		{
@@ -356,8 +360,6 @@ namespace Multikeys
 			}
 			else return false;
 			// commandPointer should contain a command now
-			allCommands.push_back(commandPointer);
-
 			std::wstring scancode = ((PXmlElement)child)->getAttribute(L"Scancode");
 			try
 			{
@@ -365,12 +367,12 @@ namespace Multikeys
 				if (iScancode <= 0xFF)
 				{
 					Scancode sc = Scancode(iScancode & 0xFF);
-					allScancodes.push_back(sc);
+					layout[sc] = commandPointer;
 				}
 				else
 				{
 					Scancode sc = Scancode(iScancode >> 8, iScancode & 0xFF);
-					allScancodes.push_back(sc);
+					layout[sc] = commandPointer;
 				}
 			}
 			catch (std::exception e)
@@ -378,10 +380,12 @@ namespace Multikeys
 				// handle errors
 				return false;
 			}
-			
+
+
 			*pLevel =
-				new Level(ptrLevelModMap, allCommands.size(), allScancodes.data(), allCommands.data());
-			// It's okay that these arrays die at the end of this function.
+				new Level(modifierCombination, layout);
+			// It's okay that these containers die at the end of this function.
+			// Level will copy them in its constructor.
 
 		}
 

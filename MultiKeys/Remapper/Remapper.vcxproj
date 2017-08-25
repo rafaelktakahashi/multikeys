@@ -138,6 +138,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="KeystrokeCommands.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="stdafx.cpp">

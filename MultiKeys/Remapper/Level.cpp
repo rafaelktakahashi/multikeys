@@ -5,42 +5,28 @@
 
 namespace Multikeys
 {
-	Level::Level(ModifierStateMap* modStates,
-		unsigned short remapsCount, Scancode* keys, PKeystrokeCommand* commands)
-		: ptrModifierStateMap(modStates)
-	{
-		for (unsigned short i = 0; i < remapsCount; i++)
-		{
-			this->layout.insert(
-				std::pair<Scancode, PKeystrokeCommand>(keys[i], commands[i])
-			);
-		}
-	}
+	Level::Level(const std::vector<std::wstring>& _modifierCombination,
+		const std::unordered_map<Scancode, PKeystrokeCommand>& _layout)
+		:	modifierCombination(_modifierCombination),
+			layout(_layout)
+	{ }
 
 	PKeystrokeCommand Level::getCommand(Scancode sc) const
 	{
-
-		if (layout.count(sc) == 0)
-		{
-			// not found
-			return nullptr;
-		}
-		else
-		{
-			// found
-			return layout.at(sc);
-		}
-	}
-
-	bool Level::triggersLevel(ModifierStateMap* modifierState) const
-	{
-		return ( *modifierState == *(this->ptrModifierStateMap) );
+		// Because maps do not allow duplicate keys,
+		// unordered_map::count actually returns either 0 or 1
+		// and is used to tell whether a key exists in the map.
+		return (
+			layout.count(sc) == 0 ?		// <- true if not found
+			nullptr :
+			layout.at(sc)
+			);
 	}
 
 	Level::~Level()
 	{
-		delete this->ptrModifierStateMap;
-
+		// Delete every command.
+		// No command appears in more than one level, or in more than one keyboard.
 		for (auto it = this->layout.begin(); it != this->layout.end(); it++)
 		{
 			delete it->second;

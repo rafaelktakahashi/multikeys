@@ -16,37 +16,30 @@ namespace Multikeys
 
 		// Map from scancodes to keystroke command pointers.
 		// No command pointer is ever deleted at runtime.
-		std::map<Scancode, PKeystrokeCommand> layout;
-
-		// Identifies the combination of modifiers that trigger this level.
-		ModifierStateMap *const ptrModifierStateMap;
-		// Const objects can only call const methods
-
-		// Update: This identifies the combination of modifiers that trigger this level,
-		// by name of the modifiers. Each modifier listed must be on,
-		// and every other must be off.
-		std::vector<std::wstring> modifierCombination;
+		const std::unordered_map<Scancode, PKeystrokeCommand> layout;
 
 	public:
 
-		// Constructor
-		// modStates - Pointer to a ModifierStateMap already initialized with the
-		//			proper modifiers; all modifiers must match that of the
-		//			keyboard that owns this level, in order.
-		//			The states in modStates will identify this level.
-		// remapsCount - the number of remaps registered in this level
-		// keys, commands - arrays of keys and command pointers, in the correct order,
-		//			representing the remaps. The caller may delete both arrays
-		//			afterwards.
-		Level(ModifierStateMap* modStates,
-			unsigned short remapsCount, Scancode* keys, PKeystrokeCommand* commands);
+		// This identifies the combination of modifiers that trigger this level,
+		// by name of the modifiers. Each modifier listed must be on,
+		// and every other must be off.
+		const std::vector<std::wstring> modifierCombination;
+
+		// Updated Constructor
+		// modifierCombination - vector of wstrings that contains the names of each
+		//		modifier that should be pressed down in order to activate this level.
+		//		Modifiers present in the parent keyboard, but not in this list, must
+		//		not be pressed in order to activate this level.
+		// layout - a hash map from scancode to its command. This object is used purely
+		//		for retrieval.
+		// The caller may delete either container, or let them go out of scope after calling this.
+		Level(const std::vector<std::wstring>& _modifierCombination,
+			const std::unordered_map<Scancode, PKeystrokeCommand>& _layout);
 
 		// Receives a scancode and returns the command mapped to it.
 		// If there is no such command, a null pointer is returned.
 		PKeystrokeCommand getCommand(Scancode sc) const;
 
-		// Check if a set of modifiers is equal to this level's.
-		bool triggersLevel(ModifierStateMap* modifierState) const;
 
 		
 

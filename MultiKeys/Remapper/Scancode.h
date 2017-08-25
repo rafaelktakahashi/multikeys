@@ -55,19 +55,20 @@ namespace Multikeys
 	inline bool operator<=(const Scancode& lhs, const Scancode& rhs) { return !operator>(lhs, rhs); }
 	inline bool operator>=(const Scancode& lhs, const Scancode& rhs) { return !operator<(lhs, rhs); }
 
-	// Scancode hasher so that it may be used in a hash map.
+}
+
+
+namespace std {
+	// Hash specialization for Scancode so that it may be used in a hash map (std::unordered_map).
 	// It's okay to change. Maps are constructed every time a config file is read.
-	struct ScancodeHasher
+	template<>
+	struct hash<Multikeys::Scancode>
 	{
-		std::size_t operator()(const Scancode& key) const
+		size_t operator()(const Multikeys::Scancode & x) const
 		{
-			using std::size_t;
-			using std::hash;
 			return (hash<unsigned short>()(
-				(key.makeCode) ^ (key.flgE0 << 8) ^ (key.flgE1 << 9)
+				(x.makeCode) ^ (x.flgE0 << 8) ^ (x.flgE1 << 9)
 				));
 		}
 	};
-	
-
 }

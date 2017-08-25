@@ -26,20 +26,20 @@ namespace Multikeys
 		// to no level.
 		Level* activeLevel;
 
-		// Pointer to a dead key waiting for the next character; null if no dead key is active.
+		// Pointer to a dead key waiting for the next character; null when no dead key is active.
 		DeadKeyCommand * activeDeadKey;
 
 		// Call this function to check for modifiers.
 		// If the key described by the parameters is a modifier, the internal state of
-		// this object is updated (as well as the active level), and TRUE is returned.
+		// this object is updated (as well as the active level), and true is returned.
 		// If the key is not a modifier, no changes to internal state are made, and
-		// FALSE is returned.
-		BOOL _updateKeyboardState(Scancode scancode, BYTE vKeyCode, BOOL flag_keyup);
+		// false is returned.
+		bool _updateKeyboardState(Scancode sc, bool flag_keyup);
 
 	public:
 
 		// Public name of this device; wide string in conformity with the Raw Input API.
-		std::wstring deviceName;
+		const std::wstring deviceName;
 
 		// Constructor
 		// levelCount - The number of levels this keyboard will contain
@@ -48,6 +48,12 @@ namespace Multikeys
 		//				ownership is transferred to this Keyboard object.
 		Keyboard(unsigned int levelCount, Level**const levels, ModifierStateMap* modifiers);
 		// : levels(levels, levels+levelCount)		<-- use in implementation
+		
+		// STL Constructor
+		// levels - Pointers to levels; may delete after calling this.
+		// modifers - structure of ModiferStateMap already initialized with Modifiers
+		//			ownership of pointer is transferred to this Keyboard object.
+		Keyboard(const std::vector<Level*>& levels, ModifierStateMap* modifiers);
 
 		// Receives information about a keypress, and returns true if the keystroke should
 		// be blocked.

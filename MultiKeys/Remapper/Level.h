@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 #include "Scancode.h"
-#include "Modifier.h"
 #include "KeystrokeCommands.h"
 
 namespace Multikeys
@@ -10,13 +9,13 @@ namespace Multikeys
 
 	// This class represents the remaps associated with a specific
 	// modifier combination.
-	typedef class Level
+	class Level
 	{
 	private:
 
 		// Map from scancodes to keystroke command pointers.
 		// No command pointer is ever deleted at runtime.
-		const std::unordered_map<Scancode, PKeystrokeCommand> layout;
+		const std::unordered_map<Scancode, BaseKeystrokeCommand*> layout;
 
 	public:
 
@@ -34,11 +33,11 @@ namespace Multikeys
 		//		for retrieval.
 		// The caller may delete either container, or let them go out of scope after calling this.
 		Level(const std::vector<std::wstring>& _modifierCombination,
-			const std::unordered_map<Scancode, PKeystrokeCommand>& _layout);
+			const std::unordered_map<Scancode, BaseKeystrokeCommand*>& _layout);
 
 		// Receives a scancode and returns the command mapped to it.
 		// If there is no such command, a null pointer is returned.
-		PKeystrokeCommand getCommand(Scancode sc) const;
+		BaseKeystrokeCommand* getCommand(Scancode sc) const;
 
 
 		

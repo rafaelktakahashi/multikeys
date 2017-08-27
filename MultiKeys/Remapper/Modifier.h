@@ -2,10 +2,14 @@
 
 #include "stdafx.h"
 #include "Scancode.h"
+#include "Level.h"
 
 namespace Multikeys
 {
 	// Abstract class
+	//
+	// Splitting modifiers into either simple or composite
+	// is particular to this implementation.
 	typedef class AbstractModifier
 	{
 	protected:
@@ -50,30 +54,19 @@ namespace Multikeys
 	{
 	protected:
 		Scancode* scanArray;
-		unsigned short scanCount;
+		size_t scanCount;
 	public:
 		
-		// Classic C constructor
-		// name - name of this modifier, should be unique across different modifiers.
-		// scancodeCount - Number of different scancodes that are part of this composite modifier.
-		// scancodeArray - c-style array that contains all Scancodes that are part of this modifier.
-		//				the caller may free scancodeArray after this call.
-		CompositeModifier(std::wstring name, unsigned short scancodeCount, Scancode* scancodeArray) :
-			AbstractModifier(name), scanCount(scancodeCount)
-		{
-			scanArray = new Scancode[scancodeCount];
-			for (size_t i = 0; i < scancodeCount; i++)
-			{
-				scanArray[i] = scancodeArray[i];
-			}
-		}
-
 		// STL constructor
 		// The caller may free scancodeVector afterwards or let it go out of scope.
 		CompositeModifier(std::wstring name, std::vector<Scancode> scancodeVector) :
 			AbstractModifier(name), scanCount(scancodeVector.size())
 		{
-			std::copy(scancodeVector.begin(), scancodeVector.end(), &scanArray[0]);
+			scanArray = new Scancode[scancodeVector.size()];
+			for (size_t i = 0; i < scancodeVector.size(); i++)
+			{
+				scanArray[i] = scancodeVector[i];
+			}
 		}
 
 		bool matches(Scancode sc) const override
@@ -139,21 +132,6 @@ namespace Multikeys
 				if (it->first->matches(sc))
 				{
 					it->second = keyDown;
-					return true;
-				}
-			}
-			return false;
-		}
-
-		// Do we really need this function?
-		bool setState(std::wstring name, bool state)
-		{
-			// loop through this map; if a modifier with this name is found, update its state
-			for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
-			{
-				if (it->first->name.compare(name) == 0)
-				{
-					it->second = state;
 					return true;
 				}
 			}

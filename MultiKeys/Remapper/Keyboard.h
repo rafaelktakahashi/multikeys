@@ -6,7 +6,7 @@
 
 namespace Multikeys
 {
-	typedef class Keyboard
+	class Keyboard
 	{
 	private:
 
@@ -16,7 +16,7 @@ namespace Multikeys
 
 		// Initialize in constructor - keep an empty command in memory, since it's
 		// frequently returned.
-		IKeystrokeCommand* noAction;
+		BaseKeystrokeCommand* noAction;
 
 		// All levels belonging to this keyboard's layout
 		const std::vector<Level*> levels;
@@ -41,15 +41,7 @@ namespace Multikeys
 		// Public name of this device; wide string in conformity with the Raw Input API.
 		const std::wstring deviceName;
 
-		// Constructor
-		// levelCount - The number of levels this keyboard will contain
-		// levels - array of Level pointers. May delete after calling this.
-		// modifiers - structure of ModifierStateMap already filled with Modifiers
-		//				ownership is transferred to this Keyboard object.
-		Keyboard(unsigned int levelCount, Level**const levels, ModifierStateMap* modifiers);
-		// : levels(levels, levels+levelCount)		<-- use in implementation
 		
-		// STL Constructor
 		// levels - Pointers to levels; may delete after calling this.
 		// modifers - structure of ModiferStateMap already initialized with Modifiers
 		//			ownership of pointer is transferred to this Keyboard object.
@@ -72,5 +64,5 @@ namespace Multikeys
 		// Destructor
 		~Keyboard();
 
-	} *PKeyboard;
+	};
 }

@@ -60,7 +60,7 @@ namespace Multikeys
 
 		virtual KeystrokeOutputType getType() const = 0;
 
-		virtual BOOL execute(BOOL keyup, BOOL repeated) const override = 0;
+		virtual bool execute(bool keyup, bool repeated) const override = 0;
 
 		virtual ~BaseKeystrokeCommand() override = 0;
 	};
@@ -76,8 +76,8 @@ namespace Multikeys
 	protected:
 
 		INPUT * keystrokes;
-		USHORT inputCount;
-		BOOL triggerOnRepeat;
+		size_t inputCount;
+		bool triggerOnRepeat;
 
 	public:
 
@@ -91,9 +91,9 @@ namespace Multikeys
 		//		sent (1 byte value), and also the high bit (most significant) set in case of a keyup. Every keypress
 		//		in this array will be sent in order of execution.
 		// USHORT _inputCount - number of elements in keypressSequence
-		// BOOL _triggerOnRepeat - true if this command should be triggered multiple times if user
+		// bool _triggerOnRepeat - true if this command should be triggered multiple times if user
 		//		holds down the key
-		MacroCommand(const unsigned short *const keypressSequence, const USHORT _inputCount, const BOOL _triggerOnRepeat)
+		MacroCommand(const unsigned short *const keypressSequence, const size_t _inputCount, const bool _triggerOnRepeat)
 			: BaseKeystrokeCommand(), inputCount(_inputCount), triggerOnRepeat(_triggerOnRepeat)
 		{
 			if (keypressSequence == nullptr)
@@ -101,7 +101,7 @@ namespace Multikeys
 
 			keystrokes = new INPUT[_inputCount];
 
-			BOOL keyup = 0;
+			bool keyup = 0;
 			USHORT virtualKeyCode = 0;
 			for (unsigned int i = 0; i < _inputCount; i++)
 			{
@@ -120,7 +120,7 @@ namespace Multikeys
 			return KeystrokeOutputType::MacroCommand;
 		}
 
-		BOOL execute(BOOL keyup, BOOL repeated) const override
+		bool execute(bool keyup, bool repeated) const override
 		{
 			if (keyup)
 				return TRUE;
@@ -142,15 +142,54 @@ namespace Multikeys
 	protected:
 
 		INPUT * keystrokes;
-		USHORT inputCount;
-		BOOL triggerOnRepeat;
+		size_t inputCount;
+		bool triggerOnRepeat;
 
 	public:
 
 		// STL constructor
+		// TODO: Take object by reference instead
 		UnicodeCommand(std::vector<unsigned int> * const codepoints, const bool triggerOnRepeat)
 		{
 			UnicodeCommand(codepoints->data(), codepoints->size(), triggerOnRepeat);
+		}
+
+		// Constructor
+		// The caller may let this container go out of scope.
+		UnicodeCommand(const std::vector<unsigned int>& codepoints, const bool triggerOnRepeat)
+		{
+			inputCount = codepoints.size();
+			for (size_t i = 0; i < codepoints.size(); i++)
+			{
+				if (codepoints[i] > 0xffff)
+					inputCount++;		// <- correct the amount of inputs
+			}
+			keystrokes = new INPUT[inputCount];
+
+			size_t currentIndex = 0;
+			for (size_t i = 0; i < inputCount; i++)
+			{
+				if (codepoints[i] <= 0xffff)
+				{
+					// one UTF-16 code value, one simulated keypress
+					keystrokes[currentIndex] = INPUT(unicodePrototype);
+					keystrokes[currentIndex].ki.wScan = codepoints[i];
+					currentIndex++;
+					continue;
+				}
+				else
+				{
+					// one UTF-16 surrogate pair, two simulated keypresses
+					WORD highSurrogate = 0xd800 + ((codepoints[i] - 0x10000) >> 10);
+					WORD lowSurrogate = 0xdc00 + (codepoints[i] & 0x3ff);
+					keystrokes[currentIndex] = INPUT(unicodePrototype);
+					keystrokes[currentIndex + 1] = INPUT(unicodePrototype);
+					keystrokes[currentIndex].ki.wScan = highSurrogate;
+					keystrokes[currentIndex + 1].ki.wScan = lowSurrogate;
+					currentIndex += 2;
+					continue;
+				}
+			}
 		}
 
 		// UINT codepoints - array of UINTs, each containing a single Unicode code point
@@ -158,9 +197,9 @@ namespace Multikeys
 		//		be sent in order on execution.
 		//		This array may be deleted after this function is called.
 		// UINT _inputCount - number of elements in codepoints
-		// BOOL _triggerOnRepeat - true if this command should be triggered multiple times if user
+		// bool _triggerOnRepeat - true if this command should be triggered multiple times if user
 		//		holds down the key
-		UnicodeCommand(const UINT * const codepoints, const UINT _inputCount, const BOOL _triggerOnRepeat)
+		UnicodeCommand(const UINT * const codepoints, const UINT _inputCount, const bool _triggerOnRepeat)
 			: BaseKeystrokeCommand(), inputCount(_inputCount), triggerOnRepeat(_triggerOnRepeat)
 		{
 			if (codepoints == nullptr) return;
@@ -204,7 +243,7 @@ namespace Multikeys
 			return KeystrokeOutputType::UnicodeCommand;
 		}
 
-		BOOL execute(BOOL keyup, BOOL repeated) const override
+		bool execute(bool keyup, bool repeated) const override
 		{
 			if (keyup)	// Unicode keystrokes do not activate on release
 				return TRUE;
@@ -214,12 +253,12 @@ namespace Multikeys
 		}
 
 		// Comparing unicode keystrokes is important for a dead key.
-		inline bool operator==(UnicodeCommand& const rhs) const
+		inline bool operator==(const UnicodeCommand& rhs) const
 		{
 			if (inputCount != rhs.inputCount) return false;
 			// One by one, compare the keystroke inputs by codepoint.
 			// We trust that the rest of each INPUT structure is the same
-			for (int i = 0; i < inputCount; i++)
+			for (size_t i = 0; i < inputCount; i++)
 				if (this->keystrokes[i].ki.wScan != rhs.keystrokes[i].ki.wScan)
 					return false;
 			return true;
@@ -257,7 +296,7 @@ namespace Multikeys
 			return KeystrokeOutputType::ScriptCommand;
 		}
 
-		BOOL execute(BOOL keyup, BOOL repeated) const override
+		bool execute(bool keyup, bool repeated) const override
 		{
 			if (repeated || keyup) return TRUE;
 
@@ -335,7 +374,7 @@ namespace Multikeys
 				{
 					// try to find the correct one (dereference pointers before comparing)
 					// The actual UnicodeCommand objects are different, so comparing pointers won't work.
-					if (*(iterator->first) == *((UnicodeCommand*)command))
+					if (*(iterator->first) == *(dynamic_cast<UnicodeCommand*>(command)))
 					{
 					// replace it
 					_nextCommand = iterator->second;
@@ -407,7 +446,7 @@ namespace Multikeys
 		}
 
 
-		BOOL execute(BOOL keyup, BOOL repeated = FALSE) const override
+		bool execute(bool keyup, bool repeated = FALSE) const override
 		{
 			if (keyup) return TRUE;	// because unicode keyups do nothing
 
@@ -459,7 +498,7 @@ namespace Multikeys
 
 		EmptyCommand() : BaseKeystrokeCommand() {}
 		KeystrokeOutputType getType() const override { return KeystrokeOutputType::EmptyCommand; }
-		BOOL execute(BOOL keyup, BOOL repeated = FALSE) const override { return TRUE; }
+		bool execute(bool keyup, bool repeated = FALSE) const override { return TRUE; }
 		~EmptyCommand() override {}
 	};
 

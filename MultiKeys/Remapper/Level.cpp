@@ -6,12 +6,12 @@
 namespace Multikeys
 {
 	Level::Level(const std::vector<std::wstring>& _modifierCombination,
-		const std::unordered_map<Scancode, PKeystrokeCommand>& _layout)
+		const std::unordered_map<Scancode, BaseKeystrokeCommand*>& _layout)
 		:	modifierCombination(_modifierCombination),
 			layout(_layout)
 	{ }
 
-	PKeystrokeCommand Level::getCommand(Scancode sc) const
+	BaseKeystrokeCommand* Level::getCommand(Scancode sc) const
 	{
 		// Because maps do not allow duplicate keys,
 		// unordered_map::count actually returns either 0 or 1

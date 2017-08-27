@@ -14,7 +14,7 @@ namespace Multikeys
 	public:
 
 		// Simulate the keytroke sequence that this object represents
-		virtual BOOL execute(BOOL keyup, BOOL repeated) const = 0;
+		virtual bool execute(bool keyup, bool repeated) const = 0;
 
 		// Virtual destructor
 		virtual ~IKeystrokeCommand() = 0;

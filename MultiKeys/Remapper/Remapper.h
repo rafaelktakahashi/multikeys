@@ -15,7 +15,7 @@ namespace Multikeys
 	private:
 
 		mutable Scancode workScancode;
-		std::vector<PKeyboard> keyboards;
+		std::vector<Keyboard*> keyboards;
 
 	public:
 		Remapper()
@@ -27,7 +27,7 @@ namespace Multikeys
 
 		bool evaluateKey(
 			RAWKEYBOARD* const keypressed,
-			WCHAR* const deviceName,
+			wchar_t* const deviceName,
 			OUT PKeystrokeCommand* const out_action) const override
 		{
 			// Check each keyboard until name matches,
@@ -38,10 +38,10 @@ namespace Multikeys
 			{
 				if ( wcscmp(deviceName, (*it)->deviceName.c_str()) )
 				{
-					this->workScancode.flgE0 = (keypressed->Flags & RI_KEY_E0) & RI_KEY_E0;
-					this->workScancode.flgE1 = (keypressed->Flags & RI_KEY_E1) & RI_KEY_E1;
-					this->workScancode.makeCode = keypressed->MakeCode;
-					return ((*it)->evaluateKey(this->workScancode, keypressed->VKey,
+					this->workScancode.flgE0 = keypressed->Flags & RI_KEY_E0;
+					this->workScancode.flgE1 = keypressed->Flags & RI_KEY_E1;
+					this->workScancode.makeCode = keypressed->MakeCode & 0xff;
+					return ((*it)->evaluateKey(this->workScancode, keypressed->VKey & 0xff,
 						(keypressed->Flags & RI_KEY_BREAK) == RI_KEY_BREAK, out_action)
 						);
 				}
@@ -56,8 +56,8 @@ namespace Multikeys
 				it != keyboards.end();
 				it++)
 			{
-				// Dereference iterator to get a PKeyboard
-				// Delete PKeyboard (which is a Keyboard pointer)
+				// Dereference iterator to get a Keyboard*
+				// Delete Keyboard*
 				delete (*it);
 			}
 		}

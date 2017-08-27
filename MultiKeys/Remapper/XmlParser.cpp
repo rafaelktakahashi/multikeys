@@ -16,7 +16,7 @@
 // implementation of readSettings in Remapper class
 
 
-// Typedefs
+// Typedefs for ease of use
 typedef xercesc::XercesDOMParser	XercesDOMParser, *PXercesDOMParser;
 typedef xercesc::XMLString			XmlString, *PXmlString;
 typedef xercesc::DOMDocument		XmlDocument, *PXmlDocument;
@@ -34,15 +34,15 @@ namespace Multikeys
 
 	// Parses an entire document node and extracts an array of keyboards from it.
 	// PXmlDocument document - node representing the entire document to be parsed
-	// keyboardArray - array of PKeyboard (Keyboard pointers) that will contain the final result
+	// keyboardArray - array of Keyboard* (Keyboard pointers) that will contain the final result
 	// keyboardCount - will contain the amount of keyboards read (length of keyboard array)
 	bool ParseDocument(const PXmlDocument document,
-		OUT PKeyboard **const keyboardArray,
+		OUT Keyboard* **const keyboardArray,
 		OUT unsigned int *const keyboardCount);
 
 	// Parses a keyboard element and places its data in a Keyboard class;
-	// pKeyboard - (pointer to) keyboard structure that will hold this node's data.
-	bool ParseKeyboard(const PXmlElement kbElement, OUT PKeyboard *const pKeyboard);
+	// Keyboard* - (pointer to) keyboard structure that will hold this node's data.
+	bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard);
 
 	// Receives a keyboard element, and instantiates a modifier state map with its remap in it
 	bool ParseModifier(const PXmlElement modElement, OUT ModifierStateMap* *const pModifiers);
@@ -50,10 +50,10 @@ namespace Multikeys
 	// Parses a level element and places its data in a Level class;
 	// pLevel - (pointer to) level structure that will hold this node's data
 	bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel);
-	bool ParseUnicode(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
-	bool ParseMacro(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
-	bool ParseExecutable(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
-	bool ParseDeadKey(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand);
+	bool ParseUnicode(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
+	bool ParseMacro(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
+	bool ParseExecutable(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
+	bool ParseDeadKey(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
 
 
 	bool Remapper::loadSettings(const std::wstring filename)
@@ -62,7 +62,7 @@ namespace Multikeys
 		{
 			xercesc::XMLPlatformUtils::Initialize();
 		}
-		catch (const xercesc::XMLException& e)
+		catch (const xercesc::XMLException&)
 		{
 			// OutputDebugString(L"Error during initialization of Xerces: " + e.getMessage() + L"\n");
 			return false;
@@ -81,7 +81,7 @@ namespace Multikeys
 		{
 			parser->parse(filename.c_str());	// xerces expects a wchar_t*, not wstring
 		}
-		catch (const xercesc::XMLException& e)
+		catch (const xercesc::XMLException&)
 		{
 			// OutputDebugString(L"Error at Xerces, failed to parse file: " + e.getMessage() + L"\n");
 			return false;
@@ -92,7 +92,7 @@ namespace Multikeys
 		PXmlDocument document = parser->getDocument();	// Root of the document to be parsed
 
 		// Actually loading stuff into this parser's list of keyboards is delegated into another function:
-		PKeyboard* keyboards = nullptr;
+		Keyboard** keyboards = nullptr;
 		unsigned int keyboardCount = 0;
 		ParseDocument(document, &keyboards, &keyboardCount);
 		if (keyboards == nullptr)
@@ -113,7 +113,7 @@ namespace Multikeys
 		{
 			xercesc::XMLPlatformUtils::Terminate();
 		}
-		catch (xercesc::XMLException& e)
+		catch (xercesc::XMLException&)
 		{
 			// OutputDebugString(L"Xerces teardown error: " + e.getMessage() + L"\n");
 			return false;
@@ -125,7 +125,7 @@ namespace Multikeys
 
 
 	bool ParseDocument(const PXmlDocument document,
-		OUT PKeyboard **const keyboardArray,
+		OUT Keyboard* **const keyboardArray,
 		OUT unsigned int *const keyboardCount)
 	{
 		// Get root element
@@ -139,9 +139,9 @@ namespace Multikeys
 		// second pointer is an array
 		// third pointer is because the array contains pointers to Keyboard objects
 		*keyboardCount = keyboardElements->getLength();
-		*keyboardArray = new PKeyboard[*keyboardCount];
-		// At this point, *keyboardArray is array of PKeyboard,
-		//		but each PKeyboard is itself an uninitialized pointer.
+		*keyboardArray = new Keyboard*[*keyboardCount];
+		// At this point, *keyboardArray is array of Keyboard*,
+		//		but each Keyboard* is itself an uninitialized pointer.
 
 		for (XMLSize_t i = 0; i < keyboardElements->getLength(); i++)
 		{
@@ -151,11 +151,11 @@ namespace Multikeys
 				return false;
 			PXmlElement keyboardElement = (PXmlElement)keyboardElements->item(i);
 
-			// 1. keyboardArray is a pointer to an array of PKeyboards (PKeyboard **const)
-			// 2. *keyboardArray is the array of PKeyboards, already allocated
-			// 3. (*keyboardArray)[i] is one PKeyboard in that array, at position i
-			// 4. &((*keyboardArray)[i]) is a reference to a PKeyboard at position i
-			// 5. After this call, (*keyboardArray)[i] will be a PKeyboard pointing to
+			// 1. keyboardArray is a pointer to an array of Keyboard*s (Keyboard* **const)
+			// 2. *keyboardArray is the array of Keyboard*s, already allocated
+			// 3. (*keyboardArray)[i] is one Keyboard* in that array, at position i
+			// 4. &((*keyboardArray)[i]) is a reference to a Keyboard* at position i
+			// 5. After this call, (*keyboardArray)[i] will be a Keyboard* pointing to
 			//			an instantiated Keyboard structure.
 			if ( !ParseKeyboard(keyboardElement, &((*keyboardArray)[i])) )
 				return false;
@@ -165,9 +165,8 @@ namespace Multikeys
 	}
 
 
-	bool ParseKeyboard(const PXmlElement kbElement, OUT PKeyboard *const pKeyboard)
+	bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard)
 	{
-
 		// Get name
 		const wchar_t* keyboardName = kbElement->getAttribute(L"Name");
 		// Keyboards also have an alias attribute, but that's for the UI
@@ -192,7 +191,7 @@ namespace Multikeys
 		PXmlNodeList levelElements = kbElement->getElementsByTagName(L"level");
 
 		// Allocate memory for levels
-		Level** levelArray = new Level*[levelElements->getLength()];
+		std::vector<Level*> levelVector;
 
 		for (XMLSize_t i = 0; i < levelElements->getLength(); i++)
 		{
@@ -200,13 +199,19 @@ namespace Multikeys
 				return false;	// there was a "level" that's not an element
 			PXmlElement levelElement = (PXmlElement)levelElements->item(i);
 
-			if ( !ParseLevel(levelElement, &(levelArray[i])) )
+			// Declare a pointer to level
+			Level* pLevel;
+			// This call will place an actual instance there
+			if ( !ParseLevel(levelElement, &pLevel) )
 				return false;
+			// Add the new instance into the vector
+			levelVector.push_back(pLevel);
+			// The pointer dies, but not the object.
 		}
 
 		// levelArray is ready, and so is the modifier state map
 		*pKeyboard =
-			new Keyboard(levelElements->getLength(), levelArray, ptrModStateMap);
+			new Keyboard(levelVector, ptrModStateMap);
 
 		return true;
 	}
@@ -301,7 +306,7 @@ namespace Multikeys
 
 
 
-	bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel)
+	bool ParseLevel(const PXmlElement lvlElement, OUT Level** const pLevel)
 	{
 		// Get a copy of the modifier state map
 		// ModifierStateMap * ptrLevelModMap = new ModifierStateMap(*pModifiers);
@@ -327,7 +332,7 @@ namespace Multikeys
 
 		// Read all remaps
 		PXmlNodeList allChildren = lvlElement->getChildNodes();
-		std::unordered_map<Scancode, PKeystrokeCommand> layout;
+		std::unordered_map<Scancode, BaseKeystrokeCommand*> layout;
 
 		for (XMLSize_t i = 0; i < modifierList->getLength(); i++)
 		{
@@ -336,7 +341,7 @@ namespace Multikeys
 				continue;
 
 			std::wstring childTagName = std::wstring(child->getNodeName());
-			PKeystrokeCommand commandPointer = nullptr;
+			BaseKeystrokeCommand* commandPointer = nullptr;
 			
 			if (childTagName.compare(L"unicode") == 0)
 			{
@@ -396,7 +401,7 @@ namespace Multikeys
 
 
 
-	bool ParseUnicode(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand)
+	bool ParseUnicode(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
 	{
 		// retrieve trigger on repeat attribute
 		bool triggerOnRepeat =
@@ -431,7 +436,7 @@ namespace Multikeys
 
 	}
 
-	bool ParseMacro(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand)
+	bool ParseMacro(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
 	{
 		// retrieve trigger on repeat attribute
 		bool triggerOnRepeat =
@@ -475,7 +480,7 @@ namespace Multikeys
 		return true;
 	}
 
-	bool ParseExecutable(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand)
+	bool ParseExecutable(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
 	{
 		// One "path" element, one "parameter" element
 		PXmlNodeList pathElementList = rmpElement->getElementsByTagName(L"path");
@@ -551,26 +556,26 @@ namespace Multikeys
 			// Put them in their own UnicodeCommands
 			PXmlElement replacementNode = (PXmlElement)replList->item(i);
 			// From
-			std::vector<unsigned int>* pFromCodepoints;
+			std::vector<unsigned int> pFromCodepoints;
 			workList = replacementNode->getElementsByTagName(L"from");
 			if (workList->getLength() != 1) return false;
 			if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
-			if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), pFromCodepoints)) return false;
+			if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &pFromCodepoints)) return false;
 			// To
-			std::vector<unsigned int>* pToCodepoints;
+			std::vector<unsigned int> pToCodepoints;
 			workList = replacementNode->getElementsByTagName(L"to");
 			if (workList->getLength() != 1) return false;
 			if (workList->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
-			if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), pToCodepoints)) return false;
+			if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &pToCodepoints)) return false;
 			// make both Unicode commands, store them in the map
-			UnicodeCommand * pFromCommand = new UnicodeCommand(pFromCodepoints, true);
-			UnicodeCommand * pToCommand = new UnicodeCommand(pToCodepoints, true);
+			UnicodeCommand * pFromCommand = new UnicodeCommand(&pFromCodepoints, true);
+			UnicodeCommand * pToCommand = new UnicodeCommand(&pToCodepoints, true);
 			(*replacements)[pFromCommand] = pToCommand;		// These UnicodeCommands don't die
 		}
 		// replacements have already been inserted
 		return true;
 	}
-	bool ParseDeadKey(const PXmlElement rmpElement, OUT PKeystrokeCommand *const pCommand)
+	bool ParseDeadKey(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
 	{
 		// Unicode characters that represent this key independently
 		std::vector<unsigned int> codepointVector;

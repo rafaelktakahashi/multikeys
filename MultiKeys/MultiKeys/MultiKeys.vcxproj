@@ -19,10 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
+    <CVProjectVersion>15.0</CVProjectVersion>
     <ProjectGuid>{8685DBE5-5BDD-4B90-A730-29B7B4E62739}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MultiKeys</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>Multikeys</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

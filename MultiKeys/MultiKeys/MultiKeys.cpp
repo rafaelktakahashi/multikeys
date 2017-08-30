@@ -7,7 +7,8 @@
 
 #include "stdafx.h"
 #include "MultiKeys.h"
-#include "Remaps.h"
+#include "../Remapper/RemapperAPI.h"
+#include "Scancodes.h"
 #include "KeyboardHook.h"
 
 
@@ -40,7 +41,8 @@ WCHAR * keyboardNameBuffer = new WCHAR[keyboardNameBufferSize];
 RAWINPUT * raw;
 
 // Remapper
-Multikeys::Remapper remapper = Multikeys::Remapper();
+Multikeys::PRemapper remapper;	// PRemapper is a pointer type
+								// Must be initialized
 
 // text to display on screen for debugging
 WCHAR* debugText = new WCHAR[DEBUG_TEXT_SIZE];
@@ -90,23 +92,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LPWSTR * szArgList;			// to hold arguments (0: name of exe, 1: path to config file)
 	int argCount;
 	szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount);
+
+	Multikeys::Create(&remapper);
+
 	if (szArgList == NULL)
 	{					// Eventually we'll have to make these fail cases just fail.
 		OutputDebugString(L"No arguments found. Initializing with default file");
-		remapper.ParseSettings(L"C:\\MultiKeys\\MultiKeys.xml");
+		remapper->loadSettings(L"C:\\MultiKeys\\MultiKeys.xml");
 	}
 	else if (argCount != 2)
 	{
 		OutputDebugString(L"Incorrect number of arguments. Initializing with default file");
-		remapper.ParseSettings(L"C:\\MultiKeys\\MultiKeys.xml");
+		remapper->loadSettings(L"C:\\MultiKeys\\MultiKeys.xml");
 	}
 	else
 	{
 		// try this
-		if (!remapper.ParseSettings(std::wstring(szArgList[1])))
+		if (!remapper->loadSettings(std::wstring(szArgList[1])))
 		{
 			OutputDebugString(L"Failed to open file. Initializing with default file");
-			remapper.ParseSettings(L"C:\\MultiKeys\\MultiKeys.xml");
+			remapper->loadSettings(L"C:\\MultiKeys\\MultiKeys.xml");
 		}
 	}
 
@@ -314,7 +319,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Instead of storing the decision for this keystroke, store the decision for both a
 			// left shift and a right shift, since we don't know which one produced this message
 			OutputDebugString(L"Raw Input: Fake shift detected, storing two shift decisions.\n");
-			IKeystrokeCommand * possibleAction;
+			Multikeys::PKeystrokeCommand possibleAction;
 
 			// keyup and keydown is wrong
 			if (raw->data.keyboard.Flags & RI_KEY_BREAK)
@@ -323,12 +328,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			// pretend this is a left shift
 			raw->data.keyboard.MakeCode = 0x2a;
-			BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
+			bool DoBlock = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);
 			decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
 
 			// pretend this is a right shift
 			raw->data.keyboard.MakeCode = 0x36;
-			DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
+			DoBlock = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 			decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
 
 			return 0;
@@ -352,8 +357,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Store that decision in the decisionBuffer; look for it when the hook asks.
 
 		// Check whether to block this key, and store the decision for when the hook asks for it
-		IKeystrokeCommand * possibleAction = nullptr;		// <- we don't know yet is our key maps to anything
-		BOOL DoBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
+		Multikeys::PKeystrokeCommand possibleAction = nullptr;		// <- we don't know yet is our key maps to anything
+		BOOL DoBlock = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 
 	#if DEBUG
 		if (DoBlock)
@@ -500,7 +505,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					// Now, if the decision was to block the hook, we must act on it at this point, just before popping it
 					if (iterator->decision) {
 
-						if (iterator->mappedAction->simulate(!keyPressed, previousStateFlagWasDown && keyPressed) == FALSE) {
+						if (!iterator->mappedAction->execute(!keyPressed, previousStateFlagWasDown && keyPressed)) {
 						#if DEBUG
 							OutputDebugString(L"Simulation failed!!\n");
 						#endif
@@ -651,8 +656,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				// Turns out this raw input message wasn't the one we were looking for.
 				// Put it in the queue just like we did in the WM_INPUT case, and keep waiting.
-				IKeystrokeCommand * possibleInput;
-				BOOL doBlock = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleInput);
+				Multikeys::PKeystrokeCommand possibleInput;
+				BOOL doBlock = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleInput);
 				decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleInput, doBlock));
 
 
@@ -700,12 +705,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				recordFound = TRUE;		// This will get us out of the loop.
 										// (the other way to exit the loop is by timing out)
 				// But we still didn't evaluate the raw message (it just arrived!)
-				IKeystrokeCommand * possibleOutput;
-				blockThisHook = remapper.EvaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleOutput);
+				Multikeys::PKeystrokeCommand possibleOutput;
+				blockThisHook = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleOutput);
 				// Immediately act on the input if there is one, since this decision won't be stored in the buffer
 				if (blockThisHook) {
 
-					if (!possibleOutput->simulate(!keyPressed, previousStateFlagWasDown && keyPressed)) {
+					if (!possibleOutput->execute(!keyPressed, previousStateFlagWasDown && keyPressed)) {
 #if DEBUG
 						OutputDebugString(L"WndProc: Command failed!!\n");
 #endif

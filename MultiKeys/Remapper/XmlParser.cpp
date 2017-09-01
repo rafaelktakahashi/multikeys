@@ -568,8 +568,8 @@ namespace Multikeys
 			if (workList->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
 			if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &pToCodepoints)) return false;
 			// make both Unicode commands, store them in the map
-			UnicodeCommand * pFromCommand = new UnicodeCommand(&pFromCodepoints, true);
-			UnicodeCommand * pToCommand = new UnicodeCommand(&pToCodepoints, true);
+			UnicodeCommand * pFromCommand = new UnicodeCommand(pFromCodepoints, true);
+			UnicodeCommand * pToCommand = new UnicodeCommand(pToCodepoints, true);
 			(*replacements)[pFromCommand] = pToCommand;		// These UnicodeCommands don't die
 		}
 		// replacements have already been inserted
@@ -607,7 +607,7 @@ namespace Multikeys
 
 		// set dead key pointer
 		*pCommand =
-			new DeadKeyCommand(&codepointVector, &replacementsMap);
+			new DeadKeyCommand(codepointVector, replacementsMap);
 		return true;
 	}
 

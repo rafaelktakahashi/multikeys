@@ -11,9 +11,11 @@ namespace Multikeys
 	// or an executable file.
 	typedef class IKeystrokeCommand
 	{
+	protected:
+		IKeystrokeCommand();
 	public:
 
-		// Simulate the keytroke sequence that this object represents
+		// Execute this command. This method may have a variety of effects.
 		virtual bool execute(bool keyup, bool repeated) const = 0;
 
 		// Virtual destructor

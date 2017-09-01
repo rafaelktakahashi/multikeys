@@ -147,13 +147,6 @@ namespace Multikeys
 
 	public:
 
-		// STL constructor
-		// TODO: Take object by reference instead
-		UnicodeCommand(std::vector<unsigned int> * const codepoints, const bool triggerOnRepeat)
-		{
-			UnicodeCommand(codepoints->data(), codepoints->size(), triggerOnRepeat);
-		}
-
 		// Constructor
 		// The caller may let this container go out of scope.
 		UnicodeCommand(const std::vector<unsigned int>& codepoints, const bool triggerOnRepeat)
@@ -396,10 +389,10 @@ namespace Multikeys
 
 
 		// STL constructor
-		DeadKeyCommand(std::vector<unsigned int> * const independentCodepoints,
-			std::unordered_map<UnicodeCommand*, UnicodeCommand*> * const replacements)
+		DeadKeyCommand(const std::vector<unsigned int>& const independentCodepoints,
+			const std::unordered_map<UnicodeCommand*, UnicodeCommand*>& replacements)
 			: UnicodeCommand(independentCodepoints, true),
-			replacements(*replacements) { }
+			replacements(replacements) { }
 
 		// UINT* independentCodepoints - the Unicode character for this dead key
 		//								Array may be deleted after passing

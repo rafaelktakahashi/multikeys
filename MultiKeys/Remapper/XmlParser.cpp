@@ -26,36 +26,38 @@ typedef xercesc::DOMAttr			XmlAttribute, *PXmlAttribute;
 typedef xercesc::DOMNamedNodeMap	XmlNamedNodeMap, *PXmlNamedNodeMap;
 typedef xercesc::DOMElement			XmlElement, *PXmlElement;
 
+using namespace Multikeys;
+
+
+/*---Prototypes for functions used in this file---*/
+// Parses an entire document node and extracts an array of keyboards from it.
+// PXmlDocument document - node representing the entire document to be parsed
+// keyboardArray - array of Keyboard* (Keyboard pointers) that will contain the final result
+// keyboardCount - will contain the amount of keyboards read (length of keyboard array)
+bool ParseDocument(const PXmlDocument document,
+	OUT Keyboard* **const keyboardArray,
+	OUT unsigned int *const keyboardCount);
+
+// Parses a keyboard element and places its data in a Keyboard class;
+// Keyboard* - (pointer to) keyboard structure that will hold this node's data.
+bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard);
+
+// Receives a keyboard element, and instantiates a modifier state map with its remap in it
+bool ParseModifier(const PXmlElement modElement, OUT ModifierStateMap* *const pModifiers);
+
+// Parses a level element and places its data in a Level class;
+// pLevel - (pointer to) level structure that will hold this node's data
+bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel);
+bool ParseUnicode(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
+bool ParseMacro(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
+bool ParseExecutable(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
+bool ParseDeadKey(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
+
+
+
 
 namespace Multikeys
 {
-
-	/*---Prototypes---*/
-
-	// Parses an entire document node and extracts an array of keyboards from it.
-	// PXmlDocument document - node representing the entire document to be parsed
-	// keyboardArray - array of Keyboard* (Keyboard pointers) that will contain the final result
-	// keyboardCount - will contain the amount of keyboards read (length of keyboard array)
-	bool ParseDocument(const PXmlDocument document,
-		OUT Keyboard* **const keyboardArray,
-		OUT unsigned int *const keyboardCount);
-
-	// Parses a keyboard element and places its data in a Keyboard class;
-	// Keyboard* - (pointer to) keyboard structure that will hold this node's data.
-	bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard);
-
-	// Receives a keyboard element, and instantiates a modifier state map with its remap in it
-	bool ParseModifier(const PXmlElement modElement, OUT ModifierStateMap* *const pModifiers);
-
-	// Parses a level element and places its data in a Level class;
-	// pLevel - (pointer to) level structure that will hold this node's data
-	bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel);
-	bool ParseUnicode(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
-	bool ParseMacro(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
-	bool ParseExecutable(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
-	bool ParseDeadKey(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
-
-
 	bool Remapper::loadSettings(const std::wstring filename)
 	{
 		try
@@ -91,7 +93,7 @@ namespace Multikeys
 		// Do the actual processing
 		PXmlDocument document = parser->getDocument();	// Root of the document to be parsed
 
-		// Actually loading stuff into this parser's list of keyboards is delegated into another function:
+														// Actually loading stuff into this parser's list of keyboards is delegated into another function:
 		Keyboard** keyboards = nullptr;
 		unsigned int keyboardCount = 0;
 		ParseDocument(document, &keyboards, &keyboardCount);
@@ -105,7 +107,7 @@ namespace Multikeys
 		this->keyboards.clear();		// Remember that this method is an implementation of Remapper::loadSettings()
 		this->keyboards.assign(keyboards, keyboards + keyboardCount);	// and thus "this" is the remapper
 
-		// At the very end
+																		// At the very end
 		document->release();
 		delete parser;
 		delete errorHandler;
@@ -121,498 +123,498 @@ namespace Multikeys
 
 		return true;
 	}
+}
 
 
 
-	bool ParseDocument(const PXmlDocument document,
-		OUT Keyboard* **const keyboardArray,
-		OUT unsigned int *const keyboardCount)
+	
+	
+/* Implementing prototypes */
+
+
+bool ParseDocument(const PXmlDocument document,
+	OUT Keyboard* **const keyboardArray,
+	OUT unsigned int *const keyboardCount)
+{
+	// Get root element
+	PXmlElement root = document->getDocumentElement();
+
+	// Get all children elements named "keyboard"
+	PXmlNodeList keyboardElements = document->getElementsByTagName(L"keyboard");
+
+	// keyboardArray is Keyboard***const
+	// first pointer is because it's an out parameter; where it points to is changed
+	// second pointer is an array
+	// third pointer is because the array contains pointers to Keyboard objects
+	*keyboardCount = keyboardElements->getLength();
+	*keyboardArray = new Keyboard*[*keyboardCount];
+	// At this point, *keyboardArray is array of Keyboard*,
+	//		but each Keyboard* is itself an uninitialized pointer.
+
+	for (XMLSize_t i = 0; i < keyboardElements->getLength(); i++)
 	{
-		// Get root element
-		PXmlElement root = document->getDocumentElement();
+		// We do this cast here because
+		// Xerces' getElementsByTagName returns Nodes that are all Elements.
+		if (keyboardElements->item(i)->getNodeType() != xercesc::DOMNode::ELEMENT_NODE)
+			return false;
+		PXmlElement keyboardElement = (PXmlElement)keyboardElements->item(i);
 
-		// Get all children elements named "keyboard"
-		PXmlNodeList keyboardElements = document->getElementsByTagName(L"keyboard");
+		// 1. keyboardArray is a pointer to an array of Keyboard*s (Keyboard* **const)
+		// 2. *keyboardArray is the array of Keyboard*s, already allocated
+		// 3. (*keyboardArray)[i] is one Keyboard* in that array, at position i
+		// 4. &((*keyboardArray)[i]) is a reference to a Keyboard* at position i
+		// 5. After this call, (*keyboardArray)[i] will be a Keyboard* pointing to
+		//			an instantiated Keyboard structure.
+		if ( !ParseKeyboard(keyboardElement, &((*keyboardArray)[i])) )
+			return false;
+	}
 
-		// keyboardArray is Keyboard***const
-		// first pointer is because it's an out parameter; where it points to is changed
-		// second pointer is an array
-		// third pointer is because the array contains pointers to Keyboard objects
-		*keyboardCount = keyboardElements->getLength();
-		*keyboardArray = new Keyboard*[*keyboardCount];
-		// At this point, *keyboardArray is array of Keyboard*,
-		//		but each Keyboard* is itself an uninitialized pointer.
+	return true;
+}
 
-		for (XMLSize_t i = 0; i < keyboardElements->getLength(); i++)
+
+bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard)
+{
+	// Get name
+	const wchar_t* keyboardName = kbElement->getAttribute(L"Name");
+	// Keyboards also have an alias attribute, but that's for the UI
+
+	// There should be one "modifiers" tag:
+	PXmlNodeList modifierElements = kbElement->getElementsByTagName(L"modifiers");
+	if (modifierElements->getLength() != 1)
+		return false;
+	PXmlNode modifierElement = modifierElements->item(0);
+	if (modifierElement->getNodeType() != XmlNode::ELEMENT_NODE)
+		return false;
+	// Get pointer to modifier state map
+	ModifierStateMap * ptrModStateMap;
+	// Pass it to the function that will instantiate it
+	if ( !ParseModifier((PXmlElement)modifierElement, &ptrModStateMap) )
+		return false;
+	// ptrModStateMap should now point to an instantiated modifier state map.
+	// We'll instantiate it after making all levels
+
+
+	// Get all levels
+	PXmlNodeList levelElements = kbElement->getElementsByTagName(L"level");
+
+	// Allocate memory for levels
+	std::vector<Level*> levelVector;
+
+	for (XMLSize_t i = 0; i < levelElements->getLength(); i++)
+	{
+		if (levelElements->item(i)->getNodeType() != XmlNode::ELEMENT_NODE)
+			return false;	// there was a "level" that's not an element
+		PXmlElement levelElement = (PXmlElement)levelElements->item(i);
+
+		// Declare a pointer to level
+		Level* pLevel;
+		// This call will place an actual instance there
+		if ( !ParseLevel(levelElement, &pLevel) )
+			return false;
+		// Add the new instance into the vector
+		levelVector.push_back(pLevel);
+		// The pointer dies, but not the object.
+	}
+
+	// levelArray is ready, and so is the modifier state map
+	*pKeyboard =
+		new Keyboard(levelVector, ptrModStateMap);
+
+	return true;
+}
+
+
+
+bool ParseModifier(const PXmlElement modElement, OUT ModifierStateMap**const pModifiers)
+{
+	// This element contains any number of "modifier" tags in it
+	PXmlNodeList modifierElements = modElement->getElementsByTagName(L"modifier");
+
+	// Get a multimap to place stuff in
+	std::multimap<std::wstring, unsigned int> modMultimap;
+
+	for (XMLSize_t i = 0; i < modifierElements->getLength(); i++)
+	{
+		// for each element, place a pair in the multimap containing its name and value
+		if (modifierElements->item(i)->getNodeType() != XmlNode::ELEMENT_NODE)
+			return false;		// there was a "modifier" that's not an element
+		PXmlElement thisElement = (PXmlElement)modifierElements->item(i);
+		// get name
+		std::wstring modifierName = std::wstring(thisElement->getAttribute(L"Name"));
+		// get value
+		std::wstring modifierValue = std::wstring(thisElement->getNodeValue());
+		unsigned int iModifierValue = 0;
+		try
 		{
-			// We do this cast here because
-			// Xerces' getElementsByTagName returns Nodes that are all Elements.
-			if (keyboardElements->item(i)->getNodeType() != xercesc::DOMNode::ELEMENT_NODE)
-				return false;
-			PXmlElement keyboardElement = (PXmlElement)keyboardElements->item(i);
-
-			// 1. keyboardArray is a pointer to an array of Keyboard*s (Keyboard* **const)
-			// 2. *keyboardArray is the array of Keyboard*s, already allocated
-			// 3. (*keyboardArray)[i] is one Keyboard* in that array, at position i
-			// 4. &((*keyboardArray)[i]) is a reference to a Keyboard* at position i
-			// 5. After this call, (*keyboardArray)[i] will be a Keyboard* pointing to
-			//			an instantiated Keyboard structure.
-			if ( !ParseKeyboard(keyboardElement, &((*keyboardArray)[i])) )
-				return false;
+			iModifierValue = std::stoi(modifierValue, 0, 16);
 		}
+		catch (std::exception e)
+		{
+			// handle errors
+			return false;
+		}
+		auto thisPair =
+			std::pair<std::wstring, unsigned int>(modifierName, iModifierValue);
+		modMultimap.insert(thisPair);
 
-		return true;
 	}
 
 
-	bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard)
+	// modMultimap contains a number of pairs equal to the amount of modifiers read
+	// some keys are the same; the amount of keys is equal to the amount of modifiers
+	// pairs with the same key (name) are composite modifiers
+
+	std::vector<PModifier> modVector;		// getting a list of modifiers
+	decltype(modMultimap.equal_range(L"")) range;	// range is of whatever type equal_range returns
+		// range will become an std::pair of unknown.
+	// range.second points to the first element that does not have a key of the specified parameter
+	for (auto it = modMultimap.begin(); it != modMultimap.end(); it = range.second)
 	{
-		// Get name
-		const wchar_t* keyboardName = kbElement->getAttribute(L"Name");
-		// Keyboards also have an alias attribute, but that's for the UI
+		range = modMultimap.equal_range(it->first);
+		// notice the step: range.second, which will go to the next key
 
-		// There should be one "modifiers" tag:
-		PXmlNodeList modifierElements = kbElement->getElementsByTagName(L"modifiers");
-		if (modifierElements->getLength() != 1)
-			return false;
-		PXmlNode modifierElement = modifierElements->item(0);
-		if (modifierElement->getNodeType() != XmlNode::ELEMENT_NODE)
-			return false;
-		// Get pointer to modifier state map
-		ModifierStateMap * ptrModStateMap;
-		// Pass it to the function that will instantiate it
-		if ( !ParseModifier((PXmlElement)modifierElement, &ptrModStateMap) )
-			return false;
-		// ptrModStateMap should now point to an instantiated modifier state map.
-		// We'll instantiate it after making all levels
+		// Just figure out the length
+		size_t length = 0;
+		for (auto d = range.first; d != range.second; d++)
+			length++;
 
-
-		// Get all levels
-		PXmlNodeList levelElements = kbElement->getElementsByTagName(L"level");
-
-		// Allocate memory for levels
-		std::vector<Level*> levelVector;
-
-		for (XMLSize_t i = 0; i < levelElements->getLength(); i++)
+		// see if a simple or composite modifier is needed
+		PModifier pModifier;
+		if (length == 1)		// simple modifier, there is one scancode
 		{
-			if (levelElements->item(i)->getNodeType() != XmlNode::ELEMENT_NODE)
-				return false;	// there was a "level" that's not an element
-			PXmlElement levelElement = (PXmlElement)levelElements->item(i);
-
-			// Declare a pointer to level
-			Level* pLevel;
-			// This call will place an actual instance there
-			if ( !ParseLevel(levelElement, &pLevel) )
-				return false;
-			// Add the new instance into the vector
-			levelVector.push_back(pLevel);
-			// The pointer dies, but not the object.
+			int scCode = range.first->second;
+			if (scCode <= 0xff)	// One byte scancode
+				pModifier = new SimpleModifier(it->first, Scancode(scCode));
+			else				// Two byte scancode
+				pModifier = new SimpleModifier(it->first, Scancode(scCode >> 8, scCode & 0xff));
 		}
-
-		// levelArray is ready, and so is the modifier state map
-		*pKeyboard =
-			new Keyboard(levelVector, ptrModStateMap);
-
-		return true;
-	}
-
-
-
-	bool ParseModifier(const PXmlElement modElement, OUT ModifierStateMap**const pModifiers)
-	{
-		// This element contains any number of "modifier" tags in it
-		PXmlNodeList modifierElements = modElement->getElementsByTagName(L"modifier");
-
-		// Get a multimap to place stuff in
-		std::multimap<std::wstring, unsigned int> modMultimap;
-
-		for (XMLSize_t i = 0; i < modifierElements->getLength(); i++)
+		else if (length > 1)	// composite modifier, there are many scancodes
 		{
-			// for each element, place a pair in the multimap containing its name and value
-			if (modifierElements->item(i)->getNodeType() != XmlNode::ELEMENT_NODE)
-				return false;		// there was a "modifier" that's not an element
-			PXmlElement thisElement = (PXmlElement)modifierElements->item(i);
-			// get name
-			std::wstring modifierName = std::wstring(thisElement->getAttribute(L"Name"));
-			// get value
-			std::wstring modifierValue = std::wstring(thisElement->getNodeValue());
-			unsigned int iModifierValue = 0;
-			try
-			{
-				iModifierValue = std::stoi(modifierValue, 0, 16);
-			}
-			catch (std::exception e)
-			{
-				// handle errors
-				return false;
-			}
-			auto thisPair =
-				std::pair<std::wstring, unsigned int>(modifierName, iModifierValue);
-			modMultimap.insert(thisPair);
-
-		}
-
-
-		// modMultimap contains a number of pairs equal to the amount of modifiers read
-		// some keys are the same; the amount of keys is equal to the amount of modifiers
-		// pairs with the same key (name) are composite modifiers
-
-		std::vector<PModifier> modVector;		// getting a list of modifiers
-		decltype(modMultimap.equal_range(L"")) range;	// range is of whatever type equal_range returns
-			// range will become an std::pair of unknown.
-		// range.second points to the first element that does not have a key of the specified parameter
-		for (auto it = modMultimap.begin(); it != modMultimap.end(); it = range.second)
-		{
-			range = modMultimap.equal_range(it->first);
-			// notice the step: range.second, which will go to the next key
-
-			// Just figure out the length
-			size_t length = 0;
+			std::vector<Scancode> scVector;	// temporarily hold scancodes
 			for (auto d = range.first; d != range.second; d++)
-				length++;
-
-			// see if a simple or composite modifier is needed
-			PModifier pModifier;
-			if (length == 1)		// simple modifier, there is one scancode
 			{
-				int scCode = range.first->second;
-				if (scCode <= 0xff)	// One byte scancode
-					pModifier = new SimpleModifier(it->first, Scancode(scCode));
-				else				// Two byte scancode
-					pModifier = new SimpleModifier(it->first, Scancode(scCode >> 8, scCode & 0xff));
+				if (d->second <= 0xff)	// One byte scancode
+					scVector.push_back(Scancode(d->second));
+				else					// Two byte scancode
+					scVector.push_back(Scancode(d->second >> 8, d->second & 0xff));
 			}
-			else if (length > 1)	// composite modifier, there are many scancodes
-			{
-				std::vector<Scancode> scVector;	// temporarily hold scancodes
-				for (auto d = range.first; d != range.second; d++)
-				{
-					if (d->second <= 0xff)	// One byte scancode
-						scVector.push_back(Scancode(d->second));
-					else					// Two byte scancode
-						scVector.push_back(Scancode(d->second >> 8, d->second & 0xff));
-				}
-				pModifier = new CompositeModifier(it->first, scVector);
-			}
-
-			// add to the vector
-			modVector.push_back(pModifier);
+			pModifier = new CompositeModifier(it->first, scVector);
 		}
 
-		*pModifiers =
-			new ModifierStateMap(modVector);
-
-		return true;
+		// add to the vector
+		modVector.push_back(pModifier);
 	}
 
+	*pModifiers =
+		new ModifierStateMap(modVector);
+
+	return true;
+}
 
 
-	bool ParseLevel(const PXmlElement lvlElement, OUT Level** const pLevel)
+
+bool ParseLevel(const PXmlElement lvlElement, OUT Level** const pLevel)
+{
+	// Get a copy of the modifier state map
+	// ModifierStateMap * ptrLevelModMap = new ModifierStateMap(*pModifiers);
+	// no longer necessary to create a modifier state map
+
+	// This will contain the modifiers that are necessary to trigger this level,
+	// identified only by name.
+	std::vector<std::wstring> modifierCombination;
+
+	// Get all modifiers that are required to trigger this level
+	PXmlNodeList modifierList = lvlElement->getElementsByTagName(L"modifier");
+	for (XMLSize_t i = 0; i < modifierList->getLength(); i++)
 	{
-		// Get a copy of the modifier state map
-		// ModifierStateMap * ptrLevelModMap = new ModifierStateMap(*pModifiers);
-		// no longer necessary to create a modifier state map
+		PXmlNode modifier = modifierList->item(i);
+		if (modifier->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+			return false;		// there was a non-element "modifier"
+		std::wstring modifierName = std::wstring(modifier->getNodeValue());
+		modifierCombination.push_back(modifierName);		// <- adds new modifier name to necessary modifiers
+	}
 
-		// This will contain the modifiers that are necessary to trigger this level,
-		// identified only by name.
-		std::vector<std::wstring> modifierCombination;
+	// At this point, modifierCombination contains the modifiers and will only go out of scope at
+	// the end of this function.
 
-		// Get all modifiers that are required to trigger this level
-		PXmlNodeList modifierList = lvlElement->getElementsByTagName(L"modifier");
-		for (XMLSize_t i = 0; i < modifierList->getLength(); i++)
-		{
-			PXmlNode modifier = modifierList->item(i);
-			if (modifier->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-				return false;		// there was a non-element "modifier"
-			std::wstring modifierName = std::wstring(modifier->getNodeValue());
-			modifierCombination.push_back(modifierName);		// <- adds new modifier name to necessary modifiers
-		}
+	// Read all remaps
+	PXmlNodeList allChildren = lvlElement->getChildNodes();
+	std::unordered_map<Scancode, BaseKeystrokeCommand*> layout;
 
-		// At this point, modifierCombination contains the modifiers and will only go out of scope at
-		// the end of this function.
+	for (XMLSize_t i = 0; i < modifierList->getLength(); i++)
+	{
+		PXmlNode child = allChildren->item(i);
+		if (child->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+			continue;
 
-		// Read all remaps
-		PXmlNodeList allChildren = lvlElement->getChildNodes();
-		std::unordered_map<Scancode, BaseKeystrokeCommand*> layout;
-
-		for (XMLSize_t i = 0; i < modifierList->getLength(); i++)
-		{
-			PXmlNode child = allChildren->item(i);
-			if (child->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-				continue;
-
-			std::wstring childTagName = std::wstring(child->getNodeName());
-			BaseKeystrokeCommand* commandPointer = nullptr;
+		std::wstring childTagName = std::wstring(child->getNodeName());
+		BaseKeystrokeCommand* commandPointer = nullptr;
 			
-			if (childTagName.compare(L"unicode") == 0)
-			{
-				if (!ParseUnicode((PXmlElement)child, &commandPointer))
-					return false;
-			}
-			else if (childTagName.compare(L"macro") == 0)
-			{
-				if (!ParseMacro((PXmlElement)child, &commandPointer))
-					return false;
-			}
-			else if (childTagName.compare(L"execute") == 0)
-			{
-				if (!ParseExecutable((PXmlElement)child, &commandPointer))
-					return false;
-			}
-			else if (childTagName.compare(L"deadkey") == 0)
-			{
-				if (!ParseDeadKey((PXmlElement)child, &commandPointer))
-					return false;
-			}
-			else return false;
-			// commandPointer should contain a command now
-			std::wstring scancode = ((PXmlElement)child)->getAttribute(L"Scancode");
-			try
-			{
-				unsigned short iScancode = std::stoi(scancode.c_str(), 0, 16);
-				if (iScancode <= 0xFF)
-				{
-					Scancode sc = Scancode(iScancode & 0xFF);
-					layout[sc] = commandPointer;
-				}
-				else
-				{
-					Scancode sc = Scancode(iScancode >> 8, iScancode & 0xFF);
-					layout[sc] = commandPointer;
-				}
-			}
-			catch (std::exception e)
-			{
-				// handle errors
+		if (childTagName.compare(L"unicode") == 0)
+		{
+			if (!ParseUnicode((PXmlElement)child, &commandPointer))
 				return false;
+		}
+		else if (childTagName.compare(L"macro") == 0)
+		{
+			if (!ParseMacro((PXmlElement)child, &commandPointer))
+				return false;
+		}
+		else if (childTagName.compare(L"execute") == 0)
+		{
+			if (!ParseExecutable((PXmlElement)child, &commandPointer))
+				return false;
+		}
+		else if (childTagName.compare(L"deadkey") == 0)
+		{
+			if (!ParseDeadKey((PXmlElement)child, &commandPointer))
+				return false;
+		}
+		else return false;
+		// commandPointer should contain a command now
+		std::wstring scancode = ((PXmlElement)child)->getAttribute(L"Scancode");
+		try
+		{
+			unsigned short iScancode = std::stoi(scancode.c_str(), 0, 16);
+			if (iScancode <= 0xFF)
+			{
+				Scancode sc = Scancode(iScancode & 0xFF);
+				layout[sc] = commandPointer;
 			}
-
-
-			*pLevel =
-				new Level(modifierCombination, layout);
-			// It's okay that these containers die at the end of this function.
-			// Level will copy them in its constructor.
-
+			else
+			{
+				Scancode sc = Scancode(iScancode >> 8, iScancode & 0xFF);
+				layout[sc] = commandPointer;
+			}
+		}
+		catch (std::exception e)
+		{
+			// handle errors
+			return false;
 		}
 
 
-		return true;
+		*pLevel =
+			new Level(modifierCombination, layout);
+		// It's okay that these containers die at the end of this function.
+		// Level will copy them in its constructor.
+
 	}
 
 
+	return true;
+}
 
 
-	bool ParseUnicode(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
+
+
+bool ParseUnicode(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
+{
+	// retrieve trigger on repeat attribute
+	bool triggerOnRepeat =
+		wcscmp(rmpElement->getAttribute(L"TriggerOnRepeat"), L"True") == 0;
+
+	std::vector<unsigned int> codepointVector;
+
+	// read each codepoint
+	PXmlNodeList codepointElements = rmpElement->getElementsByTagName(L"codepoint");
+	for (XMLSize_t i = 0; i < codepointElements->getLength(); i++)
 	{
-		// retrieve trigger on repeat attribute
-		bool triggerOnRepeat =
-			wcscmp(rmpElement->getAttribute(L"TriggerOnRepeat"), L"True") == 0;
+		if (codepointElements->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+			continue;		// found codepoint node that wasn't element
 
-		std::vector<unsigned int> codepointVector;
-
-		// read each codepoint
-		PXmlNodeList codepointElements = rmpElement->getElementsByTagName(L"codepoint");
-		for (XMLSize_t i = 0; i < codepointElements->getLength(); i++)
+		try
 		{
-			if (codepointElements->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-				continue;		// found codepoint node that wasn't element
-
-			try
-			{
-				unsigned int codepoint = std::stoi(
-					codepointElements->item(i)->getNodeValue(), 0, 16
-				);
-				codepointVector.push_back(codepoint);
-			}
-			catch (std::exception e)
-			{
-				// handle errors
-				return false;
-			}
+			unsigned int codepoint = std::stoi(
+				codepointElements->item(i)->getNodeValue(), 0, 16
+			);
+			codepointVector.push_back(codepoint);
 		}
+		catch (std::exception e)
+		{
+			// handle errors
+			return false;
+		}
+	}
+
+	*pCommand =
+		new UnicodeCommand(codepointVector.data(), codepointVector.size(), triggerOnRepeat);
+	return true;
+
+}
+
+bool ParseMacro(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
+{
+	// retrieve trigger on repeat attribute
+	bool triggerOnRepeat =
+		wcscmp(rmpElement->getAttribute(L"TriggerOnRepeat"), L"True") == 0;
+
+	std::vector<unsigned short> vkeyVector;
+
+	// read each vKey
+	PXmlNodeList vkeyElements = rmpElement->getElementsByTagName(L"vkey");
+	for (XMLSize_t i = 0; i < vkeyElements->getLength(); i++)
+	{
+		if (vkeyElements->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+			continue;
+
+		try
+		{
+			unsigned short vkey = std::stoi(
+				vkeyElements->item(i)->getNodeValue(), 0, 16
+			);
+
+			bool isKeyUp =
+				wcscmp(
+					((PXmlElement)vkeyElements->item(i))->getAttribute(L"Keypress"),
+					L"Up"
+				) == 0;
+
+			if (isKeyUp)		// turn on the most significant bit of a 16-bit variable
+				vkey |= 0x8000;
+
+			vkeyVector.push_back(vkey);
+		}
+		catch (std::exception e)
+		{
+			// handle errors
+			return false;
+		}
+	}
+
+	*pCommand =
+		new MacroCommand(vkeyVector.data(), vkeyVector.size(), triggerOnRepeat);
+	return true;
+}
+
+bool ParseExecutable(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
+{
+	// One "path" element, one "parameter" element
+	PXmlNodeList pathElementList = rmpElement->getElementsByTagName(L"path");
+	if (pathElementList->getLength() != 1)
+		return false;
+	if (pathElementList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+		return false;
+	std::wstring path = pathElementList->item(0)->getNodeValue();
+
+	PXmlNodeList parameterElementList = rmpElement->getElementsByTagName(L"parameter");
+	if (parameterElementList->getLength() == 1)
+	{
+		if (parameterElementList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+			return false;
+		std::wstring parameter = parameterElementList->item(0)->getNodeValue();
 
 		*pCommand =
-			new UnicodeCommand(codepointVector.data(), codepointVector.size(), triggerOnRepeat);
-		return true;
-
+			new ExecutableCommand(path, parameter);
 	}
-
-	bool ParseMacro(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
+	else
 	{
-		// retrieve trigger on repeat attribute
-		bool triggerOnRepeat =
-			wcscmp(rmpElement->getAttribute(L"TriggerOnRepeat"), L"True") == 0;
-
-		std::vector<unsigned short> vkeyVector;
-
-		// read each vKey
-		PXmlNodeList vkeyElements = rmpElement->getElementsByTagName(L"vkey");
-		for (XMLSize_t i = 0; i < vkeyElements->getLength(); i++)
-		{
-			if (vkeyElements->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-				continue;
-
-			try
-			{
-				unsigned short vkey = std::stoi(
-					vkeyElements->item(i)->getNodeValue(), 0, 16
-				);
-
-				bool isKeyUp =
-					wcscmp(
-						((PXmlElement)vkeyElements->item(i))->getAttribute(L"Keypress"),
-						L"Up"
-					) == 0;
-
-				if (isKeyUp)		// turn on the most significant bit of a 16-bit variable
-					vkey |= 0x8000;
-
-				vkeyVector.push_back(vkey);
-			}
-			catch (std::exception e)
-			{
-				// handle errors
-				return false;
-			}
-		}
-
 		*pCommand =
-			new MacroCommand(vkeyVector.data(), vkeyVector.size(), triggerOnRepeat);
-		return true;
+			new ExecutableCommand(path);
 	}
 
-	bool ParseExecutable(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
+	return true;
+}
+
+bool ParseIndependentCodepoints(
+	const PXmlElement indElement,
+	OUT std::vector<unsigned int>* codepoints)
+{
+	// Similar to Unicode command parsing
+	std::vector<unsigned int> codepointVector;
+
+	// read each codepoint
+	PXmlNodeList codepointElements = indElement->getElementsByTagName(L"codepoint");
+	for (XMLSize_t i = 0; i < codepointElements->getLength(); i++)
 	{
-		// One "path" element, one "parameter" element
-		PXmlNodeList pathElementList = rmpElement->getElementsByTagName(L"path");
-		if (pathElementList->getLength() != 1)
-			return false;
-		if (pathElementList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-			return false;
-		std::wstring path = pathElementList->item(0)->getNodeValue();
+		if (codepointElements->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+			continue;		// found codepoint node that wasn't element
 
-		PXmlNodeList parameterElementList = rmpElement->getElementsByTagName(L"parameter");
-		if (parameterElementList->getLength() == 1)
+		try
 		{
-			if (parameterElementList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-				return false;
-			std::wstring parameter = parameterElementList->item(0)->getNodeValue();
-
-			*pCommand =
-				new ExecutableCommand(path, parameter);
+			unsigned int codepoint = std::stoi(
+				codepointElements->item(i)->getNodeValue(), 0, 16
+												);
+			codepointVector.push_back(codepoint);
 		}
-		else
+		catch (std::exception e)
 		{
-			*pCommand =
-				new ExecutableCommand(path);
+			// handle errors
+			return false;
 		}
-
-		return true;
 	}
+	*codepoints = codepointVector;
+	return true;
+}
+bool ParseReplacements(
+	const PXmlNodeList replList,
+	OUT std::unordered_map<UnicodeCommand*, UnicodeCommand*>* replacements)	// <-should not be null
+{
+	PXmlNodeList workList;
+	// Each node in replList is an element containing one <from> tag and a <to> tag.
 
-	bool ParseIndependentCodepoints(
-		const PXmlElement indElement,
-		OUT std::vector<unsigned int>* codepoints)
+	replacements->clear();
+	for (XMLSize_t i = 0; i < replList->getLength(); i++)
 	{
-		// Similar to Unicode command parsing
-		std::vector<unsigned int> codepointVector;
+		if (replList->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+			continue;
 
-		// read each codepoint
-		PXmlNodeList codepointElements = indElement->getElementsByTagName(L"codepoint");
-		for (XMLSize_t i = 0; i < codepointElements->getLength(); i++)
-		{
-			if (codepointElements->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-				continue;		// found codepoint node that wasn't element
-
-			try
-			{
-				unsigned int codepoint = std::stoi(
-					codepointElements->item(i)->getNodeValue(), 0, 16
-												  );
-				codepointVector.push_back(codepoint);
-			}
-			catch (std::exception e)
-			{
-				// handle errors
-				return false;
-			}
-		}
-		*codepoints = codepointVector;
-		return true;
+		// Retrieve both <from> and <to> tags
+		// Put them in their own UnicodeCommands
+		PXmlElement replacementNode = (PXmlElement)replList->item(i);
+		// From
+		std::vector<unsigned int> pFromCodepoints;
+		workList = replacementNode->getElementsByTagName(L"from");
+		if (workList->getLength() != 1) return false;
+		if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
+		if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &pFromCodepoints)) return false;
+		// To
+		std::vector<unsigned int> pToCodepoints;
+		workList = replacementNode->getElementsByTagName(L"to");
+		if (workList->getLength() != 1) return false;
+		if (workList->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
+		if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &pToCodepoints)) return false;
+		// make both Unicode commands, store them in the map
+		UnicodeCommand * pFromCommand = new UnicodeCommand(pFromCodepoints, true);
+		UnicodeCommand * pToCommand = new UnicodeCommand(pToCodepoints, true);
+		(*replacements)[pFromCommand] = pToCommand;		// These UnicodeCommands don't die
 	}
-	bool ParseReplacements(
-		const PXmlNodeList replList,
-		OUT std::unordered_map<UnicodeCommand*, UnicodeCommand*>* replacements)	// <-should not be null
-	{
-		PXmlNodeList workList;
-		// Each node in replList is an element containing one <from> tag and a <to> tag.
+	// replacements have already been inserted
+	return true;
+}
+bool ParseDeadKey(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
+{
+	// Unicode characters that represent this key independently
+	std::vector<unsigned int> codepointVector;
 
-		replacements->clear();
-		for (XMLSize_t i = 0; i < replList->getLength(); i++)
-		{
-			if (replList->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-				continue;
+	// Map that contains all replacements this dead key can make
+	std::unordered_map<UnicodeCommand*, UnicodeCommand*> replacementsMap;
 
-			// Retrieve both <from> and <to> tags
-			// Put them in their own UnicodeCommands
-			PXmlElement replacementNode = (PXmlElement)replList->item(i);
-			// From
-			std::vector<unsigned int> pFromCodepoints;
-			workList = replacementNode->getElementsByTagName(L"from");
-			if (workList->getLength() != 1) return false;
-			if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
-			if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &pFromCodepoints)) return false;
-			// To
-			std::vector<unsigned int> pToCodepoints;
-			workList = replacementNode->getElementsByTagName(L"to");
-			if (workList->getLength() != 1) return false;
-			if (workList->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
-			if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &pToCodepoints)) return false;
-			// make both Unicode commands, store them in the map
-			UnicodeCommand * pFromCommand = new UnicodeCommand(pFromCodepoints, true);
-			UnicodeCommand * pToCommand = new UnicodeCommand(pToCodepoints, true);
-			(*replacements)[pFromCommand] = pToCommand;		// These UnicodeCommands don't die
-		}
-		// replacements have already been inserted
-		return true;
-	}
-	bool ParseDeadKey(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand)
-	{
-		// Unicode characters that represent this key independently
-		std::vector<unsigned int> codepointVector;
+	// Retrieve independent codepoints
+	PXmlNodeList workList;
 
-		// Map that contains all replacements this dead key can make
-		std::unordered_map<UnicodeCommand*, UnicodeCommand*> replacementsMap;
+	workList = rmpElement->getElementsByTagName(L"independent");
+	if (workList->getLength() != 1)
+		return false;
+	if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+		return false;
+	if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &codepointVector))
+		return false;
+	// At this point, codepointVector contains a valid Unicode sequence
 
-		// Retrieve independent codepoints
-		PXmlNodeList workList;
+	// Retrieve replacements
+	workList = rmpElement->getElementsByTagName(L"replacement");
+	if (workList->getLength() != 1)
+		return false;
+	if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+		return false;
+	if (!ParseReplacements(workList, &replacementsMap))
+		return false;
+	// At this point, replacementsMap contains valid replacements
 
-		workList = rmpElement->getElementsByTagName(L"independent");
-		if (workList->getLength() != 1)
-			return false;
-		if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-			return false;
-		if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &codepointVector))
-			return false;
-		// At this point, codepointVector contains a valid Unicode sequence
-
-		// Retrieve replacements
-		workList = rmpElement->getElementsByTagName(L"replacement");
-		if (workList->getLength() != 1)
-			return false;
-		if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-			return false;
-		if (!ParseReplacements(workList, &replacementsMap))
-			return false;
-		// At this point, replacementsMap contains valid replacements
-
-		// set dead key pointer
-		*pCommand =
-			new DeadKeyCommand(codepointVector, replacementsMap);
-		return true;
-	}
-
-
-
-
-
-}		// End of namespace MutiKeys
+	// set dead key pointer
+	*pCommand =
+		new DeadKeyCommand(codepointVector, replacementsMap);
+	return true;
+}

@@ -13,8 +13,7 @@ namespace Multikeys
 	typedef class AbstractModifier
 	{
 	protected:
-		AbstractModifier(std::wstring name) : name(name)
-		{}
+		AbstractModifier(std::wstring name);
 	public:
 
 		// This name should uniquely identify each modifier.
@@ -34,17 +33,11 @@ namespace Multikeys
 	protected:
 		Scancode sc;
 	public:
-		SimpleModifier(std::wstring name, Scancode scancode) :
-			AbstractModifier(name), sc(scancode)
-		{}
+		SimpleModifier(std::wstring name, Scancode scancode);
 
-		bool matches(Scancode sc) const override
-		{
-			return this->sc == sc;
-		}
+		bool matches(Scancode sc) const override;
 
-		~SimpleModifier() override
-		{}
+		~SimpleModifier() override;
 
 	};
 
@@ -57,33 +50,12 @@ namespace Multikeys
 		size_t scanCount;
 	public:
 		
-		// STL constructor
 		// The caller may free scancodeVector afterwards or let it go out of scope.
-		CompositeModifier(std::wstring name, std::vector<Scancode> scancodeVector) :
-			AbstractModifier(name), scanCount(scancodeVector.size())
-		{
-			scanArray = new Scancode[scancodeVector.size()];
-			for (size_t i = 0; i < scancodeVector.size(); i++)
-			{
-				scanArray[i] = scancodeVector[i];
-			}
-		}
+		CompositeModifier(std::wstring name, std::vector<Scancode> scancodeVector);
 
-		bool matches(Scancode sc) const override
-		{
-			// An incoming scancode only needs to match one of this modifier's scancodes.
-			for (unsigned short i = 0; i < scanCount; i++)
-			{
-				if (scanArray[i] == sc)
-					return true;
-			}
-			return false;
-		}
+		bool matches(Scancode sc) const override;
 
-		~CompositeModifier() override
-		{
-			delete[] scanArray;
-		}
+		~CompositeModifier() override;
 	};
 
 
@@ -103,97 +75,25 @@ namespace Multikeys
 	public:
 
 		// Copy constructor
-		ModifierStateMap(const ModifierStateMap& original)
-		{
-			// copy constructor also sets all modifiers to false
-			this->modifiers =
-				original.modifiers;
-			for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
-			{
-				it->second = false;
-			}
-		}
+		ModifierStateMap(const ModifierStateMap& original);
 
 		// STL constructor; sets all modifiers to unpressed
-		ModifierStateMap(const std::vector<PModifier>& modifiers)
-		{
-			for (size_t i = 0; i < modifiers.size(); i++)
-			{ this->modifiers.insert(std::pair<PModifier, bool>(modifiers[i], false)); }
-		}
+		ModifierStateMap(const std::vector<PModifier>& modifiers);
 		
 
 		// Receives a scancode, and a flag for keypress up or down.
 		// If sc is a modifier contained in this object, its state is updated and true is returned
 		// otherwise, false is returned.
-		bool updateState(Scancode sc, bool keyDown)
-		{
-			for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
-			{
-				if (it->first->matches(sc))
-				{
-					it->second = keyDown;
-					return true;
-				}
-			}
-			return false;
-		}
+		bool updateState(Scancode sc, bool keyDown);
 
 		// Returns true if level is triggered by the current combination of modifiers in this object.
-		bool checkState(Level* const level) const
-		{
-			// 1. Every name present in modNames must be set to true in this->modifiers
-			// 2. Every name not present in modNames must be set to false in this->modifiers
-			// Satified those conditions, this method must return true
-			// Not satified those conditions, this method must return false.
-			size_t i = 0;
-			bool found = false;
+		bool checkState(Level* const level) const;
 
-			// Loop through list of all modifiers
-			for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
-			{
-				// Determine whether or not this modifier is present in the Level's modifiers
-				// Look for it by name
-				for (i = 0, found = false; i < level->modifierCombination.size(); i++)
-				{
-					if (level->modifierCombination[i] == it->first->name)
-					{
-						found = true;
-						break;	// get out of for loop
-					}
-				}
-				// Presence in the Level's modifers must be equal to the modifier's current state
-				if (found != it->second)
-				{
-					return false;
-				}
-			}
-			// Looped and never returned false, then succeeded.
-			return true;
-		}
-
-		void resetAllModifiers()
-		{
-			for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
-				it->second = false;
-		}
+		void resetAllModifiers();
 
 
-		inline bool operator==(const ModifierStateMap& rhs) const
-		{
-			return rhs.modifiers.size() == this->modifiers.size()
-				&& (		// This is comparing pointers
-					std::equal(this->modifiers.begin(), this->modifiers.end(),
-						rhs.modifiers.begin())
-					);
-		}
+		inline bool operator==(const ModifierStateMap& rhs) const;
 
-		~ModifierStateMap()
-		{
-			// free all PModifiers
-			for (auto it = modifiers.begin(); it != modifiers.end(); it++)
-			{
-				delete it->first;
-			}
-		}
+		~ModifierStateMap();
 	};
 }

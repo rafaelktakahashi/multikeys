@@ -12,7 +12,7 @@ namespace Multikeys
 	typedef class IKeystrokeCommand
 	{
 	protected:
-		IKeystrokeCommand();
+		IKeystrokeCommand() { }
 	public:
 
 		// Execute this command. This method may have a variety of effects.

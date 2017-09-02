@@ -6,10 +6,8 @@
 // Portions of this file were originally written by Vít Blecha
 
 #include "stdafx.h"
-#include "MultiKeys.h"
-#include "../Remapper/RemapperAPI.h"
+#include "MultikeysCore.h"
 #include "Scancodes.h"
-#include "KeyboardHook.h"
 
 
 #define MAX_LOADSTRING 100
@@ -20,20 +18,20 @@ WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 
-// Handle to the main executable window
+												// Handle to the main executable window
 HWND mainHwnd;
 // Windows message for communication between main executable and DLL module
 UINT const WM_HOOK = WM_APP + 1;
 // How long should hook processing wait for the matching Raw Input message (in ms)
 DWORD maxWaitingTime = 50;		// Hopefully no legitimate keystroke should have a delay as long as 0.05s
 
-// Flag for AltGr. Used in the AltGr fix.
+								// Flag for AltGr. Used in the AltGr fix.
 BOOL AltGrBlockNextLCtrl = FALSE;
 
 // Buffer for keyboard Raw Input struct
 UINT rawKeyboardBufferSize = 32;
 LPBYTE rawKeyboardBuffer = new BYTE[rawKeyboardBufferSize];		// These buffers should be enough,	
-// Buffer for keyboard name										// but do allocate more space if needed.
+																// Buffer for keyboard name										// but do allocate more space if needed.
 UINT keyboardNameBufferSize = 128;
 WCHAR * keyboardNameBuffer = new WCHAR[keyboardNameBufferSize];
 
@@ -44,7 +42,7 @@ RAWINPUT * raw;
 Multikeys::PRemapper remapper;	// PRemapper is a pointer type
 								// Must be initialized
 
-// text to display on screen for debugging
+								// text to display on screen for debugging
 WCHAR* debugText = new WCHAR[DEBUG_TEXT_SIZE];
 WCHAR* debugTextKeyboardName = new WCHAR[DEBUG_TEXT_SIZE];
 WCHAR* debugTextBeingBlocked = new WCHAR[DEBUG_TEXT_SIZE];
@@ -65,21 +63,21 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-					 _In_opt_ HINSTANCE hPrevInstance,
-					 _In_ LPWSTR    lpCmdLine,
-					 _In_ int       nCmdShow)
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	// UNREFERENCED_PARAMETER(lpCmdLine);			// <- is it ok to comment out?
-													// I guess.
-	
+	// I guess.
+
 	// Initialize global strings
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_MULTIKEYS, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
 
 	// Perform application initialization:
-	if (!InitInstance (hInstance, nCmdShow))
+	if (!InitInstance(hInstance, nCmdShow))
 	{
 		return FALSE;
 	}
@@ -119,17 +117,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LocalFree(szArgList);			// return it to the abyss (sort of)
 
 
-	// Main message loop:
+									// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{			// We ignore all accelerators; the point of this is that the user makes their own.
-		// if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))				
-		// {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+				// if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))				
+				// {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 		// }
 	}
 
-	return (int) msg.wParam;
+	return (int)msg.wParam;
 }
 
 
@@ -145,17 +143,17 @@ ATOM MyRegisterClass(HINSTANCE hInstance)		// receives a handle to an applicatio
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
-	wcex.style          = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc    = WndProc;
-	wcex.cbClsExtra     = 0;
-	wcex.cbWndExtra     = 0;
-	wcex.hInstance      = hInstance;
-	wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MULTIKEYS));
-	wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_MULTIKEYS);
-	wcex.lpszClassName  = szWindowClass;
-	wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WndProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MULTIKEYS));
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_MULTIKEYS);
+	wcex.lpszClassName = szWindowClass;
+	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassExW(&wcex);
 }
@@ -172,42 +170,42 @@ ATOM MyRegisterClass(HINSTANCE hInstance)		// receives a handle to an applicatio
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // Store instance handle in our global variable
+	hInst = hInstance; // Store instance handle in our global variable
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,		// The moment when a window is created
-	  CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,		// The moment when a window is created
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
-   {
-	  return FALSE;
-   }
-
-
-
-   // Store the handle globally
-   mainHwnd = hWnd;
-
-
-   // Show the window. This might need to go away someday.
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
-
-   
-   // Register for receiving Raw Input for keyboards
-   RAWINPUTDEVICE rawInputDevice[1];
-   rawInputDevice[0].usUsagePage = 1;		// usage page = 1 is generic and usage = 6 is for keyboards
-   rawInputDevice[0].usUsage = 6;				// (2 is mouse, 4 is joystick, 6 is keyboard, there are others)
-   rawInputDevice[0].dwFlags = RIDEV_INPUTSINK;		// Receive input even if the registered window is in the background
-   rawInputDevice[0].hwndTarget = hWnd;				// Handle to the target window (NULL would make it follow kb focus)
-   RegisterRawInputDevices(rawInputDevice, 1, sizeof(rawInputDevice[0]));
-
-   // Setup the keyboard hook (from the dll)
-   InstallHook(hWnd);
-   // The hook needs to be executed from a separate dll because it's a global hook.
+	if (!hWnd)
+	{
+		return FALSE;
+	}
 
 
 
-   return TRUE;
+	// Store the handle globally
+	mainHwnd = hWnd;
+
+
+	// Show the window. This might need to go away someday.
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
+
+
+	// Register for receiving Raw Input for keyboards
+	RAWINPUTDEVICE rawInputDevice[1];
+	rawInputDevice[0].usUsagePage = 1;		// usage page = 1 is generic and usage = 6 is for keyboards
+	rawInputDevice[0].usUsage = 6;				// (2 is mouse, 4 is joystick, 6 is keyboard, there are others)
+	rawInputDevice[0].dwFlags = RIDEV_INPUTSINK;		// Receive input even if the registered window is in the background
+	rawInputDevice[0].hwndTarget = hWnd;				// Handle to the target window (NULL would make it follow kb focus)
+	RegisterRawInputDevices(rawInputDevice, 1, sizeof(rawInputDevice[0]));
+
+	// Setup the keyboard hook (from the dll)
+	InstallHook(hWnd);
+	// The hook needs to be executed from a separate dll because it's a global hook.
+
+
+
+	return TRUE;
 }
 
 // Utility function that resets modifiers
@@ -241,22 +239,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
-	// Raw Input Message:
+		// Raw Input Message:
 	case WM_INPUT:				// case of UINTs
 	{	// brackets for locality
 
 		UINT bufferSize = 0;		// work variable
 
-		// Get data from the raw input structure
-		// Parameters:
-		// 1. HRAWINPUT - a handle to the raw input structure (in this case stored in the long param of the message)
-		// 2. UINT - a flag containing what to return, either RID_HEADER (header) or RID_INPUT (raw data)
-		// 3. LPVOID, out param - a pointer to the data that comes from the RAW INPUT structure
-		//		If this is null, the next parameter will contain the required size of the buffer
-		// 4. PUINT, in or out param - size of the data, or required size if previous param is NULL
-		// 5. UINT - size in bytes of the header
+									// Get data from the raw input structure
+									// Parameters:
+									// 1. HRAWINPUT - a handle to the raw input structure (in this case stored in the long param of the message)
+									// 2. UINT - a flag containing what to return, either RID_HEADER (header) or RID_INPUT (raw data)
+									// 3. LPVOID, out param - a pointer to the data that comes from the RAW INPUT structure
+									//		If this is null, the next parameter will contain the required size of the buffer
+									// 4. PUINT, in or out param - size of the data, or required size if previous param is NULL
+									// 5. UINT - size in bytes of the header
 
-		// get required buffer size, check if it's larger than what we have
+									// get required buffer size, check if it's larger than what we have
 		GetRawInputData((HRAWINPUT)lParam, RID_INPUT, NULL, &bufferSize, sizeof(RAWINPUTHEADER));
 		if (bufferSize > rawKeyboardBufferSize)
 		{
@@ -273,19 +271,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// cast the contents of the buffer into our rawinput pointer
 		raw = (RAWINPUT*)rawKeyboardBuffer;
 
-		#if DEBUG
-			WCHAR * text = new WCHAR[128];		// <- unnecessary allocation, but this is just for debug
-			swprintf_s(text, 128, L"Raw Input: Virtual key %X scancode %s%s%X (%s)\n",
-				raw->data.keyboard.VKey,		// virtual keycode
-				(raw->data.keyboard.Flags & RI_KEY_E0 ? L"e0 " : L""),
-				(raw->data.keyboard.Flags & RI_KEY_E1 ? L"e1 " : L""),
-				raw->data.keyboard.MakeCode,	// scancode
-				raw->data.keyboard.Flags & RI_KEY_BREAK ? L"up" : L"down");		// keydown or keyup (make/break)
-			OutputDebugString(text);
-			memcpy_s(debugText, DEBUG_TEXT_SIZE, text, 128);	// will redraw later
-			delete[] text;
-		#endif
-		
+#if DEBUG
+		WCHAR * text = new WCHAR[128];		// <- unnecessary allocation, but this is just for debug
+		swprintf_s(text, 128, L"Raw Input: Virtual key %X scancode %s%s%X (%s)\n",
+			raw->data.keyboard.VKey,		// virtual keycode
+			(raw->data.keyboard.Flags & RI_KEY_E0 ? L"e0 " : L""),
+			(raw->data.keyboard.Flags & RI_KEY_E1 ? L"e1 " : L""),
+			raw->data.keyboard.MakeCode,	// scancode
+			raw->data.keyboard.Flags & RI_KEY_BREAK ? L"up" : L"down");		// keydown or keyup (make/break)
+		OutputDebugString(text);
+		memcpy_s(debugText, DEBUG_TEXT_SIZE, text, 128);	// will redraw later
+		delete[] text;
+#endif
+
 
 		// We'll get the device name
 		// Check that our buffer is enough for the task:
@@ -295,15 +293,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			keyboardNameBufferSize = bufferSize;
 			delete[] keyboardNameBuffer;
 			keyboardNameBuffer = new WCHAR[keyboardNameBufferSize];
-		#if DEBUG
+#if DEBUG
 			OutputDebugString(L"Needed more space for device name buffer");
-		#endif
+#endif
 		}
 
 		// Load the device name into the buffer
 		GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, keyboardNameBuffer, &keyboardNameBufferSize);
 		// Now the buffer contains the name of the device that sent the signal
-		
+
 
 		/*----Fix for Fake shift----*/
 		// When shift + numpad key is pressed while numlock is on, a fake shift up is pressed on keydown,
@@ -326,12 +324,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				raw->data.keyboard.Flags &= 0xfffe;		// unset last bit
 			else raw->data.keyboard.Flags |= RI_KEY_BREAK;	// set last bit
 
-			// pretend this is a left shift
+															// pretend this is a left shift
 			raw->data.keyboard.MakeCode = 0x2a;
 			bool DoBlock = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);
 			decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
 
-			// pretend this is a right shift
+																									// pretend this is a right shift
 			raw->data.keyboard.MakeCode = 0x36;
 			DoBlock = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 			decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
@@ -342,15 +340,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// There is a copy of this on the delayed message loop.
 		/*---End of fix for Fake shift----*/
 
-		
-		#if DEBUG
-			memcpy_s(debugTextKeyboardName, DEBUG_TEXT_SIZE, keyboardNameBuffer, keyboardNameBufferSize);
-			text = new WCHAR[200];
-			swprintf_s(text, 200, L"Raw Input: Keyboard name is %ls\n", keyboardNameBuffer);
-			 OutputDebugString(text);
-			delete[] text;
-			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE);
-		#endif
+
+#if DEBUG
+		memcpy_s(debugTextKeyboardName, DEBUG_TEXT_SIZE, keyboardNameBuffer, keyboardNameBufferSize);
+		text = new WCHAR[200];
+		swprintf_s(text, 200, L"Raw Input: Keyboard name is %ls\n", keyboardNameBuffer);
+		OutputDebugString(text);
+		delete[] text;
+		RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE);
+#endif
 
 
 		// Call the function that decides whether to block or allow this keystroke
@@ -360,10 +358,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		Multikeys::PKeystrokeCommand possibleAction = nullptr;		// <- we don't know yet is our key maps to anything
 		BOOL DoBlock = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 
-	#if DEBUG
+#if DEBUG
 		if (DoBlock)
 			OutputDebugString(L"Raw Input: Recording a key block\n");
-	#endif
+#endif
 
 		decisionBuffer.push_back(DecisionRecord(raw->data.keyboard, possibleAction, DoBlock));	// remember the answer
 
@@ -373,11 +371,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}	// end of case WM_INPUT
 
 
-	// Message from Hooking DLL
-	// It means we need to look for a corresponding Raw Input message that should have arrived before
-	// That message is the one that can tell us whether or not to block the key,
-	// and this message is the one that can block the key.
-	// (or maybe it didn't arrive yet. Checking is necessary.)
+		// Message from Hooking DLL
+		// It means we need to look for a corresponding Raw Input message that should have arrived before
+		// That message is the one that can tell us whether or not to block the key,
+		// and this message is the one that can block the key.
+		// (or maybe it didn't arrive yet. Checking is necessary.)
 	case WM_HOOK:		// <- user-defined message (user is this program)
 	{
 		// In this message, word parameter contains the virtual key code (not scancode),
@@ -394,33 +392,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		USHORT keyPressed = !((lParam >> 31) & 1);			// gets the thirty-first bit which is 1 when it's a keyup; invert it
 		USHORT extractedScancode = (lParam >> 16) & 255;	// extract one full byte at position 16
 		USHORT isExtended = (lParam >> 24) & 1;				// twenty-fourth bit
-		// There exists a KF_ALTDOWN define set to 0x2000. Very sadly, that's incorrect and points to bit 13 instead of 29.
-		// In fact, all of these KF flags seem to be one byte less than they should. I don't know the deal with that.
+															// There exists a KF_ALTDOWN define set to 0x2000. Very sadly, that's incorrect and points to bit 13 instead of 29.
+															// In fact, all of these KF flags seem to be one byte less than they should. I don't know the deal with that.
 		USHORT isAltKeyDown = (lParam >> 29) & 1;			// twenty-ninth bit
-		
 
-		// We should ignore keys that go up when they were already up. For now, we send a warning to the debug screen.
+
+															// We should ignore keys that go up when they were already up. For now, we send a warning to the debug screen.
 		USHORT previousStateFlagWasDown = (lParam >> 30) & 1;
-		
-		
-		
 
-		#if DEBUG
+
+
+
+#if DEBUG
+		WCHAR text[128];
+		swprintf_s(text, 128, L"Hook: vKey=%X keydown=%d sc=%x extend=%d Alt=%d raw lParam=%x\n",
+			virtualKeyCode, keyPressed, extractedScancode, isExtended, isAltKeyDown, lParam);
+		OutputDebugString(text);	// <- sends to debug window
+
+		if (!previousStateFlagWasDown && !keyPressed)
+		{
 			WCHAR text[128];
-			swprintf_s(text, 128, L"Hook: vKey=%X keydown=%d sc=%x extend=%d Alt=%d raw lParam=%x\n",
-				virtualKeyCode, keyPressed, extractedScancode, isExtended, isAltKeyDown, lParam);
-			OutputDebugString(text);	// <- sends to debug window
+			swprintf_s(text, 128, L"Hook: Redundant keyup vkey=%X sc=%x ext=%d\n",
+				virtualKeyCode, extractedScancode, isExtended);
+			OutputDebugString(text);
 
-			if (!previousStateFlagWasDown && !keyPressed)
-			{
-				WCHAR text[128];
-				swprintf_s(text, 128, L"Hook: Redundant keyup vkey=%X sc=%x ext=%d\n",
-					virtualKeyCode, extractedScancode, isExtended);
-				OutputDebugString(text);
-			
-			}
-		#endif
-		
+		}
+#endif
+
 
 		/*----Dealing with Pause/Break----*/
 		// In case this is the hook message generated by the Pause/Break key (which generates two Raw Input messages),
@@ -432,9 +430,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// Is pause/break
 			extractedScancode = 0x1d;		// Will wait for (virtual key = 0x13, scancode = 1d) instead.
 											// That's why we don't declare everything const. Things change here.
-		#if DEBUG
+#if DEBUG
 			OutputDebugString(L"Hook: Received a Pause/Break, will look for raw vkey13 sc=1d\n");
-		#endif
+#endif
 		}
 		// It's not necessary to look for the second Raw Input message (vkey = 0xff, sc = 0x45), since no Hook message will find it.
 		// That would only add an extra check statement. Just make sure that any remaps for Pause/Break are set to activate
@@ -448,34 +446,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (virtualKeyCode == VK_SNAPSHOT		// printscreen
 			&& ((extractedScancode == SCANCODE_PRINT_SCREEN		// scancode for prtscn alone or with shift, or with ctrl
 				&& isExtended == 1)
-			|| (extractedScancode == SCANCODE_SYS_REQ		// scancode for prtscn with alt
-				&& isExtended == 0))
+				|| (extractedScancode == SCANCODE_SYS_REQ		// scancode for prtscn with alt
+					&& isExtended == 0))
 			&& keyPressed == 0)		// key up
 		{
 			// we send a keypress down (keyboard name shouldn't matter)
 			LPARAM mockLParam = lParam;
 			mockLParam &= 0x7fffffff;		// set thirty-first bit to 0 (flag for keypress up)
 
-		#if DEBUG
+#if DEBUG
 			OutputDebugString(L"Hook: Up PrintScreen received, will send fake keypress down to self\n");
-		#endif
+#endif
 
 			// This should interrupt processing
 			SendMessage(mainHwnd, WM_HOOK, wParam, mockLParam);
 			// Output value goes nowhere, because there is no real key to be blocked
 		}
-	#if DEBUG
+#if DEBUG
 		else if (virtualKeyCode == VK_SNAPSHOT
 			&& ((extractedScancode == 0x37
 				&& isExtended == 1)
-			|| (extractedScancode == 0x54
-				&& isExtended == 0))
+				|| (extractedScancode == 0x54
+					&& isExtended == 0))
 			&& keyPressed == 1)		// key down
 			OutputDebugString(L"Hook: Received message from self, will look for PrintScreen down before up\n");
-	#endif
+#endif
 		/*----Finished dealing with PrintScreen----*/
-		
-		
+
+
 		// Check the Raw Input buffer to see if this Hook message is supposed to be blocked; WdnProc returns 1 if it is
 		BOOL blockThisHook = FALSE;
 		BOOL recordFound = FALSE;
@@ -495,20 +493,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					// Actually, this doesn't guarantee a match;
 					// Keys in two different keyboards corresponding to the same virtual key may be pressed in rapid succession
 					// We have to assume that people don't do that normally.
-					
-				#if DEBUG
+
+#if DEBUG
 					if (iterator->decision) OutputDebugString(L"Hook: Must block this key.\n");
 					else if (iterator->decision == FALSE) OutputDebugString(L"Hook: Must let this key through.\n");
-				#endif
+#endif
 
-					
+
 					// Now, if the decision was to block the hook, we must act on it at this point, just before popping it
 					if (iterator->decision) {
 
 						if (!iterator->mappedAction->execute(!keyPressed, previousStateFlagWasDown && keyPressed)) {
-						#if DEBUG
+#if DEBUG
 							OutputDebugString(L"Simulation failed!!\n");
-						#endif
+#endif
 						}
 					}
 
@@ -528,16 +526,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		} // end if buffer.empty
 
-		// At this point, recordFound is either TRUE or FALSE, and if TRUE, blockThisHook has the correct choice.
+		  // At this point, recordFound is either TRUE or FALSE, and if TRUE, blockThisHook has the correct choice.
 
-		// Wait for the matching Raw Input message if the decision buffer was empty or the matching record wasn't there
-		
+		  // Wait for the matching Raw Input message if the decision buffer was empty or the matching record wasn't there
 
-		// Variables used for timers are startTime and currentTime
+
+		  // Variables used for timers are startTime and currentTime
 		startTime = GetTickCount();			// <- record start time
 
-		// Will only fall into this if we didn't find the correct record.
-		// It's a lot of work, but hopefully won't happen frequently.
+											// Will only fall into this if we didn't find the correct record.
+											// It's a lot of work, but hopefully won't happen frequently.
 		while (!recordFound)
 		{
 			MSG rawMessage;		// We're peeking the message; that is, we're trusting that the very next raw input message
@@ -554,11 +552,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				if ((currentTime < startTime ? ULONG_MAX - startTime + currentTime : currentTime - startTime) > maxWaitingTime)
 				{
 					// Ignore the Hook message if it exceeded the limit
-				#if DEBUG
-						WCHAR text[128];
-						swprintf_s(text, 128, L"Hook timed out: %X (%d)\n", virtualKeyCode, keyPressed);
-						OutputDebugString(text);
-				#endif
+#if DEBUG
+					WCHAR text[128];
+					swprintf_s(text, 128, L"Hook timed out: %X (%d)\n", virtualKeyCode, keyPressed);
+					OutputDebugString(text);
+#endif
 					return 0;
 				}
 
@@ -578,9 +576,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				rawKeyboardBufferSize = bufferSize;
 				delete[] rawKeyboardBuffer;
 				rawKeyboardBuffer = new BYTE[rawKeyboardBufferSize];
-			#if DEBUG
+#if DEBUG
 				OutputDebugString(L"Needed more space for the delayed raw input message.");
-			#endif
+#endif
 			}
 			// Load data into the buffer
 			GetRawInputData((HRAWINPUT)rawMessage.lParam, RID_INPUT, rawKeyboardBuffer, &rawKeyboardBufferSize, sizeof(RAWINPUTHEADER));
@@ -589,20 +587,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
 
-			// A lot of code here is similar to that in the WM_INPUT case.
-			#if DEBUG
-				WCHAR text[128];		// <- unnecessary allocation, but this is just for debug
-				swprintf_s(text, 128, L"(delayed) Raw Input: virtual key %X scancode %s%s%X (%s)\n",
-					raw->data.keyboard.VKey,		// virtual keycode
-					raw->data.keyboard.Flags & RI_KEY_E0 ? L"e0 " : L"",
-					raw->data.keyboard.Flags & RI_KEY_E1 ? L"e1 " : L"",
-					raw->data.keyboard.MakeCode,
-					raw->data.keyboard.Flags & RI_KEY_BREAK ? L"up" : L"down");		// keydown or keyup (make/break)
-				OutputDebugString(text);
-				memcpy_s(debugText, DEBUG_TEXT_SIZE, text, 128);	// will redraw later
-			#endif
+																// A lot of code here is similar to that in the WM_INPUT case.
+#if DEBUG
+			WCHAR text[128];		// <- unnecessary allocation, but this is just for debug
+			swprintf_s(text, 128, L"(delayed) Raw Input: virtual key %X scancode %s%s%X (%s)\n",
+				raw->data.keyboard.VKey,		// virtual keycode
+				raw->data.keyboard.Flags & RI_KEY_E0 ? L"e0 " : L"",
+				raw->data.keyboard.Flags & RI_KEY_E1 ? L"e1 " : L"",
+				raw->data.keyboard.MakeCode,
+				raw->data.keyboard.Flags & RI_KEY_BREAK ? L"up" : L"down");		// keydown or keyup (make/break)
+			OutputDebugString(text);
+			memcpy_s(debugText, DEBUG_TEXT_SIZE, text, 128);	// will redraw later
+#endif
 
-			// Prepare string buffer for the device name
+																// Prepare string buffer for the device name
 			GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, NULL, &bufferSize);
 			if (bufferSize > keyboardNameBufferSize)
 			{
@@ -610,9 +608,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				keyboardNameBufferSize = bufferSize;
 				delete[] keyboardNameBuffer;
 				keyboardNameBuffer = new WCHAR[keyboardNameBufferSize];
-			#if DEBUG
+#if DEBUG
 				OutputDebugString(L"Needed more space for keyboard name in the delayed raw input message");
-			#endif
+#endif
 			}
 			// Load the device name into the buffer
 			GetRawInputDeviceInfo(raw->header.hDevice, RIDI_DEVICENAME, keyboardNameBuffer, &keyboardNameBufferSize);
@@ -638,7 +636,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					else raw->data.keyboard.Flags |= RI_KEY_BREAK;	// set last bit
 
 					raw->data.keyboard.MakeCode = extractedScancode;				// *You're the same as us*
-					// That'll make this Hook continue, and recognize this delayed message as its match.
+																					// That'll make this Hook continue, and recognize this delayed message as its match.
 				}
 			}
 			// (I wish we could fake RawInput messages. Doesn't seem like so).
@@ -704,7 +702,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				// This is truly the message we were looking for.
 				recordFound = TRUE;		// This will get us out of the loop.
 										// (the other way to exit the loop is by timing out)
-				// But we still didn't evaluate the raw message (it just arrived!)
+										// But we still didn't evaluate the raw message (it just arrived!)
 				Multikeys::PKeystrokeCommand possibleOutput;
 				blockThisHook = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleOutput);
 				// Immediately act on the input if there is one, since this decision won't be stored in the buffer
@@ -720,7 +718,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		}
 
-	#if DEBUG
+#if DEBUG
 		if (blockThisHook)
 		{
 			WCHAR text[128];
@@ -736,44 +734,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			memcpy_s(debugTextBeingBlocked, DEBUG_TEXT_SIZE, text, 128);
 			RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE);
 		}
-	#endif
+#endif
 
 		return blockThisHook;	// exit WndProc, the message caller receives 1 or 0
-		// Message caller is the hook dll. It sends a message to this window (this message) upon receival of a hook signal,
-		// and blocks it if this message returns 1.
+								// Message caller is the hook dll. It sends a message to this window (this message) upon receival of a hook signal,
+								// and blocks it if this message returns 1.
 
 	}	// end of case WM_HOOK
 
 
 	case WM_COMMAND:
+	{
+		int wmId = LOWORD(wParam);
+		// Parse the menu selections:
+		switch (wmId)
 		{
-			int wmId = LOWORD(wParam);
-			// Parse the menu selections:
-			switch (wmId)
-			{
-			case IDM_ABOUT:
-				DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-				break;
-			case IDM_EXIT:
-				DestroyWindow(hWnd);
-				break;
-			default:
-				return DefWindowProc(hWnd, message, wParam, lParam);
-			}
+		case IDM_ABOUT:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			break;
+		case IDM_EXIT:
+			DestroyWindow(hWnd);
+			break;
+		default:
+			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
-		break;
+	}
+	break;
 	case WM_PAINT:
-		{
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hWnd, &ps);
-		#if DEBUG
-			TextOut(hdc, 10, 10, debugText, DEBUG_TEXT_SIZE);
-			TextOut(hdc, 10, 40, debugTextBeingBlocked, DEBUG_TEXT_SIZE);
-			TextOut(hdc, 10, 80, debugTextKeyboardName, 200);
-			EndPaint(hWnd, &ps);
-		#endif
-		}
-		break;
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hWnd, &ps);
+#if DEBUG
+		TextOut(hdc, 10, 10, debugText, DEBUG_TEXT_SIZE);
+		TextOut(hdc, 10, 40, debugTextBeingBlocked, DEBUG_TEXT_SIZE);
+		TextOut(hdc, 10, 80, debugTextKeyboardName, 200);
+		EndPaint(hWnd, &ps);
+#endif
+	}
+	break;
 	case WM_DESTROY:
 		UninstallHook();		// Done using it.
 		PostQuitMessage(0);

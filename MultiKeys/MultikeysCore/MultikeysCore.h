@@ -1,13 +1,12 @@
 // This header based on code by Vít Blecha, developed by Rafael Takahashi
 
-// MultiKeys allows you to selectively remap keys on multiple keyboards, with
+// Multikeys allows you to selectively remap keys on multiple keyboards, with
 // an intuitive interface and no need to learn a scripting language.
 
 #pragma once
 
+#include "stdafx.h"
 #include "resource.h"
-#include "../Remapper/RemapperAPI.h"
-
 
 // Structure of a single record that will be saved in the decisionBuffer
 struct DecisionRecord
@@ -34,5 +33,4 @@ struct DecisionRecord
 		// Constructor
 	}
 };
-
 

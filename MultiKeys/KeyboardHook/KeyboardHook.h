@@ -10,8 +10,6 @@
 // Windows types
 #include <windef.h>
 
-// did not include (or create) resource.h
-
 
 #define HOOKINGRAWINPUTDLL_API __declspec(dllexport)
 

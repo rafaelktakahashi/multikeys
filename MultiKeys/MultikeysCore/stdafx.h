@@ -36,6 +36,7 @@
 #include <shellapi.h>		// to get arguments passed to main
 
 
-
+#include "../Remapper/RemapperAPI.h"		// Remapper static library
+#include "../KeyboardHook/KeyboardHook.h"	// Keyboard Hook DLL, which must be a separate dynamic library.
 
 

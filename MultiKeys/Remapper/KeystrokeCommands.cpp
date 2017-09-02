@@ -7,6 +7,13 @@ namespace Multikeys
 {
 
 	/*
+	IKeystrokeCommand
+	Explanation - the pure virtual destructor declared in IKeystrokeCommand still needs an implementation.
+				This behavior is particular to destructors.
+	*/
+	IKeystrokeCommand::~IKeystrokeCommand() { }
+
+	/*
 	BaseKeystrokeCommand
 	*/
 	

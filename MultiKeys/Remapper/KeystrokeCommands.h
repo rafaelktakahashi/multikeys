@@ -18,6 +18,10 @@ namespace Multikeys
 		EmptyCommand
 	};
 
+	/*
+	BaseKeystrokeCommand - Base class for all commands, for internal use. Inherits from
+	IKeystrokeCommand, which is visible outside this library.
+	*/
 	class BaseKeystrokeCommand : public IKeystrokeCommand
 	{
 	protected:
@@ -25,36 +29,7 @@ namespace Multikeys
 		INPUT VirtualKeyPrototypeDown;
 		INPUT VirtualKeyPrototypeUp;
 
-		BaseKeystrokeCommand()
-		{
-			// Initialize prototypes
-			//
-			// Prototypes exist to remove the derived classes' responsability to initialize their own INPUT
-			// structure every time. This means every derived class contains these prototypes, even if they
-			// don't need them; however, if everything goes correctly, the initialization of this class
-			// should never occur at runtime.
-
-			// When keyeventf_unicode is set, virtual key must be 0,
-			// and the UTF-16 code value is put into wScan
-			// Surrogate pairs require two consecutive inputs
-			unicodePrototype.type = INPUT_KEYBOARD;
-			unicodePrototype.ki.dwExtraInfo = 0;
-			unicodePrototype.ki.dwFlags = KEYEVENTF_UNICODE;
-			unicodePrototype.ki.time = 0;
-			unicodePrototype.ki.wVk = 0;
-
-
-			// Virtual keys are sent with the scancode e0 00 because our hook
-			// will filter these out (to avoid responding to injected keys)
-			VirtualKeyPrototypeDown.type = INPUT_KEYBOARD;
-			VirtualKeyPrototypeDown.ki.dwExtraInfo = 0;
-			VirtualKeyPrototypeDown.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
-			VirtualKeyPrototypeDown.ki.time = 0;
-			VirtualKeyPrototypeDown.ki.wScan = 0;
-
-			VirtualKeyPrototypeUp = VirtualKeyPrototypeDown;
-			VirtualKeyPrototypeUp.ki.dwFlags |= KEYEVENTF_KEYUP;
-		}
+		BaseKeystrokeCommand();
 
 	public:
 
@@ -73,7 +48,7 @@ namespace Multikeys
 	class MacroCommand : public BaseKeystrokeCommand
 	{
 
-	protected:
+	private:
 
 		INPUT * keystrokes;
 		size_t inputCount;
@@ -82,10 +57,7 @@ namespace Multikeys
 	public:
 
 		// STL constructor
-		MacroCommand(std::vector<unsigned short> * const keypresses, bool triggerOnRepeat)
-		{
-			MacroCommand(keypresses->data(), keypresses->size(), triggerOnRepeat);
-		}
+		MacroCommand(std::vector<unsigned short> * const keypresses, bool triggerOnRepeat);
 
 		// unsigned short * keypressSequence - array of 16-bit values, each containing the virtual key code to be
 		//		sent (1 byte value), and also the high bit (most significant) set in case of a keyup. Every keypress
@@ -93,46 +65,13 @@ namespace Multikeys
 		// USHORT _inputCount - number of elements in keypressSequence
 		// bool _triggerOnRepeat - true if this command should be triggered multiple times if user
 		//		holds down the key
-		MacroCommand(const unsigned short *const keypressSequence, const size_t _inputCount, const bool _triggerOnRepeat)
-			: BaseKeystrokeCommand(), inputCount(_inputCount), triggerOnRepeat(_triggerOnRepeat)
-		{
-			if (keypressSequence == nullptr)
-				return;
+		MacroCommand(const unsigned short *const keypressSequence, const size_t _inputCount, const bool _triggerOnRepeat);
 
-			keystrokes = new INPUT[_inputCount];
+		KeystrokeOutputType getType() const override;
 
-			bool keyup = 0;
-			USHORT virtualKeyCode = 0;
-			for (unsigned int i = 0; i < _inputCount; i++)
-			{
-				keyup = (keypressSequence[i] >> 15) & 1;
-				virtualKeyCode = keypressSequence[i] & 0xff;
-				keystrokes[i] = INPUT(VirtualKeyPrototypeDown);
-				keystrokes[i].ki.wVk = virtualKeyCode;
-				if (keyup) keystrokes[i].ki.dwFlags |= KEYEVENTF_KEYUP;
-			}
+		bool execute(bool keyup, bool repeated) const override;
 
-		}	// end of constructor
-
-		
-		KeystrokeOutputType getType() const override
-		{
-			return KeystrokeOutputType::MacroCommand;
-		}
-
-		bool execute(bool keyup, bool repeated) const override
-		{
-			if (keyup)
-				return TRUE;
-			else if (!repeated || (repeated && triggerOnRepeat))
-				return (SendInput(inputCount, keystrokes, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
-			else return TRUE;
-		}
-
-		~MacroCommand() override
-		{
-			delete[] keystrokes;
-		}
+		~MacroCommand() override;
 
 	};
 
@@ -149,41 +88,7 @@ namespace Multikeys
 
 		// Constructor
 		// The caller may let this container go out of scope.
-		UnicodeCommand(const std::vector<unsigned int>& codepoints, const bool triggerOnRepeat)
-		{
-			inputCount = codepoints.size();
-			for (size_t i = 0; i < codepoints.size(); i++)
-			{
-				if (codepoints[i] > 0xffff)
-					inputCount++;		// <- correct the amount of inputs
-			}
-			keystrokes = new INPUT[inputCount];
-
-			size_t currentIndex = 0;
-			for (size_t i = 0; i < inputCount; i++)
-			{
-				if (codepoints[i] <= 0xffff)
-				{
-					// one UTF-16 code value, one simulated keypress
-					keystrokes[currentIndex] = INPUT(unicodePrototype);
-					keystrokes[currentIndex].ki.wScan = codepoints[i];
-					currentIndex++;
-					continue;
-				}
-				else
-				{
-					// one UTF-16 surrogate pair, two simulated keypresses
-					WORD highSurrogate = 0xd800 + ((codepoints[i] - 0x10000) >> 10);
-					WORD lowSurrogate = 0xdc00 + (codepoints[i] & 0x3ff);
-					keystrokes[currentIndex] = INPUT(unicodePrototype);
-					keystrokes[currentIndex + 1] = INPUT(unicodePrototype);
-					keystrokes[currentIndex].ki.wScan = highSurrogate;
-					keystrokes[currentIndex + 1].ki.wScan = lowSurrogate;
-					currentIndex += 2;
-					continue;
-				}
-			}
-		}
+		UnicodeCommand(const std::vector<unsigned int>& codepoints, const bool triggerOnRepeat);
 
 		// UINT codepoints - array of UINTs, each containing a single Unicode code point
 		//		identifying the character to be sent. All characters in this array will
@@ -192,75 +97,16 @@ namespace Multikeys
 		// UINT _inputCount - number of elements in codepoints
 		// bool _triggerOnRepeat - true if this command should be triggered multiple times if user
 		//		holds down the key
-		UnicodeCommand(const UINT * const codepoints, const UINT _inputCount, const bool _triggerOnRepeat)
-			: BaseKeystrokeCommand(), inputCount(_inputCount), triggerOnRepeat(_triggerOnRepeat)
-		{
-			if (codepoints == nullptr) return;
+		UnicodeCommand(const UINT * const codepoints, const UINT _inputCount, const bool _triggerOnRepeat);
 
-			for (unsigned int i = 0; i < _inputCount; i++)
-			{
-				if (codepoints[i] > 0xffff)
-					inputCount++;			// <- actual amount of inputs
-			}
-			keystrokes = new INPUT[inputCount];
+		KeystrokeOutputType getType() const override;
 
-			unsigned int currentIndex = 0;
-			for (unsigned int i = 0; i < _inputCount; i++)
-			{
-				if (codepoints[i] <= 0xffff)
-				{
-					// one UTF-16 code value, one simulated keypress
-					keystrokes[currentIndex] = INPUT(unicodePrototype);
-					keystrokes[currentIndex].ki.wScan = codepoints[i];
-					currentIndex++;
-					continue;		// next for
-				}
-				else
-				{
-					// UTF-16 surrogate pair, two simulated keypresses
-					USHORT highSurrogate = 0xd800 + ((codepoints[i] - 0x10000) >> 10);
-					USHORT lowSurrogate = 0xdc00 + (codepoints[i] & 0x3ff);
-					keystrokes[currentIndex] = INPUT(unicodePrototype);
-					keystrokes[currentIndex + 1] = INPUT(unicodePrototype);
-					keystrokes[currentIndex].ki.wScan = highSurrogate;
-					keystrokes[currentIndex + 1].ki.wScan = lowSurrogate;
-					currentIndex += 2;
-					continue;
-				}
-			}	// end for
-
-		}	// end constructor
-
-		KeystrokeOutputType getType() const override
-		{
-			return KeystrokeOutputType::UnicodeCommand;
-		}
-
-		bool execute(bool keyup, bool repeated) const override
-		{
-			if (keyup)	// Unicode keystrokes do not activate on release
-				return TRUE;
-			else if (!repeated || (repeated && triggerOnRepeat))
-				return (SendInput(inputCount, keystrokes, sizeof(INPUT)) == inputCount ? TRUE : FALSE);
-			else return TRUE;
-		}
+		bool execute(bool keyup, bool repeated) const override;
 
 		// Comparing unicode keystrokes is important for a dead key.
-		inline bool operator==(const UnicodeCommand& rhs) const
-		{
-			if (inputCount != rhs.inputCount) return false;
-			// One by one, compare the keystroke inputs by codepoint.
-			// We trust that the rest of each INPUT structure is the same
-			for (size_t i = 0; i < inputCount; i++)
-				if (this->keystrokes[i].ki.wScan != rhs.keystrokes[i].ki.wScan)
-					return false;
-			return true;
-		}
+		inline bool operator==(const UnicodeCommand& rhs) const;
 
-		~UnicodeCommand() override
-		{
-			delete[] keystrokes;
-		}
+		~UnicodeCommand() override;
 	};
 
 
@@ -279,34 +125,13 @@ namespace Multikeys
 		// std::wstring arguments - arguments to be passed to executable; multiple arguments must be
 		//		separated by space
 		// In practice, the file does not need to be an .exe executable specifically.
-		ExecutableCommand(std::wstring filename, std::wstring arguments = std::wstring())
-			: BaseKeystrokeCommand(), filename(filename), arguments(arguments)
-		{}
+		ExecutableCommand(std::wstring filename, std::wstring arguments = std::wstring());
 
+		KeystrokeOutputType getType() const override;
 
-		KeystrokeOutputType getType() const override
-		{
-			return KeystrokeOutputType::ScriptCommand;
-		}
+		bool execute(bool keyup, bool repeated) const override;
 
-		bool execute(bool keyup, bool repeated) const override
-		{
-			if (repeated || keyup) return TRUE;
-
-			// start process at filename
-
-			HINSTANCE retVal =
-				ShellExecute(NULL, L"open", filename.c_str(), arguments.c_str(), NULL, SW_SHOWNORMAL);
-			if ((LONG)retVal <= 32)
-				return FALSE;
-			// TODO: handle errors
-
-
-			return TRUE;
-		}
-
-		~ExecutableCommand() override
-		{ }
+		~ExecutableCommand() override;
 
 	};
 
@@ -336,51 +161,8 @@ namespace Multikeys
 		//		does not correspond to a remap.
 		// vKey - Virtual key code of the keystroke that generated this. Only for checking
 		//		special keys (esc, tab), and only present (non-zero) if command is null.
-		void _setNextCommand(BaseKeystrokeCommand*const command, const USHORT vKey)
-		{
-			if (command == nullptr)
-			{
-				// means that the input is not supposed to be blocked
-				// Might implement: Do not send this dead key's character if next key is either
-				//		escape or tab.
-				_nextCommand = nullptr;
-				_nextCommandType = 1;
-			}
-			else
-			{
-				// first, make sure that the command is unicode (dead keys inherit from it):
+		void _setNextCommand(BaseKeystrokeCommand*const command, const USHORT vKey);
 
-				// All those that are not unicode are just placed as next command
-				if (command->getType() != KeystrokeOutputType::UnicodeCommand
-					&& command->getType() != KeystrokeOutputType::DeadKeyCommand)
-				{
-					_nextCommand = command;
-					_nextCommandType = 3;
-					return;
-				}
-
-				// It's a unicode (or dead key):
-				// compare its input sequence with the replacement list
-				// The map of replacements contains pointers, so using find() would actually
-				//		search by pointer. That doesn't work.
-				for (auto iterator = replacements.begin(); iterator != replacements.end(); iterator++)
-				{
-					// try to find the correct one (dereference pointers before comparing)
-					// The actual UnicodeCommand objects are different, so comparing pointers won't work.
-					if (*(iterator->first) == *(dynamic_cast<UnicodeCommand*>(command)))
-					{
-					// replace it
-					_nextCommand = iterator->second;
-					_nextCommandType = 4;
-					return;
-					}
-				}
-				// didn't find a suitable replacement
-				_nextCommand = command;
-				_nextCommandType = 2;
-
-			}
-		}
 	public:
 
 
@@ -389,10 +171,8 @@ namespace Multikeys
 
 
 		// STL constructor
-		DeadKeyCommand(const std::vector<unsigned int>& const independentCodepoints,
-			const std::unordered_map<UnicodeCommand*, UnicodeCommand*>& replacements)
-			: UnicodeCommand(independentCodepoints, true),
-			replacements(replacements) { }
+		DeadKeyCommand(const std::vector<unsigned int>& independentCodepoints,
+			const std::unordered_map<UnicodeCommand*, UnicodeCommand*>& replacements);
 
 		// UINT* independentCodepoints - the Unicode character for this dead key
 		//								Array may be deleted after passing
@@ -405,14 +185,7 @@ namespace Multikeys
 		// UINT replacements_count - number of items in the previous arrays
 		DeadKeyCommand(UINT*const independentCodepoints, UINT const independentCodepointsCount,
 			UnicodeCommand**const replacements_from, UnicodeCommand**const replacements_to,
-			UINT const replacements_count)
-			: UnicodeCommand(independentCodepoints, independentCodepointsCount, true),
-			_nextCommand(nullptr), _nextCommandType(0)
-		{
-			for (unsigned int i = 0; i < replacements_count; i++) {
-				replacements[replacements_from[i]] = replacements_to[i];
-			}
-		}	// end of constructor
+			UINT const replacements_count);
 
 
 
@@ -420,64 +193,19 @@ namespace Multikeys
 		//		what action to take when execute() is called on it.
 		// IkeystrokeOutput* const command - pointer to the command to be executed right after this key;
 		//		might be replaced if a match exists.
-		void setNextCommand(BaseKeystrokeCommand*const command)
-		{
-			_setNextCommand(command, 0);
-		}
+		void setNextCommand(BaseKeystrokeCommand*const command);
 
 		// Call when next input is received, before using this dead key
 		// const USHORT vKey - the virtual key input by the user
-		void setNextCommand(const USHORT vKey)
-		{
-			_setNextCommand(nullptr, vKey);
-		}
+		void setNextCommand(const USHORT vKey);
 
 
-		KeystrokeOutputType getType() const override
-		{
-			return KeystrokeOutputType::DeadKeyCommand;
-		}
+		KeystrokeOutputType getType() const override;
 
 
-		bool execute(bool keyup, bool repeated = FALSE) const override
-		{
-			if (keyup) return TRUE;	// because unicode keyups do nothing
+		bool execute(bool keyup, bool repeated = FALSE) const override;
 
-									// First, check for an edge case: If the next input is this one
-									// That means infinite recursion because there's only one instance
-									// of each given dead key (so every of its pointers will point there)
-			if (_nextCommand == (BaseKeystrokeCommand*)this)
-			{
-				// just send this key twice
-				SendInput(inputCount, keystrokes, sizeof(INPUT));
-				SendInput(inputCount, keystrokes, sizeof(INPUT));
-				// then clear the next pointer
-				_nextCommand = nullptr;
-			}
-
-			// there is a replacement:
-			if (_nextCommandType == 4)
-			{
-				return (_nextCommand->execute(keyup, repeated));
-			}
-
-			// Situation is normal; send this key, then the next
-			SendInput(inputCount, keystrokes, sizeof(INPUT));
-			if (_nextCommand != nullptr)
-				return (_nextCommand->execute(keyup, repeated));
-			else
-				return TRUE;
-		}
-
-		~DeadKeyCommand() override
-		{
-			// is it necessary? --> delete _nextCommand;
-			for (auto iterator = replacements.begin(); iterator != replacements.end(); iterator++)
-			{
-				delete iterator->first;
-				delete iterator->second;
-			}
-		}
+		~DeadKeyCommand() override;
 
 	};
 

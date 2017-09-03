@@ -13,6 +13,15 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/sax/HandlerBase.hpp>
 
+// Telling the linker to use the correct version of xerces library
+// Xercesc was obtained through NuGet, but it seems the library doesn't automatically get linked
+// so we do it manually here. The paths start at $(TargetDir), and the v100 probably refers to XML 1.0.
+#ifdef _DEBUG
+#pragma comment(lib, "..\\packages\\xercesc.3.1.1\\build\\native\\lib\\Win32\\v100\\Debug\\xerces-c_3D.lib")
+#else
+#pragma comment(lib, "..\\packages\\xercesc.3.1.1\\build\\native\\lib\\Win32\\v100\\Release\\xerces-c_3.lib")
+#endif
+
 // implementation of readSettings in Remapper class
 
 

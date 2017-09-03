@@ -8,9 +8,9 @@ namespace Multikeys
 
 	/*
 	IKeystrokeCommand
-	Explanation - the pure virtual destructor declared in IKeystrokeCommand still needs an implementation.
-				This behavior is particular to destructors.
 	*/
+
+	// destructors need an implementation, even if they are pure virtual.
 	IKeystrokeCommand::~IKeystrokeCommand() { }
 
 	/*
@@ -47,6 +47,9 @@ namespace Multikeys
 		VirtualKeyPrototypeUp = VirtualKeyPrototypeDown;
 		VirtualKeyPrototypeUp.ki.dwFlags |= KEYEVENTF_KEYUP;
 	}
+
+	// pure virtual destructor still needs implementation.
+	BaseKeystrokeCommand::~BaseKeystrokeCommand() { }
 
 
 

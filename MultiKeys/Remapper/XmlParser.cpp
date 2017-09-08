@@ -8,6 +8,8 @@
 #include "Scancode.h"
 #include "KeystrokeCommands.h"
 
+#include <stdexcept>
+
 // Xerces
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -23,6 +25,7 @@ const wchar_t* xmlch_to_wcs(const XMLCh* from)
 // helper function to build a wstring from a const XMLCh*.
 std::wstring xmlch_to_wstring(const XMLCh* from)
 {
+	if (!from) throw std::invalid_argument("XMLCh* argument was null.");
 	auto u16 = std::u16string(from);
 	return std::wstring(u16.begin(), u16.end());
 }
@@ -131,9 +134,12 @@ namespace Multikeys
 		this->keyboards.assign(keyboards, keyboards + keyboardCount);	// and thus "this" is the remapper
 
 																		// At the very end
-		document->release();
+		
+		// apparently we can't free the parser and also release the document. Doing both causes an exception.
+		// document->release();
 		delete parser;
 		delete errorHandler;
+		
 		try
 		{
 			xercesc::XMLPlatformUtils::Terminate();
@@ -266,7 +272,7 @@ bool ParseModifier(const PXmlElement modElement, OUT ModifierStateMap**const pMo
 		// get name
 		std::wstring modifierName = xmlch_to_wstring(thisElement->getAttribute(u"Name"));
 		// get value
-		std::wstring modifierValue = xmlch_to_wstring(thisElement->getNodeValue());
+		std::wstring modifierValue = xmlch_to_wstring(thisElement->getTextContent());
 		unsigned int iModifierValue = 0;
 		try
 		{
@@ -357,7 +363,7 @@ bool ParseLevel(const PXmlElement lvlElement, OUT Level** const pLevel)
 		PXmlNode modifier = modifierList->item(i);
 		if (modifier->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
 			return false;		// there was a non-element "modifier"
-		std::wstring modifierName = xmlch_to_wstring(modifier->getNodeValue());
+		std::wstring modifierName = xmlch_to_wstring(modifier->getTextContent());
 		modifierCombination.push_back(modifierName);		// <- adds new modifier name to necessary modifiers
 	}
 
@@ -526,14 +532,14 @@ bool ParseExecutable(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *co
 		return false;
 	if (pathElementList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
 		return false;
-	std::wstring path = xmlch_to_wstring(pathElementList->item(0)->getNodeValue());
+	std::wstring path = xmlch_to_wstring(pathElementList->item(0)->getTextContent());
 
 	PXmlNodeList parameterElementList = rmpElement->getElementsByTagName(u"parameter");
 	if (parameterElementList->getLength() == 1)
 	{
 		if (parameterElementList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
 			return false;
-		std::wstring parameter = xmlch_to_wstring(parameterElementList->item(0)->getNodeValue());
+		std::wstring parameter = xmlch_to_wstring(parameterElementList->item(0)->getTextContent());
 
 		*pCommand =
 			new ExecutableCommand(path, parameter);

@@ -14,8 +14,8 @@
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
-WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+WCHAR szTitle[MAX_LOADSTRING] = L"Multikeys Core";                  // The title bar text
+WCHAR szWindowClass[MAX_LOADSTRING] = L"Multikeys Core";            // the main window class name
 
 
 												// Handle to the main executable window
@@ -72,17 +72,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// I guess.
 
 	// Initialize global strings
-	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-	LoadStringW(hInstance, IDC_MULTIKEYS, szWindowClass, MAX_LOADSTRING);
-	MyRegisterClass(hInstance);
+	// LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+	// LoadStringW(hInstance, IDC_MULTIKEYS, szWindowClass, MAX_LOADSTRING);
+	if (!MyRegisterClass(hInstance))
+	{
+		DWORD ret = GetLastError();	// debug to look at return value
+		return FALSE;
+	}
 
 	// Perform application initialization:
 	if (!InitInstance(hInstance, nCmdShow))
 	{
+		DWORD ret = GetLastError();
 		return FALSE;
 	}
 
-	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MULTIKEYS));
+	// There are no acccelerators for this application.
+	// HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MULTIKEYS));
 
 	MSG msg;
 
@@ -120,8 +126,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 									// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0))
 	{			// We ignore all accelerators; the point of this is that the user makes their own.
-				// if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))				
-				// {
+		// if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))				
+		// {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 		// }
@@ -139,21 +145,30 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)		// receives a handle to an application instance
 {
-	WNDCLASSEXW wcex;
+	WNDCLASSEXW wcex = { };
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	// wcex.style = CS_HREDRAW | CS_VREDRAW;
+
+	// Pointer to the window procedure
 	wcex.lpfnWndProc = WndProc;
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
+
+	// wcex.cbClsExtra = 0;
+	// wcex.cbWndExtra = 0;
+
+	// Handle to the application instance
 	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MULTIKEYS));
-	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_MULTIKEYS);
+
+	// wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MULTIKEYS));
+	// wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	// wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	// wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_MULTIKEYS);
+
+	// String that identified the window class
 	wcex.lpszClassName = szWindowClass;
-	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+
+	// wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassExW(&wcex);
 }
@@ -186,9 +201,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	mainHwnd = hWnd;
 
 
-	// Show the window. This might need to go away someday.
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
+	// Show the window.
+	// ShowWindow(hWnd, nCmdShow);
+	// UpdateWindow(hWnd);
 
 
 	// Register for receiving Raw Input for keyboards

@@ -1,0 +1,11 @@
+prefix=F:/Programming/libs/xercesc_32_debug
+exec_prefix=F:/Programming/libs/xercesc_32_debug
+libdir=F:/Programming/libs/xercesc_32_debug/lib
+includedir=F:/Programming/libs/xercesc_32_debug/include
+
+Name: Xerces-C++
+Description: Validating XML parser library for C++
+Version: 
+Libs: -LF:/Programming/libs/xercesc_32_debug/lib -lxerces-c
+Libs.private: 
+Cflags: -IF:/Programming/libs/xercesc_32_debug/include

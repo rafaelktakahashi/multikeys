@@ -1,0 +1,2 @@
+These folders must not be named "Debug", "Release", or some other names because the .gitignore will ignore them.
+Instead, $(Platform)_$(Configuration) should be used to find them.

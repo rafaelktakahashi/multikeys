@@ -73,10 +73,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)MultikeysCoreOutput\$(Configuration)</OutDir>
     <IntDir>Intermediate\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)MultikeysCoreOutput\$(Configuration)</OutDir>
     <IntDir>Intermediate\$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -89,10 +98,11 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <Lib>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\lib\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>robocopy "$(SolutionDir)packages\xercesc.redist.3.1.1\build\native\bin\Win32\v110\$(Configuration)" "$(OutputPath)\"
+      <Command>robocopy "$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\bin" "$(OutputPath)\" *.dll
 exit 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -106,6 +116,13 @@ exit 0</Command>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <Lib>
+      <AdditionalDependencies>$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\lib\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <PostBuildEvent>
+      <Command>robocopy "$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\bin" "$(OutputPath)\" *.dll
+exit 0</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -122,10 +139,10 @@ exit 0</Command>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\lib\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
-      <Command>robocopy "$(SolutionDir)packages\xercesc.redist.3.1.1\build\native\bin\Win32\v110\$(Configuration)\\" "$(OutputPath)\"
+      <Command>robocopy "$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\bin" "$(OutputPath)\" *.dll
 exit 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -143,6 +160,13 @@ exit 0</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalDependencies>$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\lib\*.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <PostBuildEvent>
+      <Command>robocopy "$(ProjectDir)Dependencies\xercesc\$(Platform)_$(Configuration)\bin" "$(OutputPath)\" *.dll
+exit 0</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -172,19 +196,6 @@ exit 0</Command>
     </ClCompile>
     <ClCompile Include="XmlParser.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\xercesc.redist.3.1.1\build\native\xercesc.redist.targets" Condition="Exists('..\packages\xercesc.redist.3.1.1\build\native\xercesc.redist.targets')" />
-    <Import Project="..\packages\xercesc.3.1.1\build\native\xercesc.targets" Condition="Exists('..\packages\xercesc.3.1.1\build\native\xercesc.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\xercesc.redist.3.1.1\build\native\xercesc.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xercesc.redist.3.1.1\build\native\xercesc.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\xercesc.3.1.1\build\native\xercesc.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xercesc.3.1.1\build\native\xercesc.targets'))" />
-  </Target>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

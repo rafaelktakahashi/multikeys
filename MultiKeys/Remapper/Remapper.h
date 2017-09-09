@@ -27,7 +27,7 @@ namespace Multikeys
 		bool evaluateKey(
 			RAWKEYBOARD* const keypressed,
 			wchar_t* const deviceName,
-			OUT PKeystrokeCommand* const out_action) const override;
+			OUT PKeystrokeCommand* const out_action) override;
 
 		~Remapper() override;
 

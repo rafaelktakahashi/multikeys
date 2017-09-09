@@ -48,7 +48,7 @@ namespace Multikeys
 			RAWKEYBOARD* const keypressed,
 			WCHAR* const deviceName,
 			OUT PKeystrokeCommand* const out_action
-		) const = 0;
+		)= 0;
 
 		virtual ~IRemapper() = 0;
 

@@ -15,7 +15,7 @@ namespace Multikeys
 		// Type RAWKEYBOARD is from the WinAPI
 		RAWKEYBOARD* const keypressed,
 		wchar_t* const deviceName,
-		OUT PKeystrokeCommand* const out_action) const
+		OUT PKeystrokeCommand* const out_action)
 	{
 		// Check each keyboard until name matches,
 		// then call its method for checking a key
@@ -30,8 +30,11 @@ namespace Multikeys
 				this->workScancode.flgE0 = keypressed->Flags & RI_KEY_E0;
 				this->workScancode.flgE1 = keypressed->Flags & RI_KEY_E1;
 				this->workScancode.makeCode = keypressed->MakeCode & 0xff;
-				return ((*it)->evaluateKey(this->workScancode, keypressed->VKey & 0xff,
-					(keypressed->Flags & RI_KEY_BREAK) == RI_KEY_BREAK, out_action)
+				return (
+						(*it)->evaluateKey(this->workScancode,
+								keypressed->VKey & 0xff,
+								(keypressed->Flags & RI_KEY_BREAK) == RI_KEY_BREAK,
+								out_action)
 					);
 			}
 		}

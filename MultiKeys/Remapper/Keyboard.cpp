@@ -11,8 +11,18 @@ namespace Multikeys
 		: levels(levels), modifierStateMap(modifiers), deviceName(name)
 	{
 		noAction = new EmptyCommand();
-		activeLevel = nullptr;
 		activeDeadKey = nullptr;
+
+		// Initialize the current level to whichever level activates with no modifier
+		for (auto it = this->levels.begin(); it != this->levels.end(); it++)
+		{
+			if (this->modifierStateMap->checkState(*it))
+			{
+				this->activeLevel = *it;
+				break;
+			}
+			this->activeLevel = nullptr;
+		}
 	}
 
 

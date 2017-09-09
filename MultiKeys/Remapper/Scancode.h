@@ -37,9 +37,9 @@ namespace Multikeys
 	inline bool operator==(const Scancode& lhs, const Scancode& rhs)
 	{
 		return (
-			lhs.flgE0 != rhs.flgE0 ? false :
-			lhs.flgE1 != rhs.flgE1 ? false :
-			lhs.makeCode != rhs.makeCode
+			lhs.flgE0 != rhs.flgE0 ? false :		// If the E0 flag is different, == returns false
+			lhs.flgE1 != rhs.flgE1 ? false :		// else, if the E1 flag is different, == returns false
+			lhs.makeCode == rhs.makeCode			// else, compare the scancodes.
 			);
 	}
 	inline bool operator!=(const Scancode& lhs, const Scancode& rhs)
@@ -47,11 +47,19 @@ namespace Multikeys
 		return (
 			lhs.flgE0 == rhs.flgE0 ? false :
 			lhs.flgE1 == rhs.flgE1 ? false :
-			lhs.makeCode == rhs.makeCode
+			lhs.makeCode != rhs.makeCode
 			);
 	}
-	inline bool operator<(const Scancode& lhs, const Scancode& rhs) { return lhs.makeCode < rhs.makeCode; }
-	inline bool operator>(const Scancode& lhs, const Scancode& rhs) { return lhs.makeCode > rhs.makeCode; }
+	inline bool operator<(const Scancode& lhs, const Scancode& rhs)
+	{
+		return ( (lhs.makeCode) ^ (lhs.flgE0 << 8) ^ (lhs.flgE1 << 9) )
+			< ( (rhs.makeCode) ^ (rhs.flgE0 << 8) ^ (rhs.flgE1 << 9) );
+	}
+	inline bool operator>(const Scancode& lhs, const Scancode& rhs)
+	{
+		return ( (lhs.makeCode) ^ (lhs.flgE0 << 8) ^ (lhs.flgE1 << 9) )
+			> ( (rhs.makeCode) ^ (rhs.flgE0 << 8) ^ (rhs.flgE1 << 9) );
+	}
 	inline bool operator<=(const Scancode& lhs, const Scancode& rhs) { return !operator>(lhs, rhs); }
 	inline bool operator>=(const Scancode& lhs, const Scancode& rhs) { return !operator<(lhs, rhs); }
 

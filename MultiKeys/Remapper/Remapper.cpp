@@ -12,6 +12,7 @@ namespace Multikeys
 	Remapper::Remapper() { }
 
 	bool Remapper::evaluateKey(
+		// Type RAWKEYBOARD is from the WinAPI
 		RAWKEYBOARD* const keypressed,
 		wchar_t* const deviceName,
 		OUT PKeystrokeCommand* const out_action) const
@@ -22,7 +23,9 @@ namespace Multikeys
 			it != keyboards.end();
 			it++)
 		{
-			if (wcscmp(deviceName, (*it)->deviceName.c_str()))
+			
+			// If keyboard name matches:
+			if (wcscmp(deviceName, (*it)->deviceName.c_str()) == 0)
 			{
 				this->workScancode.flgE0 = keypressed->Flags & RI_KEY_E0;
 				this->workScancode.flgE1 = keypressed->Flags & RI_KEY_E1;

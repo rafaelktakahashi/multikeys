@@ -775,7 +775,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
-	case WM_PAINT:
+	case WM_PAINT: break;		// we break because the window is no longer shown. May remove this code completely.
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);

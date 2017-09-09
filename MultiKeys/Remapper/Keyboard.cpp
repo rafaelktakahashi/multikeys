@@ -1,13 +1,19 @@
 #include "stdafx.h"
 #include "Keyboard.h"
+#include "KeystrokeCommands.h"
 
 // Implementation of methods defined in Keyboard.h
 
 namespace Multikeys
 {
-	Keyboard::Keyboard(const std::vector<Level*>& levels, ModifierStateMap* modifiers)
-		: levels(levels), modifierStateMap(modifiers)
-	{ }
+	Keyboard::Keyboard(const std::wstring name,
+		const std::vector<Level*>& levels, ModifierStateMap* modifiers)
+		: levels(levels), modifierStateMap(modifiers), deviceName(name)
+	{
+		noAction = new EmptyCommand();
+		activeLevel = nullptr;
+		activeDeadKey = nullptr;
+	}
 
 
 	bool Keyboard::_updateKeyboardState(Scancode sc, bool flag_keyup)

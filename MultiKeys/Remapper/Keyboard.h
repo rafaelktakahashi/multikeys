@@ -41,11 +41,11 @@ namespace Multikeys
 		// Public name of this device; wide string in conformity with the Raw Input API.
 		const std::wstring deviceName;
 
-		
+		// name - Name to serve as unique identifier for this keyboard.
 		// levels - Pointers to levels; may delete after calling this.
 		// modifers - structure of ModiferStateMap already initialized with Modifiers
 		//			ownership of pointer is transferred to this Keyboard object.
-		Keyboard(const std::vector<Level*>& levels, ModifierStateMap* modifiers);
+		Keyboard(const std::wstring name, const std::vector<Level*>& levels, ModifierStateMap* modifiers);
 
 		// Receives information about a keypress, and returns true if the keystroke should
 		// be blocked.

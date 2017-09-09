@@ -118,8 +118,10 @@ namespace Multikeys
 		}
 		keystrokes = new INPUT[inputCount];
 
+		// Keep track of index inside the INPUT array:
 		size_t currentIndex = 0;
-		for (size_t i = 0; i < inputCount; i++)
+		// Loop must use the amount of codepoints in vector, not the corrected amount of inputs:
+		for (size_t i = 0; i < codepoints.size(); i++)
 		{
 			if (codepoints[i] <= 0xffff)
 			{

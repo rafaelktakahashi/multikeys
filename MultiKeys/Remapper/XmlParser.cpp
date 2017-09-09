@@ -130,8 +130,8 @@ namespace Multikeys
 		}
 
 		// Set!
-		this->keyboards.clear();		// Remember that this method is an implementation of Remapper::loadSettings()
-		this->keyboards.assign(keyboards, keyboards + keyboardCount);	// and thus "this" is the remapper
+		this->keyboards.clear();		// 'this' refers to this instance of Remapper.
+		this->keyboards.assign(keyboards, keyboards + keyboardCount);
 
 																		// At the very end
 		
@@ -205,7 +205,7 @@ bool ParseDocument(const PXmlDocument document,
 bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard)
 {
 	// Get name
-	const XMLCh* keyboardName = kbElement->getAttribute(u"Name");
+	std::wstring keyboardName = xmlch_to_wstring( kbElement->getAttribute(u"Name") );
 	// Keyboards also have an alias attribute, but that's for the UI
 
 	// There should be one "modifiers" tag:
@@ -216,10 +216,11 @@ bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard)
 	if (modifierElement->getNodeType() != XmlNode::ELEMENT_NODE)
 		return false;
 	// Get pointer to modifier state map
-	ModifierStateMap * ptrModStateMap;
+	ModifierStateMap * ptrModStateMap = nullptr;
 	// Pass it to the function that will instantiate it
 	if (!ParseModifier((PXmlElement)modifierElement, &ptrModStateMap))
 		return false;
+	if (!ptrModStateMap) return false;
 	// ptrModStateMap should now point to an instantiated modifier state map.
 	// We'll instantiate it after making all levels
 
@@ -237,18 +238,19 @@ bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard)
 		PXmlElement levelElement = (PXmlElement)levelElements->item(i);
 
 		// Declare a pointer to level
-		Level* pLevel;
+		Level* pLevel = nullptr;
 		// This call will place an actual instance there
 		if (!ParseLevel(levelElement, &pLevel))
 			return false;
 		// Add the new instance into the vector
+		if (!pLevel) return false;
 		levelVector.push_back(pLevel);
 		// The pointer dies, but not the object.
 	}
 
 	// levelArray is ready, and so is the modifier state map
 	*pKeyboard =
-		new Keyboard(levelVector, ptrModStateMap);
+		new Keyboard(keyboardName, levelVector, ptrModStateMap);
 
 	return true;
 }
@@ -374,7 +376,7 @@ bool ParseLevel(const PXmlElement lvlElement, OUT Level** const pLevel)
 	PXmlNodeList allChildren = lvlElement->getChildNodes();
 	std::unordered_map<Scancode, BaseKeystrokeCommand*> layout;
 
-	for (XMLSize_t i = 0; i < modifierList->getLength(); i++)
+	for (XMLSize_t i = 0; i < allChildren->getLength(); i++)
 	{
 		PXmlNode child = allChildren->item(i);
 		if (child->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
@@ -403,17 +405,22 @@ bool ParseLevel(const PXmlElement lvlElement, OUT Level** const pLevel)
 			if (!ParseDeadKey((PXmlElement)child, &commandPointer))
 				return false;
 		}
-		else return false;
+		// The only other kind of node that can appear is a modifier,
+		// and those are read elsewhere.
+		else continue;
+
+
 		// commandPointer should contain a command now
+		// no matter what kind of node was read (unicode, macro, etc), it must contain a Scancode attribute
 		std::wstring scancode = xmlch_to_wstring(((PXmlElement)child)->getAttribute(u"Scancode"));
 		try
 		{
 			unsigned short iScancode = std::stoi(scancode.c_str(), 0, 16);
 			if (iScancode <= 0xFF)
-			{
-				Scancode sc = Scancode(iScancode & 0xFF);
-				layout[sc] = commandPointer;
-			}
+			{													// remember that layout
+				Scancode sc = Scancode(iScancode & 0xFF);		// is a map!
+				layout[sc] = commandPointer;					// operator[] creates a
+			}													// new entry.
 			else
 			{
 				Scancode sc = Scancode(iScancode >> 8, iScancode & 0xFF);
@@ -426,14 +433,12 @@ bool ParseLevel(const PXmlElement lvlElement, OUT Level** const pLevel)
 			return false;
 		}
 
-
-		*pLevel =
-			new Level(modifierCombination, layout);
-		// It's okay that these containers die at the end of this function.
-		// Level will copy them in its constructor.
-
 	}
 
+	*pLevel =
+		new Level(modifierCombination, layout);
+	// It's okay that these containers die at the end of this function.
+	// Level will copy them in its constructor.
 
 	return true;
 }
@@ -459,7 +464,7 @@ bool ParseUnicode(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const
 		try
 		{
 			unsigned int codepoint = std::stoi(
-				xmlch_to_wcs(codepointElements->item(i)->getNodeValue()),
+				xmlch_to_wcs(codepointElements->item(i)->getTextContent()),
 				0,
 				16
 			);
@@ -496,7 +501,7 @@ bool ParseMacro(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const p
 		try
 		{
 			unsigned short vkey = std::stoi(
-				xmlch_to_wcs(vkeyElements->item(i)->getNodeValue()),
+				xmlch_to_wcs(vkeyElements->item(i)->getTextContent()),
 				0,
 				16
 			);
@@ -570,7 +575,7 @@ bool ParseIndependentCodepoints(
 		try
 		{
 			unsigned int codepoint = std::stoi(
-				xmlch_to_wcs(codepointElements->item(i)->getNodeValue()),
+				xmlch_to_wcs(codepointElements->item(i)->getTextContent()),
 				0,
 				16
 			);
@@ -590,7 +595,8 @@ bool ParseReplacements(
 	OUT std::unordered_map<UnicodeCommand*, UnicodeCommand*>* replacements)	// <-should not be null
 {
 	PXmlNodeList workList;
-	// Each node in replList is an element containing one <from> tag and a <to> tag.
+	// Each node in replList is an element called <replacement> containing one <from> tag and a <to> tag.
+	// Both the <from> and the <to> tag contain a list of <codepoint>s each.
 
 	replacements->clear();
 	for (XMLSize_t i = 0; i < replList->getLength(); i++)
@@ -600,19 +606,20 @@ bool ParseReplacements(
 
 		// Retrieve both <from> and <to> tags
 		// Put them in their own UnicodeCommands
+		// Note: currently, dead keys can only map from unicode commands to other unicode commands.
 		PXmlElement replacementNode = (PXmlElement)replList->item(i);
 		// From
 		std::vector<unsigned int> pFromCodepoints;
 		workList = replacementNode->getElementsByTagName(u"from");
 		if (workList->getLength() != 1) return false;
-		if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
-		if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &pFromCodepoints)) return false;
+		if (workList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
+		if (!ParseIndependentCodepoints((PXmlElement)workList->item(0), &pFromCodepoints)) return false;
 		// To
 		std::vector<unsigned int> pToCodepoints;
 		workList = replacementNode->getElementsByTagName(u"to");
 		if (workList->getLength() != 1) return false;
-		if (workList->item(i)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
-		if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &pToCodepoints)) return false;
+		if (workList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE) return false;
+		if (!ParseIndependentCodepoints((PXmlElement)workList->item(0), &pToCodepoints)) return false;
 		// make both Unicode commands, store them in the map
 		UnicodeCommand * pFromCommand = new UnicodeCommand(pFromCodepoints, true);
 		UnicodeCommand * pToCommand = new UnicodeCommand(pToCodepoints, true);
@@ -635,18 +642,18 @@ bool ParseDeadKey(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const
 	workList = rmpElement->getElementsByTagName(u"independent");
 	if (workList->getLength() != 1)
 		return false;
-	if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+	if (workList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
 		return false;
-	if (!ParseIndependentCodepoints((PXmlElement)workList->item(1), &codepointVector))
+	if (!ParseIndependentCodepoints((PXmlElement)workList->item(0), &codepointVector))
 		return false;
 	// At this point, codepointVector contains a valid Unicode sequence
 
 	// Retrieve replacements
 	workList = rmpElement->getElementsByTagName(u"replacement");
-	if (workList->getLength() != 1)
-		return false;
-	if (workList->item(1)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
-		return false;
+	/*if (workList->getLength() != 1)	// nonsense; there may be many replacements
+		return false;*/
+	/*if (workList->item(0)->getNodeType() != XmlNode::NodeType::ELEMENT_NODE)
+		return false;*/
 	if (!ParseReplacements(workList, &replacementsMap))
 		return false;
 	// At this point, replacementsMap contains valid replacements

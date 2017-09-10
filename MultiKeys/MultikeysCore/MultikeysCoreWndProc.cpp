@@ -68,8 +68,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int       nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
-	// UNREFERENCED_PARAMETER(lpCmdLine);			// <- is it ok to comment out?
-	// I guess.
 
 	// Initialize global strings
 	// LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -120,7 +118,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	// return of CommandLineToArgvW is a contiguous memory of pointers
-	LocalFree(szArgList);			// return it to the abyss (sort of)
+	LocalFree(szArgList);
 
 
 									// Main message loop:
@@ -154,21 +152,11 @@ ATOM MyRegisterClass(HINSTANCE hInstance)		// receives a handle to an applicatio
 	// Pointer to the window procedure
 	wcex.lpfnWndProc = WndProc;
 
-	// wcex.cbClsExtra = 0;
-	// wcex.cbWndExtra = 0;
-
 	// Handle to the application instance
 	wcex.hInstance = hInstance;
 
-	// wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MULTIKEYS));
-	// wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	// wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	// wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_MULTIKEYS);
-
 	// String that identified the window class
 	wcex.lpszClassName = szWindowClass;
-
-	// wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassExW(&wcex);
 }
@@ -370,7 +358,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Store that decision in the decisionBuffer; look for it when the hook asks.
 
 		// Check whether to block this key, and store the decision for when the hook asks for it
-		Multikeys::PKeystrokeCommand possibleAction = nullptr;		// <- we don't know yet is our key maps to anything
+		Multikeys::PKeystrokeCommand possibleAction = nullptr;		// <- we don't know yet if our key maps to anything
 		BOOL DoBlock = remapper->evaluateKey(&(raw->data.keyboard), keyboardNameBuffer, &possibleAction);		// ask
 
 #if DEBUG

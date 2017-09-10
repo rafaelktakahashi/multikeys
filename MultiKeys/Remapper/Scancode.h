@@ -7,9 +7,9 @@
 namespace Multikeys
 {
 	
-	// This represents every possible physical key on a keyboard;
+	// This structure uniquely represents a physical key on a keyboard;
 	// a scancode is represented by a single byte, optionally prefixed
-	// by the 0xE0 flag (Pause/Break is the only key that uses 0xE1 instead)
+	// by the 0xE0 flag (Pause/Break is the only key that uses the 0xE1 prefix instead)
 	struct Scancode
 	{
 		bool flgE0 : 1;

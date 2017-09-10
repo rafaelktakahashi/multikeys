@@ -134,8 +134,8 @@ namespace Multikeys
 			else
 			{
 				// one UTF-16 surrogate pair, two simulated keypresses
-				WORD highSurrogate = 0xd800 + ((codepoints[i] - 0x10000) >> 10);
-				WORD lowSurrogate = 0xdc00 + (codepoints[i] & 0x3ff);
+				uint16_t highSurrogate = 0xd800 + ((codepoints[i] - 0x10000) >> 10);
+				uint16_t lowSurrogate = 0xdc00 + (codepoints[i] & 0x3ff);
 				keystrokes[currentIndex] = INPUT(unicodePrototype);
 				keystrokes[currentIndex + 1] = INPUT(unicodePrototype);
 				keystrokes[currentIndex].ki.wScan = highSurrogate;
@@ -172,8 +172,8 @@ namespace Multikeys
 			else
 			{
 				// UTF-16 surrogate pair, two simulated keypresses
-				USHORT highSurrogate = 0xd800 + ((codepoints[i] - 0x10000) >> 10);
-				USHORT lowSurrogate = 0xdc00 + (codepoints[i] & 0x3ff);
+				uint16_t highSurrogate = 0xd800 + ((codepoints[i] - 0x10000) >> 10);
+				uint16_t lowSurrogate = 0xdc00 + (codepoints[i] & 0x3ff);
 				keystrokes[currentIndex] = INPUT(unicodePrototype);
 				keystrokes[currentIndex + 1] = INPUT(unicodePrototype);
 				keystrokes[currentIndex].ki.wScan = highSurrogate;

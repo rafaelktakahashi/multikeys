@@ -111,7 +111,6 @@ namespace Multikeys
 		}
 		catch (const xercesc::XMLException&)
 		{
-			// OutputDebugString(L"Error at Xerces, failed to parse file: " + e.getMessage() + L"\n");
 			return false;
 		}
 
@@ -146,7 +145,6 @@ namespace Multikeys
 		}
 		catch (xercesc::XMLException&)
 		{
-			// OutputDebugString(L"Xerces teardown error: " + e.getMessage() + L"\n");
 			return false;
 		}
 

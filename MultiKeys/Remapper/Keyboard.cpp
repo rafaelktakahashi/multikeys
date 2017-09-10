@@ -14,6 +14,8 @@ namespace Multikeys
 		activeDeadKey = nullptr;
 
 		// Initialize the current level to whichever level activates with no modifier
+		// Note: iterator dereferences into a pointer
+		this->activeLevel = nullptr;
 		for (auto it = this->levels.begin(); it != this->levels.end(); it++)
 		{
 			if (this->modifierStateMap->checkState(*it))
@@ -21,7 +23,6 @@ namespace Multikeys
 				this->activeLevel = *it;
 				break;
 			}
-			this->activeLevel = nullptr;
 		}
 	}
 
@@ -29,9 +30,13 @@ namespace Multikeys
 	bool Keyboard::_updateKeyboardState(Scancode sc, bool flag_keyup)
 	{
 		// Update the state map
-		return modifierStateMap->updateState(sc, !flag_keyup);
-		// Then update the currently active level
+		// If sc is not a modifier, this method will return false:
+		if (!modifierStateMap->updateState(sc, !flag_keyup))
+			return false;
+
+		// Then, if a modifier changed state, update the currently active level
 		// Note: iterator dereferences into a pointer
+		this->activeLevel = nullptr;
 		for (auto it = this->levels.begin(); it != this->levels.end(); it++)
 		{
 			if (this->modifierStateMap->checkState(*it))
@@ -39,8 +44,8 @@ namespace Multikeys
 				this->activeLevel = *it;
 				break;
 			}
-			this->activeLevel = nullptr;
 		}
+		return true;
 	}
 
 

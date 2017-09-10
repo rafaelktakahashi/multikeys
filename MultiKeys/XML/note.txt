@@ -1,0 +1,4 @@
+This folder is reserved for resources related to the Multikeys configuration files,
+such as the .xsd for validation.
+This folder and its contents are not included in the solution, and the files contained
+herein are to be referenced from existing projects.

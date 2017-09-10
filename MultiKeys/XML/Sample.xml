@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Multikeys>
+	<keyboard Name="\\?\HID#VID_1A2C&amp;PID_0B2A&amp;MI_00#8&amp;16c55830&amp;0&amp;0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}" Alias="Konami">
+		<modifiers>
+			<modifier Name="Shift">2A</modifier>
+			<modifier Name="Shift">36</modifier>
+			<modifier Name="AltGr">e038</modifier>
+		</modifiers>
+		<level Alias="Unshifted">
+			<unicode Scancode="02" TriggerOnRepeat="True">
+				<codepoint>2200</codepoint>
+			</unicode>
+			<unicode Scancode="03" TriggerOnRepeat="True">
+				<codepoint>1F642</codepoint>
+			</unicode>
+			<macro Scancode="04" TriggerOnRepeat="True">
+				<vkey Keypress="Down">A2</vkey>
+				<vkey Keypress="Down">46</vkey>
+				<vkey Keypress="Up">46</vkey>
+				<vkey Keypress="Up">A2</vkey>
+			</macro>
+			<unicode Scancode="05" TriggerOnRepeat="False">
+				<codepoint>48</codepoint>
+				<codepoint>69</codepoint>
+				<codepoint>2E</codepoint>
+				<codepoint>1F642</codepoint>
+			</unicode>
+			<execute Scancode="06">
+				<path>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</path>
+			</execute>
+			<macro Scancode="07" TriggerOnRepeat="False">
+				<vkey Keypress="Down">5B</vkey>
+				<vkey Keypress="Down">20</vkey>
+				<vkey Keypress="Up">20</vkey>
+				<vkey Keypress="Up">5B</vkey>
+			</macro>
+			<unicode Scancode="08" TriggerOnRepeat="True">
+				<codepoint>1F468</codepoint>
+			</unicode>
+			<unicode Scancode="09" TriggerOnRepeat="True">
+				<codepoint>1F3FE</codepoint>
+			</unicode>
+			<unicode Scancode="0A" TriggerOnRepeat="True">
+				<codepoint>1F3FD</codepoint>
+			</unicode>
+			<deadkey Scancode="0B">
+				<independent>
+					<codepoint>20</codepoint>
+				</independent>
+				<replacement>
+					<from>
+						<codepoint>48</codepoint>
+						<codepoint>69</codepoint>
+						<codepoint>2E</codepoint>
+						<codepoint>1F642</codepoint>
+					</from>
+					<to>
+						<codepoint>48</codepoint>
+						<codepoint>69</codepoint>
+						<codepoint>2E</codepoint>
+						<codepoint>1F604</codepoint>
+					</to>
+				</replacement>
+			</deadkey>
+			
+			<!-- Greek alphabet, unshifted -->
+			<unicode Scancode="10" TriggerOnRepeat="True">
+				<codepoint>3B</codepoint> <!-- Semicolon -->
+			</unicode>
+			<unicode Scancode="11" TriggerOnRepeat="True">
+				<codepoint>3C2</codepoint> <!-- Final sigma -->
+			</unicode>
+			<unicode Scancode="12" TriggerOnRepeat="True">
+				<codepoint>3B5</codepoint> <!-- Epsilon -->
+			</unicode>
+			<unicode Scancode="13" TriggerOnRepeat="True">
+				<codepoint>3C1</codepoint> <!-- Rho -->
+			</unicode>
+			<unicode Scancode="14" TriggerOnRepeat="True">
+				<codepoint>3C4</codepoint> <!-- Tau -->
+			</unicode>
+			<unicode Scancode="15" TriggerOnRepeat="True">
+				<codepoint>3C5</codepoint> <!-- Upsilon -->
+			</unicode>
+			<unicode Scancode="16" TriggerOnRepeat="True">
+				<codepoint>3B8</codepoint> <!-- Theta -->
+			</unicode>
+			<unicode Scancode="17" TriggerOnRepeat="True">
+				<codepoint>3B9</codepoint> <!-- Iota -->
+			</unicode>
+			<unicode Scancode="18" TriggerOnRepeat="True">
+				<codepoint>3BF</codepoint> <!-- Omicron -->
+			</unicode>
+			<unicode Scancode="19" TriggerOnRepeat="True">
+				<codepoint>3C0</codepoint> <!-- Pi -->
+			</unicode>
+			<unicode Scancode="1A" TriggerOnRepeat="True">
+				<codepoint>5B</codepoint> <!-- Left square bracket -->
+			</unicode>
+			<unicode Scancode="1B" TriggerOnRepeat="True">
+				<codepoint>5D</codepoint> <!-- Right square bracket -->
+			</unicode>
+			<unicode Scancode="2B" TriggerOnRepeat="True">
+				<codepoint>5C</codepoint> <!-- Backslash -->
+			</unicode>
+			<unicode Scancode="1E" TriggerOnRepeat="True">
+				<codepoint>3B1</codepoint> <!-- Alpha -->
+			</unicode>
+			<unicode Scancode="1F" TriggerOnRepeat="True">
+				<codepoint>3C3</codepoint> <!-- Sigma -->
+			</unicode>
+			<unicode Scancode="20" TriggerOnRepeat="True">
+				<codepoint>3B4</codepoint> <!-- Delta -->
+			</unicode>
+			<unicode Scancode="21" TriggerOnRepeat="True">
+				<codepoint>3C6</codepoint> <!-- Phi -->
+			</unicode>
+			<unicode Scancode="22" TriggerOnRepeat="True">
+				<codepoint>3B3</codepoint> <!-- Gamma -->
+			</unicode>
+			<unicode Scancode="23" TriggerOnRepeat="True">
+				<codepoint>3B7</codepoint> <!-- Eta -->
+			</unicode>
+			<unicode Scancode="24" TriggerOnRepeat="True">
+				<codepoint>3BE</codepoint> <!-- Xi -->
+			</unicode>
+			<unicode Scancode="25" TriggerOnRepeat="True">
+				<codepoint>3BA</codepoint> <!-- Kappa -->
+			</unicode>
+			<unicode Scancode="26" TriggerOnRepeat="True">
+				<codepoint>3BB</codepoint> <!-- Lambda -->
+			</unicode>
+			<deadkey Scancode="27">
+				<independent>
+					<codepoint>384</codepoint> <!-- Greek Tonos -->
+				</independent>
+				<replacement>
+					<from>
+						<codepoint>391</codepoint>	<!-- Upper. Alpha -->
+					</from>
+					<to>
+						<codepoint>386</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>395</codepoint>	<!-- Upper. Epsilon -->
+					</from>
+					<to>
+						<codepoint>388</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>397</codepoint>	<!-- Upper. Eta -->
+					</from>
+					<to>
+						<codepoint>389</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>399</codepoint>	<!-- Upper. Iota -->
+					</from>
+					<to>
+						<codepoint>38A</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>39F</codepoint>	<!-- Upper. Omicron -->
+					</from>
+					<to>
+						<codepoint>38C</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3A5</codepoint>	<!-- Upper. Upsilon -->
+					</from>
+					<to>
+						<codepoint>38E</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3A9</codepoint>	<!-- Upper. Omega -->
+					</from>
+					<to>
+						<codepoint>38F</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3B1</codepoint>	<!-- Alpha -->
+					</from>
+					<to>
+						<codepoint>3AC</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3B5</codepoint>	<!-- Epsilon -->
+					</from>
+					<to>
+						<codepoint>3AD</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3B7</codepoint>	<!-- Eta -->
+					</from>
+					<to>
+						<codepoint>3AE</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3B9</codepoint>	<!-- Iota -->
+					</from>
+					<to>
+						<codepoint>3AF</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3BF</codepoint>	<!-- Omicron -->
+					</from>
+					<to>
+						<codepoint>3CC</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3C5</codepoint>	<!-- Upsilon -->
+					</from>
+					<to>
+						<codepoint>3CD</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3C9</codepoint>	<!-- Omega -->
+					</from>
+					<to>
+						<codepoint>3CE</codepoint>
+					</to>
+				</replacement>
+			</deadkey>
+			<unicode Scancode="28" TriggerOnRepeat="True">
+				<codepoint>27</codepoint> <!-- Apostrophe -->
+			</unicode>
+			<unicode Scancode="56" TriggerOnRepeat="True">
+				<codepoint>3C</codepoint> <!-- Less than -->
+			</unicode>
+			<unicode Scancode="2C" TriggerOnRepeat="True">
+				<codepoint>3B6</codepoint> <!-- Zeta -->
+			</unicode>
+			<unicode Scancode="2D" TriggerOnRepeat="True">
+				<codepoint>3C7</codepoint> <!-- Chi -->
+			</unicode>
+			<unicode Scancode="2E" TriggerOnRepeat="True">
+				<codepoint>3C8</codepoint> <!-- Psi -->
+			</unicode>
+			<unicode Scancode="2F" TriggerOnRepeat="True">
+				<codepoint>3C9</codepoint> <!-- Omega -->
+			</unicode>
+			<unicode Scancode="30" TriggerOnRepeat="True">
+				<codepoint>3B2</codepoint> <!-- Beta -->
+			</unicode>
+			<unicode Scancode="31" TriggerOnRepeat="True">
+				<codepoint>3BD</codepoint> <!-- Nu -->
+			</unicode>
+			<unicode Scancode="32" TriggerOnRepeat="True">
+				<codepoint>3BC</codepoint> <!-- Mu -->
+			</unicode>
+			<unicode Scancode="33" TriggerOnRepeat="True">
+				<codepoint>2C</codepoint> <!-- Comma -->
+			</unicode>
+			<unicode Scancode="34" TriggerOnRepeat="True">
+				<codepoint>2E</codepoint> <!-- Dot -->
+			</unicode>
+			<unicode Scancode="35" TriggerOnRepeat="True">
+				<codepoint>2F</codepoint> <!-- Slash -->
+			</unicode>
+			
+		</level>
+		<level Alias="Shifted">
+			<modifier>Shift</modifier>
+			<unicode Scancode="02" TriggerOnRepeat="True">
+				<codepoint>2201</codepoint>
+			</unicode>
+			<unicode Scancode="03" TriggerOnRepeat="True">
+				<codepoint>2203</codepoint>
+			</unicode>
+			<execute Scancode="06">
+				<path>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</path>
+				<parameter>http://stackoverflow.com/</parameter>
+			</execute>
+			<unicode Scancode="08" TriggerOnRepeat="False">
+				<codepoint>1F468</codepoint>
+				<codepoint>200D</codepoint>
+				<codepoint>1F469</codepoint>
+				<codepoint>200D</codepoint>
+				<codepoint>1F467</codepoint>
+				<codepoint>200D</codepoint>
+				<codepoint>1F467</codepoint>
+			</unicode>
+			
+			<!-- Greek alphabet, shifted -->
+			<unicode Scancode="10" TriggerOnRepeat="True">
+				<codepoint>3A</codepoint> <!-- Colon -->
+			</unicode>
+			<deadkey Scancode="11">
+				<independent>
+					<codepoint>385</codepoint> <!-- Dialytika Tonos -->
+				</independent>
+				<replacement>
+					<from>
+						<codepoint>3B9</codepoint>	<!-- Iota -->
+					</from>
+					<to>
+						<codepoint>390</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3C5</codepoint>	<!-- Upsilon -->
+					</from>
+					<to>
+						<codepoint>3B0</codepoint>
+					</to>
+				</replacement>
+			</deadkey>
+			<unicode Scancode="12" TriggerOnRepeat="True">
+				<codepoint>395</codepoint> <!-- Epsilon -->
+			</unicode>
+			<unicode Scancode="13" TriggerOnRepeat="True">
+				<codepoint>3A1</codepoint> <!-- Rho -->
+			</unicode>
+			<unicode Scancode="14" TriggerOnRepeat="True">
+				<codepoint>3A4</codepoint> <!-- Tau -->
+			</unicode>
+			<unicode Scancode="15" TriggerOnRepeat="True">
+				<codepoint>3A5</codepoint> <!-- Upsilon -->
+			</unicode>
+			<unicode Scancode="16" TriggerOnRepeat="True">
+				<codepoint>398</codepoint> <!-- Theta -->
+			</unicode>
+			<unicode Scancode="17" TriggerOnRepeat="True">
+				<codepoint>399</codepoint> <!-- Iota -->
+			</unicode>
+			<unicode Scancode="18" TriggerOnRepeat="True">
+				<codepoint>29F</codepoint> <!-- Omicron -->
+			</unicode>
+			<unicode Scancode="19" TriggerOnRepeat="True">
+				<codepoint>3A0</codepoint> <!-- Pi -->
+			</unicode>
+			<unicode Scancode="1A" TriggerOnRepeat="True">
+				<codepoint>7B</codepoint> <!-- Left curly bracket -->
+			</unicode>
+			<unicode Scancode="1B" TriggerOnRepeat="True">
+				<codepoint>7D</codepoint> <!-- Right curly bracket -->
+			</unicode>
+			<unicode Scancode="2B" TriggerOnRepeat="True">
+				<codepoint>7C</codepoint> <!-- Pipe -->
+			</unicode>
+			<unicode Scancode="1E" TriggerOnRepeat="True">
+				<codepoint>391</codepoint> <!-- Alpha -->
+			</unicode>
+			<unicode Scancode="1F" TriggerOnRepeat="True">
+				<codepoint>3A3</codepoint> <!-- Sigma -->
+			</unicode>
+			<unicode Scancode="20" TriggerOnRepeat="True">
+				<codepoint>394</codepoint> <!-- Delta -->
+			</unicode>
+			<unicode Scancode="21" TriggerOnRepeat="True">
+				<codepoint>3A6</codepoint> <!-- Phi -->
+			</unicode>
+			<unicode Scancode="22" TriggerOnRepeat="True">
+				<codepoint>393</codepoint> <!-- Gamma -->
+			</unicode>
+			<unicode Scancode="23" TriggerOnRepeat="True">
+				<codepoint>397</codepoint> <!-- Eta -->
+			</unicode>
+			<unicode Scancode="24" TriggerOnRepeat="True">
+				<codepoint>39E</codepoint> <!-- Xi -->
+			</unicode>
+			<unicode Scancode="25" TriggerOnRepeat="True">
+				<codepoint>39A</codepoint> <!-- Kappa -->
+			</unicode>
+			<unicode Scancode="26" TriggerOnRepeat="True">
+				<codepoint>39B</codepoint> <!-- Lambda -->
+			</unicode>
+			<deadkey Scancode="27">
+				<independent>
+					<codepoint>A8</codepoint> <!-- Dialytika -->
+				</independent>
+				<replacement>
+					<from>
+						<codepoint>399</codepoint>	<!-- Upper. Iota -->
+					</from>
+					<to>
+						<codepoint>3AA</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3A5</codepoint>	<!-- Upper. Upsilon -->
+					</from>
+					<to>
+						<codepoint>3AB</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3B9</codepoint>	<!-- Iota -->
+					</from>
+					<to>
+						<codepoint>3CA</codepoint>
+					</to>
+				</replacement>
+				<replacement>
+					<from>
+						<codepoint>3C5</codepoint>	<!-- Upsilon -->
+					</from>
+					<to>
+						<codepoint>3CB</codepoint>
+					</to>
+				</replacement>
+			</deadkey>
+			<unicode Scancode="28" TriggerOnRepeat="True">
+				<codepoint>22</codepoint> <!-- Quote -->
+			</unicode>
+			<unicode Scancode="56" TriggerOnRepeat="True">
+				<codepoint>3E</codepoint> <!-- Greater than -->
+			</unicode>
+			<unicode Scancode="2C" TriggerOnRepeat="True">
+				<codepoint>396</codepoint> <!-- Zeta -->
+			</unicode>
+			<unicode Scancode="2D" TriggerOnRepeat="True">
+				<codepoint>3A7</codepoint> <!-- Chi -->
+			</unicode>
+			<unicode Scancode="2E" TriggerOnRepeat="True">
+				<codepoint>3A8</codepoint> <!-- Psi -->
+			</unicode>
+			<unicode Scancode="2F" TriggerOnRepeat="True">
+				<codepoint>3A9</codepoint> <!-- Omega -->
+			</unicode>
+			<unicode Scancode="30" TriggerOnRepeat="True">
+				<codepoint>392</codepoint> <!-- Beta -->
+			</unicode>
+			<unicode Scancode="31" TriggerOnRepeat="True">
+				<codepoint>39D</codepoint> <!-- Nu -->
+			</unicode>
+			<unicode Scancode="32" TriggerOnRepeat="True">
+				<codepoint>39C</codepoint> <!-- Mu -->
+			</unicode>
+			<unicode Scancode="33" TriggerOnRepeat="True">
+				<codepoint>3C</codepoint> <!-- Less than -->
+			</unicode>
+			<unicode Scancode="34" TriggerOnRepeat="True">
+				<codepoint>3E</codepoint> <!-- Greater than -->
+			</unicode>
+			<unicode Scancode="35" TriggerOnRepeat="True">
+				<codepoint>3F</codepoint> <!-- Question mark -->
+			</unicode>
+		</level>
+		<level Alias="AltGr">
+			<modifier>AltGr</modifier>
+			<unicode Scancode="12" TriggerOnRepeat="True">
+				<codepoint>20AC</codepoint>	<!-- Euro sign -->
+			</unicode>
+			<macro Scancode="13" TriggerOnRepeat="False">
+				<vkey Keypress="Down">50</vkey>
+				<vkey Keypress="Up">50</vkey>
+			</macro>
+			<execute Scancode="14">	<!-- This works; the previous one doesn't. -->
+				<path>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</path>
+				<parameter>http://stackoverflow.com/</parameter>
+			</execute>
+		</level>
+	</keyboard>
+	<keyboard Name="\\?\ACPI#PNP0303#4&amp;231b8599&amp;0#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}">
+		<modifiers>
+		</modifiers>
+		<level>
+			<unicode Scancode="02" TriggerOnRepeat="True">
+				<codepoint>21B1</codepoint>
+			</unicode>
+			<unicode Scancode="E0:1D" TriggerOnRepeat="False">
+				<codepoint>2167</codepoint>
+				<codepoint>21CA</codepoint>
+				<codepoint>2126</codepoint>
+				<codepoint>2132</codepoint>
+			</unicode>
+		</level>
+	</keyboard>
+</Multikeys>

@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Multikeys">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="keyboard">
+          <xs:annotation>
+            <xs:documentation>
+              Represents a registered keyboard, which the system will listen to. Keyboards are identified by name, and may have an alias.
+              A keyboard's alias does not affect its functionality.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element minOccurs="1" maxOccurs="1" name="modifiers">
+                <xs:annotation>
+                  <xs:documentation>
+                    The modifiers in this keyboard. This tag must exist, even if the keyboard declares no modifiers.
+                    In that case, this tag will contain no child elements.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="modifier">
+                      <xs:annotation>
+                        <xs:documentation>
+                          A modifier key, identified by scancode (in hexadecimal, one or two bytes without space). The used scancode becomes unavailable for other mappings.
+                          A modifier key must be assigned a name.
+                          Multiple modifier keys may be assigned the same name; in that case, they behave like the same modifier (e.g. Shift key on conventional keyboards).
+                        </xs:documentation>
+                      </xs:annotation>
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="Name" type="xs:string" use="required">
+                              <xs:annotation>
+                                <xs:documentation>
+                                  Name of this modifier key. If two or more modifiers have the same name, they behave like the same modifier.
+                                </xs:documentation>
+                              </xs:annotation>
+                            </xs:attribute>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element maxOccurs="unbounded" name="level">
+                <xs:annotation>
+                  <xs:documentation>
+                    The different levels in each keyboard; each level is the set of mappings corresponding to a combination of modifiers (e.g. shifted, unshifted, AltGr).
+                    Each level may be given an alias, which does not affect functionality.
+                  </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="modifier" type="xs:string">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Each modifier, identified only by name, that must be pressed down in order to activate this level.
+                          For a modifier to be specified in a level, it must also be defined for the keyboard containing this level.
+                        </xs:documentation>
+                      </xs:annotation>
+                    </xs:element>
+                    <xs:choice maxOccurs="unbounded">
+                      <xs:annotation>
+                        <xs:documentation>
+                          Each mapping from a physical key to an action. Physical keys are identified by their scancode. Scancodes are represented in hexadecimal.
+                        </xs:documentation>
+                      </xs:annotation>
+                      <xs:element minOccurs="0" maxOccurs="unbounded" name="unicode">
+                        <xs:annotation>
+                          <xs:documentation>
+                            Maps a physical key to one or more Unicode characters. Each Unicode character is represented by a codepoint.
+                          </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element minOccurs="1" maxOccurs="unbounded" name="codepoint" type="xs:string">
+                              <xs:annotation>
+                                <xs:documentation>
+                                  Corresponds to a Unicode character by its codepoint value. Represented by a 32-bit integer in hexadecimal.
+                                </xs:documentation>
+                              </xs:annotation>
+                            </xs:element>
+                          </xs:sequence>
+                          <xs:attribute name="Scancode" type="xs:string" use="required">
+                            <xs:annotation>
+                              <xs:documentation>
+                                Physical key that triggers this action. A scancode is one or two bytes in hexadecimal, not separated by space.
+                                E.g. E036 is scancode 36 with prefix E0.
+                              </xs:documentation>
+                            </xs:annotation>
+                          </xs:attribute>
+                          <xs:attribute name="TriggerOnRepeat" type="xs:string" use="required" >
+                            <xs:annotation>
+                              <xs:documentation>
+                                If "True", this action with repeatedly fire if the user is pressing down the key.
+                                If "False", this action will only fire once, even if the user keeps pressing down the key.
+                              </xs:documentation>
+                            </xs:annotation>
+                          </xs:attribute>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element minOccurs="0" maxOccurs="unbounded" name="macro">
+                        <xs:annotation>
+                          <xs:documentation>
+                            Maps a physical key to a sequence of simulated keystrokes, identified by virtual key code.
+                          </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element maxOccurs="unbounded" name="vkey">
+                              <xs:annotation>
+                                <xs:documentation>
+                                  Virtual key code of a simulated keypress.
+                                  Consists of a single hexadecimal byte, and may represent keystrokes or other actions, like mouse clicks.
+                                </xs:documentation>
+                              </xs:annotation>
+                              <xs:complexType>
+                                <xs:simpleContent>
+                                  <xs:extension base="xs:string">
+                                    <xs:attribute name="Keypress" type="xs:string" use="required">
+                                      <xs:annotation>
+                                        <xs:documentation>
+                                          If "Down", the simulated keypress corresponds to a key being pressed down.
+                                          If "Up", the simulated keypress corresponds to a key being released.
+                                          The user should make sure that every simulated keypress "Down" has a corresponding keypress "Up" aftwerwards.
+                                        </xs:documentation>
+                                      </xs:annotation>
+                                    </xs:attribute>
+                                  </xs:extension>
+                                </xs:simpleContent>
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                          <xs:attribute name="Scancode" type="xs:string" use="required">
+                            <xs:annotation>
+                              <xs:documentation>
+                                Physical key that triggers this action. A scancode is one or two bytes in hexadecimal, not separated by space.
+                                E.g. E036 is scancode 36 with prefix E0.
+                              </xs:documentation>
+                            </xs:annotation>
+                          </xs:attribute>
+                          <xs:attribute name="TriggerOnRepeat" type="xs:string" use="required">
+                            <xs:annotation>
+                              <xs:documentation>
+                                If "True", this action with repeatedly fire if the user is pressing down the key.
+                                If "False", this action will only fire once, even if the user keeps pressing down the key.
+                              </xs:documentation>
+                            </xs:annotation>
+                          </xs:attribute>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element minOccurs="0" maxOccurs="unbounded" name="execute">
+                        <xs:annotation>
+                          <xs:documentation>
+                            Maps a physical key to an executable file in disk. When this command fires, the application will be launched.
+                            Note that response time may not be immediate.
+                          </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="path" type="xs:string">
+                              <xs:annotation>
+                                <xs:documentation>
+                                  Full path to the application to be launched.
+                                </xs:documentation>
+                              </xs:annotation>
+                            </xs:element>
+                            <xs:element minOccurs="0" maxOccurs="1" name="parameter" type="xs:string">
+                              <xs:annotation>
+                                <xs:documentation>
+                                  Optional parameter to be passed to the application being launched.
+                                  If more than one parameter is desired, join them with a space in between.
+                                </xs:documentation>
+                              </xs:annotation>
+                            </xs:element>
+                          </xs:sequence>
+                          <xs:attribute name="Scancode" type="xs:string" use="required">
+                            <xs:annotation>
+                              <xs:documentation>
+                                Physical key that triggers this action. A scancode is one or two bytes in hexadecimal, not separated by space.
+                                E.g. E036 is scancode 36 with prefix E0.
+                              </xs:documentation>
+                            </xs:annotation>
+                          </xs:attribute>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element minOccurs="0" maxOccurs="unbounded" name="deadkey">
+                        <xs:annotation>
+                          <xs:documentation>
+                            Maps a physical key to a dead key. Dead keys produce no character, but modify the next keypress.
+                            The dead key must have an independent character (or characters) in Unicode, as well as a list of replacements.
+                            Dead keys may only modify Unicode characters. For similar functionality for other kinds of actions, consider using modifier keys.
+                          </xs:documentation>
+                        </xs:annotation>
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="independent">
+                              <xs:annotation>
+                                <xs:documentation>
+                                  Character(s) that should represent this key independently.
+                                  For example, when a dead key is pressed followed by an invalid replacement sequence, the independent representation
+                                     is sent, followed by the other keypress.
+                                </xs:documentation>
+                              </xs:annotation>
+                              <xs:complexType>
+                                <xs:sequence>
+                                  <xs:element minOccurs="1" maxOccurs="unbounded" name="codepoint" type="xs:string" />
+                                </xs:sequence>
+                              </xs:complexType>
+                            </xs:element>
+                            <xs:element minOccurs="1" maxOccurs="unbounded" name="replacement">
+                              <xs:annotation>
+                                <xs:documentation>
+                                  Represents a single valid replacement sequence.
+                                  For example, a dead key for the tilde diacritic may want to replace the character 'a' with 'a with tilde'.
+                                  Dead keys are also capable of replacing entire sequences of characters, as long the next key would send
+                                    precisely that sequence at once.
+                                </xs:documentation>
+                              </xs:annotation>
+                              <xs:complexType>
+                                <xs:sequence>
+                                  <xs:element name="from">
+                                    <xs:annotation>
+                                      <xs:documentation>
+                                        Sequence of Unicode characters to check if the next character is a valid replacement.
+                                      </xs:documentation>
+                                    </xs:annotation>
+                                    <xs:complexType>
+                                      <xs:sequence>
+                                        <xs:element maxOccurs="unbounded" name="codepoint" type="xs:string" />
+                                      </xs:sequence>
+                                    </xs:complexType>
+                                  </xs:element>
+                                  <xs:element name="to">
+                                    <xs:annotation>
+                                      <xs:documentation>
+                                        In case the next keypress is a valid replacement, these Unicode characters are sent instead.
+                                      </xs:documentation>
+                                    </xs:annotation>
+                                    <xs:complexType>
+                                      <xs:sequence>
+                                        <xs:element maxOccurs="unbounded" name="codepoint" type="xs:string" />
+                                      </xs:sequence>
+                                    </xs:complexType>
+                                  </xs:element>
+                                </xs:sequence>
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                          <xs:attribute name="Scancode" type="xs:string" use="required">
+                            <xs:annotation>
+                              <xs:documentation>
+                                Physical key that triggers this action. A scancode is one or two bytes in hexadecimal, not separated by space.
+                                E.g. E036 is scancode 36 with prefix E0.
+                              </xs:documentation>
+                            </xs:annotation>
+                          </xs:attribute>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:choice>
+                  </xs:sequence>
+                  <xs:attribute name="Alias" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="Name" type="xs:string" use="required" />
+            <xs:attribute name="Alias" type="xs:string" use="optional" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

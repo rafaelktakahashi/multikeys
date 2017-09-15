@@ -58,30 +58,31 @@ namespace MultikeysGUI.Persistence
 
             if (string.IsNullOrWhiteSpace(filename))
             { throw new ArgumentException("Filename provided was empty."); }
-            
+
             // This method should fail if this class' schema set failed to initialize
             if (schemaSet == null)
             { throw new Exception("The XML schema file failed to load."); }
-            
+
 
             // Prepare the document
             XDocument document = XDocument.Load(filename);
 
             var reader = XmlReader.Create(filename);
-                
+
             // Validate the document
-            document.Validate(schemaSet, (obj, e) => {
+            document.Validate(schemaSet, (obj, e) =>
+            {
                 throw new XmlSchemaValidationException(e.Message);
             });
 
             // Read the document
             return ReadConfiguration(document);
-                
+
         }
 
         // Methods for reading elements
 
-        
+
         private static VirtualKeystroke ReadVKey(XElement el)
         {
             return new VirtualKeystroke
@@ -90,12 +91,12 @@ namespace MultikeysGUI.Persistence
                 VirtualKeyCode = byte.Parse(el.Value, System.Globalization.NumberStyles.HexNumber)
             };
         }
-        
-        private static  UInt32 ReadCodepoint(XElement el)
+
+        private static UInt32 ReadCodepoint(XElement el)
         {
             return UInt32.Parse(el.Value, System.Globalization.NumberStyles.HexNumber);
         }
-        
+
         private static UnicodeCommand ReadUnicodeCommand(XElement el)
         {
             return new UnicodeCommand
@@ -105,7 +106,7 @@ namespace MultikeysGUI.Persistence
                 Codepoints = el.Elements("codepoint").Select(it => ReadCodepoint(it)).ToList()
             };
         }
-        
+
         private static MacroCommand ReadMacroCommand(XElement el)
         {
             return new MacroCommand
@@ -115,7 +116,7 @@ namespace MultikeysGUI.Persistence
                 VKeyCodes = el.Elements("vkey").Select(it => ReadVKey(it)).ToList()
             };
         }
-        
+
         private static ExecutableCommand ReadExecutableCommand(XElement el)
         {
             return new ExecutableCommand
@@ -125,14 +126,14 @@ namespace MultikeysGUI.Persistence
                 Arguments = el.Element("parameter")?.Value
             };
         }
-        
+
         private static Tuple<IList<UInt32>, IList<UInt32>> ReadReplacement(XElement el)
         {
             var first = el.Element("from").Elements("codepoint").Select(it => ReadCodepoint(it)).ToList();
             var second = el.Element("to").Elements("codepoint").Select(it => ReadCodepoint(it)).ToList();
             return new Tuple<IList<UInt32>, IList<UInt32>>(first, second);
         }
-        
+
         private static DeadKeyCommand ReadDeadKeyCommand(XElement el)
         {
             return new DeadKeyCommand
@@ -142,7 +143,7 @@ namespace MultikeysGUI.Persistence
                 Replacements = el.Elements("replacement").Select(it => ReadReplacement(it)).ToDictionary(it => it.Item1, it => it.Item2)
             };
         }
-        
+
         private static Tuple<Scancode, Command> ReadCommand(XElement el)
         {
             Command second = null;
@@ -161,7 +162,7 @@ namespace MultikeysGUI.Persistence
                     second = ReadDeadKeyCommand(el);
                     break;
                 default:
-                    return null;
+                    throw new Exception("Unrecognized command element.");
             }
 
             var first = new Scancode(el.Attribute("Scancode").Value);
@@ -169,41 +170,37 @@ namespace MultikeysGUI.Persistence
             return new Tuple<Scancode, Command>(first, second);
 
         }
-        
+
         private static Level ReadLevel(XElement el)
         {
             return new Level
             {
                 ModifierCombination = el.Elements("modifier").Select(it => it.Value).ToList(),
-                Commands = el.Elements().Select(it => ReadCommand(it)).Where(it => it != null).ToDictionary(x => x.Item1, x=>x.Item2)
+                Commands = (
+                            from element in el.Elements()
+                            where element.Name.LocalName != "modifier"
+                            select ReadCommand(element)
+                            ).ToDictionary(x => x.Item1, x => x.Item2)
             };
         }
-        
+
         private static IList<Modifier> ReadModifiers(XElement el)
         {
-            var modifiers = new List<Modifier>();
-            foreach (var node in el.Elements("modifier"))
-            {
-                string modifierName = node.Attribute("Name").Value;
-                // if another modifier with the same name was already read, add this scancode to it
-                if (modifiers.Any(m => m.Name == modifierName))
+            return
+            (
+                from modifier in el.Elements("modifier")
+                group modifier by modifier.Attribute("Name").Value into modifierGroup
+                select new Modifier
                 {
-                    modifiers.Find(m => m.Name == modifierName).Scancodes.Add(
-                        new Scancode(node.Value)
-                        );
-                    continue;
+                    Name = modifierGroup.First().Attribute("Name").Value,
+                    Scancodes = (
+                                                from modComponent in modifierGroup
+                                                select new Scancode(modComponent.Value)
+                                                ).ToList()
                 }
-                // otherwise, make a new modifier
-                var mod = new Modifier
-                {
-                    Name = modifierName,
-                    Scancodes = new List<Scancode> { new Scancode(node.Value) }
-                };
-                modifiers.Add(mod);
-            }
-            return modifiers;
+            ).ToList();
         }
-        
+
         private static Keyboard ReadKeyboard(XElement el)
         {
             return new Keyboard
@@ -214,7 +211,7 @@ namespace MultikeysGUI.Persistence
                 Levels = el.Elements("level").Select(it => ReadLevel(it)).ToList()
             };
         }
-        
+
         private static MultikeysRoot ReadConfiguration(XDocument doc)
         {
             return new MultikeysRoot
@@ -222,7 +219,7 @@ namespace MultikeysGUI.Persistence
                 Keyboards = doc.Descendants("keyboard").Select(it => ReadKeyboard(it)).ToList()
             };
         }
-        
+
 
 
         /// <summary>
@@ -233,8 +230,167 @@ namespace MultikeysGUI.Persistence
         /// <param name="filename">Fully qualified path where the configuration file will be saved.</param>
         public static void Save(MultikeysRoot content, string filename)
         {
-            // Create 
+            WriteConfiguration(content).Save(filename);
         }
+
+        // Methods for writing the model into xml
+        private static XElement WriteVKey(VirtualKeystroke entity)
+        {
+            return new XElement(
+                "vkey",
+                new XAttribute("Keypress", entity.KeyDown ? "Down" : "Up"),
+                entity.VirtualKeyCode.ToString("X2")
+                );
+        }
+
+        private static XElement WriteCodepoint(UInt32 entity)
+        {
+            return new XElement(
+                "codepoint",
+                entity.ToString("X")
+                );
+        }
+
+        private static XElement WriteUnicodeCommand(UnicodeCommand entity)
+        {
+            var element = new XElement("unicode");
+            element.Add(new XAttribute("Scancode", entity.Scancode.ToString()));
+            element.Add(new XAttribute("TriggerOnRepeat", entity.TriggerOnRepeat ? "True" : "False"));
+            foreach (var codepoint in entity.Codepoints)
+            {
+                element.Add(WriteCodepoint(codepoint));
+            }
+
+            return element;
+        }
+
+        private static XElement WriteMacroCommand(MacroCommand entity)
+        {
+            var element = new XElement("macro");
+            element.Add(new XAttribute("Scancode", entity.Scancode.ToString()));
+            element.Add(new XAttribute("TriggerOnRepeat", entity.TriggerOnRepeat ? "True" : "False"));
+            foreach (var vkey in entity.VKeyCodes)
+            {
+                element.Add(WriteVKey(vkey));
+            }
+
+            return element;
+        }
+
+        private static XElement WriteExecutableCommand(ExecutableCommand entity)
+        {
+            var element = new XElement("execute");
+            element.Add(new XAttribute("Scancode", entity.Scancode.ToString()));
+
+            element.Add(new XElement("path", entity.Command));
+            if (entity.Arguments != null)
+                element.Add(new XElement("parameter", entity.Arguments));
+
+            return element;
+        }
+
+        private static XElement WriteReplacement(Tuple<IList<UInt32>, IList<UInt32>> entity)
+        {
+            var element = new XElement("replacement");
+
+            var element_1 = new XElement("from");
+            foreach (UInt32 codepoint in entity.Item1)
+            {
+                element_1.Add(WriteCodepoint(codepoint));
+            }
+
+            var element_2 = new XElement("to");
+            foreach (UInt32 codepoint in entity.Item2)
+            {
+                element_2.Add(WriteCodepoint(codepoint));
+            }
+
+            element.Add(element_1);
+            element.Add(element_2);
+            return element;
+        }
+
+        private static XElement WriteDeadKeyCommand(DeadKeyCommand entity)
+        {
+            var element = new XElement("deadkey");
+            element.Add(new XAttribute("Scancode", entity.Scancode.ToString()));
+            var element_1 = new XElement("independent");
+            foreach (UInt32 codepoint in entity.Codepoints)
+            {
+                element_1.Add(WriteCodepoint(codepoint));
+            }
+            element.Add(element_1);
+            foreach (var replacement in entity.Replacements)
+            {
+                element.Add(WriteReplacement(new Tuple<IList<UInt32>, IList<UInt32>>(replacement.Key, replacement.Value)));
+            }
+            return element;
+        }
+
+        private static XElement WriteCommand(Command entity)
+        {
+            // must check more specific types first, if using "is" keyword
+            if (entity is DeadKeyCommand) return WriteDeadKeyCommand(entity as DeadKeyCommand);
+            if (entity is MacroCommand) return WriteMacroCommand(entity as MacroCommand);
+            if (entity is UnicodeCommand) return WriteUnicodeCommand(entity as UnicodeCommand);
+            if (entity is ExecutableCommand) return WriteExecutableCommand(entity as ExecutableCommand);
+            return new XElement("command", "ERROR WRITING COMMAND");
+        }
+
+        private static XElement WriteLevel(Level entity)
+        {
+            var element = new XElement("level");
+            element.Add(new XAttribute("Alias", entity.Alias));
+            foreach (string modifierName in entity.ModifierCombination)
+            {
+                element.Add(new XElement("modifier", modifierName));
+            }
+            foreach (var command in entity.Commands.Select(c => c.Value))
+            {
+                element.Add(WriteCommand(command));
+            }
+            return element;
+        }
+
+        private static XElement WriteModifiers(IList<Modifier> entity)
+        {
+            var element = new XElement("modifiers");
+            foreach (Modifier modifier in entity)
+            {
+                foreach (Scancode scancode in modifier.Scancodes)
+                {
+                    var element_1 = new XElement("modifier", scancode.ToString());
+                    element_1.Add(new XAttribute("Name", modifier.Name));
+                }
+            }
+            return element;
+        }
+
+        private static XElement WriteKeyboard(Keyboard entity)
+        {
+            var element = new XElement("keyboard");
+            element.Add(new XAttribute("Name", entity.UniqueName));
+            if (entity.Alias != null)
+                element.Add(new XAttribute("Alias", entity.Alias));
+            element.Add(WriteModifiers(entity.Modifiers));
+            foreach (var level in entity.Levels)
+            {
+                element.Add(WriteLevel(level));
+            }
+            return element;
+        }
+
+        private static XElement WriteConfiguration(MultikeysRoot entity)
+        {
+            var element = new XElement("Multikeys");
+            foreach (var keyboard in entity.Keyboards)
+            {
+                element.Add(WriteKeyboard(keyboard));
+            }
+            return element;
+        }
+        
+
 
 
     }

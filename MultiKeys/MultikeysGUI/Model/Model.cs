@@ -60,6 +60,13 @@ namespace MultikeysGUI.Model
         /// Byte for the make code, in scancode set 2.
         /// </summary>
         public byte MakeCode { get; set; }
+
+        public override string ToString()
+        {
+            if (E0) return "E0" + MakeCode.ToString("X2");
+            else if (E1) return "E1" + MakeCode.ToString("X2");
+            else return MakeCode.ToString("X2");
+        }
     }
 
     public class VirtualKeystroke
@@ -143,7 +150,8 @@ namespace MultikeysGUI.Model
         /// <summary>
         /// List of remaps in this level.
         /// A remap is associated with a physical key, identified by scancode.
-        /// Each scancode may be associated with at most one command.
+        /// Each scancode may be associated with at most one command. <para/>
+        /// Each stored command also contains the scancode.
         /// </summary>
         public IDictionary<Scancode, Command> Commands { get; set; }
     }

@@ -153,24 +153,37 @@ namespace MultikeysGUI.Model
         /// Each scancode may be associated with at most one command. <para/>
         /// Each stored command also contains the scancode.
         /// </summary>
-        public IDictionary<Scancode, Command> Commands { get; set; }
+        public IDictionary<Scancode, IKeystrokeCommand> Commands { get; set; }
     }
 
     /// <summary>
     /// Base class for a command.
     /// Commands represent actions taken in response to a user keypress.
     /// </summary>
-    public abstract class Command
-    {
-        public Scancode Scancode { get; set; }
-    }
+    public interface IKeystrokeCommand { }
 
     /// <summary>
     /// Command that sends one or more Unicode characters
     /// to the window that would receive the original keystroke.
     /// </summary>
-    public class UnicodeCommand : Command
+    public class UnicodeCommand : IKeystrokeCommand
     {
+        // Default constructor
+        public UnicodeCommand() { }
+        // Constructor from text
+        public UnicodeCommand(bool triggerOnRepeat, string text)
+        {
+            TriggerOnRepeat = triggerOnRepeat;
+            Codepoints = new List<UInt32>();
+            for (int i = 0; i < text.Length; i++)
+            {
+                int codepoint = char.ConvertToUtf32(text, i);
+                if (codepoint > 0xffff)
+                { i++; }
+                Codepoints.Add((UInt32)codepoint);
+            }
+        }
+
         /// <summary>
         /// Whether or not this command should activate multiple times if the user keeps the key pressed down.
         /// </summary>
@@ -179,13 +192,26 @@ namespace MultikeysGUI.Model
         /// List of Unicode characters, identified by codepoint, that should be simulated.
         /// </summary>
         public IList<UInt32> Codepoints { get; set; }
+
+        public string ContentAsText
+        {
+            get
+            {
+                var builder = new StringBuilder();
+                foreach (UInt32 codepoint in Codepoints)
+                    builder.Append(
+                        char.ConvertFromUtf32((int)codepoint)
+                        );
+                return builder.ToString();
+            }
+        }
     }
 
     /// <summary>
     /// Command that sends one or more simulated keytrokes
     /// to the window that would receive the original keystroke.
     /// </summary>
-    public class MacroCommand : Command
+    public class MacroCommand : IKeystrokeCommand
     {
         /// <summary>
         /// Whether or not this command should activate multiple times if the user keeps the key pressed down.
@@ -200,7 +226,7 @@ namespace MultikeysGUI.Model
     /// <summary>
     /// Command that executes a certain file in disk, with optional arguments.
     /// </summary>
-    public class ExecutableCommand : Command
+    public class ExecutableCommand : IKeystrokeCommand
     {
         /// <summary>
         /// Command that should be executed on keypress.<para/>
@@ -217,12 +243,8 @@ namespace MultikeysGUI.Model
     /// Special type of Unicode command that replicates the behavior
     /// of a dead key. Only works for replacing Unicode commands.
     /// </summary>
-    public class DeadKeyCommand : Command
+    public class DeadKeyCommand : UnicodeCommand
     {
-        /// <summary>
-        /// Unicode character(s) associated with this dead key.
-        /// </summary>
-        public IList<UInt32> Codepoints { get; set; }
         /// <summary>
         /// List of replacements contained in this dead key.<para/>
         /// The command pressed after this key is compared to the first element in this dictionary.<para/>

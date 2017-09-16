@@ -65,7 +65,7 @@ namespace MultikeysGUITests
             {
                 Alias = "Default level",
                 ModifierCombination = new System.Collections.Generic.List<string>(),
-                Commands = new System.Collections.Generic.Dictionary<Scancode, Command>()
+                Commands = new System.Collections.Generic.Dictionary<Scancode, IKeystrokeCommand>()
             });
             layout.Keyboards[0].Levels[0].Commands.Add(
                 new Scancode(2),

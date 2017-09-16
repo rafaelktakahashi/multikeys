@@ -31,7 +31,7 @@ namespace MultikeysGUITests
                 $"    Activates with: {@this.ModifierCombination.JoinIntoString()}\n" +
                 $"    Contains: {@this.Commands.Select(it => it.Value.Print()).JoinIntoString()}\n";
         }
-        public static string Print(this Command @this)
+        public static string Print(this IKeystrokeCommand @this)
         {
             if (@this is UnicodeCommand) return (@this as UnicodeCommand).Print();
             else if (@this is MacroCommand) return (@this as MacroCommand).Print();

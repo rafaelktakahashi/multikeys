@@ -101,7 +101,6 @@ namespace MultikeysGUI.Persistence
         {
             return new UnicodeCommand
             {
-                Scancode = new Scancode(el.Attribute("Scancode").Value),
                 TriggerOnRepeat = el.Attribute("TriggerOnRepeat").Value == "True",
                 Codepoints = el.Elements("codepoint").Select(it => ReadCodepoint(it)).ToList()
             };
@@ -111,7 +110,6 @@ namespace MultikeysGUI.Persistence
         {
             return new MacroCommand
             {
-                Scancode = new Scancode(el.Attribute("Scancode").Value),
                 TriggerOnRepeat = el.Attribute("TriggerOnRepeat").Value == "True",
                 VKeyCodes = el.Elements("vkey").Select(it => ReadVKey(it)).ToList()
             };
@@ -121,7 +119,6 @@ namespace MultikeysGUI.Persistence
         {
             return new ExecutableCommand
             {
-                Scancode = new Scancode(el.Attribute("Scancode").Value),
                 Command = el.Element("path").Value,
                 Arguments = el.Element("parameter")?.Value
             };
@@ -138,15 +135,14 @@ namespace MultikeysGUI.Persistence
         {
             return new DeadKeyCommand
             {
-                Scancode = new Scancode(el.Attribute("Scancode").Value),
                 Codepoints = el.Element("independent").Elements("codepoint").Select(it => ReadCodepoint(it)).ToList(),
                 Replacements = el.Elements("replacement").Select(it => ReadReplacement(it)).ToDictionary(it => it.Item1, it => it.Item2)
             };
         }
 
-        private static Tuple<Scancode, Command> ReadCommand(XElement el)
+        private static Tuple<Scancode, IKeystrokeCommand> ReadCommand(XElement el)
         {
-            Command second = null;
+            IKeystrokeCommand second = null;
             switch (el.Name.LocalName)
             {
                 case "unicode":
@@ -165,9 +161,10 @@ namespace MultikeysGUI.Persistence
                     throw new Exception("Unrecognized command element.");
             }
 
+            // Tag is guaranteed to have a Scancode attribute.
             var first = new Scancode(el.Attribute("Scancode").Value);
 
-            return new Tuple<Scancode, Command>(first, second);
+            return new Tuple<Scancode, IKeystrokeCommand>(first, second);
 
         }
 
@@ -251,10 +248,10 @@ namespace MultikeysGUI.Persistence
                 );
         }
 
-        private static XElement WriteUnicodeCommand(UnicodeCommand entity)
+        private static XElement WriteUnicodeCommand(Scancode sc, UnicodeCommand entity)
         {
             var element = new XElement("unicode");
-            element.Add(new XAttribute("Scancode", entity.Scancode.ToString()));
+            element.Add(new XAttribute("Scancode", sc.ToString() ));
             element.Add(new XAttribute("TriggerOnRepeat", entity.TriggerOnRepeat ? "True" : "False"));
             foreach (var codepoint in entity.Codepoints)
             {
@@ -264,10 +261,10 @@ namespace MultikeysGUI.Persistence
             return element;
         }
 
-        private static XElement WriteMacroCommand(MacroCommand entity)
+        private static XElement WriteMacroCommand(Scancode sc, MacroCommand entity)
         {
             var element = new XElement("macro");
-            element.Add(new XAttribute("Scancode", entity.Scancode.ToString()));
+            element.Add(new XAttribute("Scancode", sc.ToString() ));
             element.Add(new XAttribute("TriggerOnRepeat", entity.TriggerOnRepeat ? "True" : "False"));
             foreach (var vkey in entity.VKeyCodes)
             {
@@ -277,10 +274,10 @@ namespace MultikeysGUI.Persistence
             return element;
         }
 
-        private static XElement WriteExecutableCommand(ExecutableCommand entity)
+        private static XElement WriteExecutableCommand(Scancode sc, ExecutableCommand entity)
         {
             var element = new XElement("execute");
-            element.Add(new XAttribute("Scancode", entity.Scancode.ToString()));
+            element.Add(new XAttribute("Scancode", sc.ToString() ));
 
             element.Add(new XElement("path", entity.Command));
             if (entity.Arguments != null)
@@ -310,10 +307,10 @@ namespace MultikeysGUI.Persistence
             return element;
         }
 
-        private static XElement WriteDeadKeyCommand(DeadKeyCommand entity)
+        private static XElement WriteDeadKeyCommand(Scancode sc, DeadKeyCommand entity)
         {
             var element = new XElement("deadkey");
-            element.Add(new XAttribute("Scancode", entity.Scancode.ToString()));
+            element.Add(new XAttribute("Scancode", sc.ToString() ));
             var element_1 = new XElement("independent");
             foreach (UInt32 codepoint in entity.Codepoints)
             {
@@ -327,13 +324,13 @@ namespace MultikeysGUI.Persistence
             return element;
         }
 
-        private static XElement WriteCommand(Command entity)
+        private static XElement WriteCommand(Scancode sc, IKeystrokeCommand entity)
         {
             // must check more specific types first, if using "is" keyword
-            if (entity is DeadKeyCommand) return WriteDeadKeyCommand(entity as DeadKeyCommand);
-            if (entity is MacroCommand) return WriteMacroCommand(entity as MacroCommand);
-            if (entity is UnicodeCommand) return WriteUnicodeCommand(entity as UnicodeCommand);
-            if (entity is ExecutableCommand) return WriteExecutableCommand(entity as ExecutableCommand);
+            if (entity is DeadKeyCommand) return WriteDeadKeyCommand(sc, entity as DeadKeyCommand);
+            if (entity is MacroCommand) return WriteMacroCommand(sc, entity as MacroCommand);
+            if (entity is UnicodeCommand) return WriteUnicodeCommand(sc, entity as UnicodeCommand);
+            if (entity is ExecutableCommand) return WriteExecutableCommand(sc, entity as ExecutableCommand);
             return new XElement("command", "ERROR WRITING COMMAND");
         }
 
@@ -345,9 +342,9 @@ namespace MultikeysGUI.Persistence
             {
                 element.Add(new XElement("modifier", modifierName));
             }
-            foreach (var command in entity.Commands.Select(c => c.Value))
+            foreach (var scToCommand in entity.Commands)
             {
-                element.Add(WriteCommand(command));
+                element.Add(WriteCommand(scToCommand.Key, scToCommand.Value));
             }
             return element;
         }

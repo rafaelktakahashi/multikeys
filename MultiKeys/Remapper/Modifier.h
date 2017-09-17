@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 #include "Scancode.h"
-#include "Level.h"
+#include "Layer.h"
 
 namespace Multikeys
 {
@@ -61,7 +61,7 @@ namespace Multikeys
 
 	// This class is used for two purposes:
 	//		In a Keyboard to represent the internal state of its modifiers (mutable)
-	//		In a Level to represent the required modifiers to trigger it (const)
+	//		In a Layer to represent the required modifiers to trigger it (const)
 	class ModifierStateMap
 	{
 	private:
@@ -86,8 +86,8 @@ namespace Multikeys
 		// otherwise, false is returned.
 		bool updateState(Scancode sc, bool keyDown);
 
-		// Returns true if level is triggered by the current combination of modifiers in this object.
-		bool checkState(Level* const level) const;
+		// Returns true if layer is triggered by the current combination of modifiers in this object.
+		bool checkState(Layer* const layer) const;
 
 		void resetAllModifiers();
 

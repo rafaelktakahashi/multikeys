@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
-#include "Level.h"
+#include "Layer.h"
 #include "Modifier.h"
 
 namespace Multikeys
@@ -18,20 +18,20 @@ namespace Multikeys
 		// frequently returned.
 		BaseKeystrokeCommand* noAction;
 
-		// All levels belonging to this keyboard's layout
-		const std::vector<Level*> levels;
+		// All layers belonging to this keyboard's layout
+		const std::vector<Layer*> layers;
 		// Const containers return const references.
 
-		// Currently active level; null if the current combination of modifiers corresponds
-		// to no level.
-		Level* activeLevel;
+		// Currently active layer; null if the current combination of modifiers corresponds
+		// to no layer.
+		Layer* activeLayer;
 
 		// Pointer to a dead key waiting for the next character; null when no dead key is active.
 		DeadKeyCommand * activeDeadKey;
 
 		// Call this function to check for modifiers.
 		// If the key described by the parameters is a modifier, the internal state of
-		// this object is updated (as well as the active level), and true is returned.
+		// this object is updated (as well as the active layer), and true is returned.
 		// If the key is not a modifier, no changes to internal state are made, and
 		// false is returned.
 		bool _updateKeyboardState(Scancode sc, bool flag_keyup);
@@ -42,10 +42,10 @@ namespace Multikeys
 		const std::wstring deviceName;
 
 		// name - Name to serve as unique identifier for this keyboard.
-		// levels - Pointers to levels; may delete after calling this.
+		// layers - Pointers to layers; may delete after calling this.
 		// modifers - structure of ModiferStateMap already initialized with Modifiers
 		//			ownership of pointer is transferred to this Keyboard object.
-		Keyboard(const std::wstring name, const std::vector<Level*>& levels, ModifierStateMap* modifiers);
+		Keyboard(const std::wstring name, const std::vector<Layer*>& layers, ModifierStateMap* modifiers);
 
 		// Receives information about a keypress, and returns true if the keystroke should
 		// be blocked.

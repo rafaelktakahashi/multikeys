@@ -105,9 +105,9 @@ namespace Multikeys
 		return false;
 	}
 
-	bool ModifierStateMap::checkState(Level* const level) const
+	bool ModifierStateMap::checkState(Layer* const layer) const
 	{
-		// 0. Level's modNames contains precisely the modifiers that trigger it.
+		// 0. Layer's modNames contains precisely the modifiers that trigger it.
 		// 1. Every name present in modNames must be already set to true in this->modifiers
 		// 2. Every name not present in modNames must be false in this->modifiers
 		// Satified those conditions, this method must return true
@@ -118,19 +118,19 @@ namespace Multikeys
 		// Loop through all modifiers in this map
 		for (auto it = this->modifiers.begin(); it != this->modifiers.end(); it++)
 		{
-			// Determine whether or not this modifier is present in the Level's modifiers
+			// Determine whether or not this modifier is present in the Layer's modifiers
 			// Look for it by name
-			for (i = 0, found = false; i < level->modifierCombination.size(); i++)
+			for (i = 0, found = false; i < layer->modifierCombination.size(); i++)
 			{
-				if (level->modifierCombination[i] == it->first->name)	// comparing wstrings
+				if (layer->modifierCombination[i] == it->first->name)	// comparing wstrings
 				{
 					found = true;
 					break;	// get out of this inner loop
 				}
 			}
-			// Presence in the Level's modifers must be equal to the modifier's current state
-			// That is, if the modifier exists in the Level, then it must be currently pressed
-			// if the modifier was not found in the Level, then it must be currently unpressed.
+			// Presence in the Layer's modifers must be equal to the modifier's current state
+			// That is, if the modifier exists in the Layer, then it must be currently pressed
+			// if the modifier was not found in the Layer, then it must be currently unpressed.
 			if (found != it->second)
 			{
 				return false;

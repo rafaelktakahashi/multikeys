@@ -59,15 +59,15 @@ namespace MultikeysGUITests
                 UniqueName = @"\\?\HID#VID_1A2C&PID_0B2A&amp;MI_00#8&16c55830&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}",
                 Alias = "Default",
                 Modifiers = new System.Collections.Generic.List<Modifier>(),
-                Levels = new System.Collections.Generic.List<Level>()
+                Layers = new System.Collections.Generic.List<Layer>()
             });
-            layout.Keyboards[0].Levels.Add(new Level
+            layout.Keyboards[0].Layers.Add(new Layer
             {
-                Alias = "Default level",
+                Alias = "Default layer",
                 ModifierCombination = new System.Collections.Generic.List<string>(),
                 Commands = new System.Collections.Generic.Dictionary<Scancode, IKeystrokeCommand>()
             });
-            layout.Keyboards[0].Levels[0].Commands.Add(
+            layout.Keyboards[0].Layers[0].Commands.Add(
                 new Scancode(2),
                 new UnicodeCommand
                 {

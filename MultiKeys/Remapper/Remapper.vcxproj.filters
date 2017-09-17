@@ -36,13 +36,13 @@
     <ClInclude Include="Keyboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Level.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Scancode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Modifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,9 +51,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KeystrokeCommands.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="XmlParser.cpp">
@@ -66,6 +63,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Modifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Layer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

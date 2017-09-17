@@ -110,9 +110,9 @@ namespace MultikeysGUI.Model
         /// </summary>
         public IList<Modifier> Modifiers { get; set; }
         /// <summary>
-        /// Levels registered on this keyboard; each is activated by a particular combination of modifiers.
+        /// Layers registered on this keyboard; each is activated by a particular combination of modifiers.
         /// </summary>
-        public IList<Level> Levels { get; set; }
+        public IList<Layer> Layers { get; set; }
     }
 
     /// <summary>
@@ -138,23 +138,23 @@ namespace MultikeysGUI.Model
     /// <summary>
     /// Group of commands that correspond to a certain combination of modifiers pressed down.
     /// An empty list of modifiers is a valid combination.
-    /// A combination of modifiers may not correspond to more than one level.
+    /// A combination of modifiers may not correspond to more than one layer.
     /// </summary>
-    public class Level
+    public class Layer
     {
         /// <summary>
-        /// Readable name given to the level; this string is chosen by the user, and has no effect on functionality.
+        /// Readable name given to the layer; this string is chosen by the user, and has no effect on functionality.
         /// </summary>
         public string Alias { get; set; }
         /// <summary>
-        /// Combination of modifiers that must be pressed down on the keyboard in order to activate this level.<para/>
+        /// Combination of modifiers that must be pressed down on the keyboard in order to activate this layer.<para/>
         /// Each modifier registered on the keyboard that is present in this list must be pressed down.<para/>
         /// Each modifier registered on the keyboard that is not present in this list must be released.
         /// Modifiers are identified by name.
         /// </summary>
         public IList<string> ModifierCombination { get; set; }
         /// <summary>
-        /// List of remaps in this level.
+        /// List of remaps in this layer.
         /// A remap is associated with a physical key, identified by scancode.
         /// Each scancode may be associated with at most one command. <para/>
         /// Each stored command also contains the scancode.

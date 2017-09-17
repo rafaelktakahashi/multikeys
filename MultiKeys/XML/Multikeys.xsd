@@ -21,7 +21,7 @@
                 </xs:annotation>
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element minOccurs="0" maxOccurs="unbounded" name="modifier">
+                    <xs:element maxOccurs="unbounded" name="modifier">
                       <xs:annotation>
                         <xs:documentation>
                           A modifier key, identified by scancode (in hexadecimal, one or two bytes without space). The used scancode becomes unavailable for other mappings.
@@ -46,11 +46,11 @@
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
-              <xs:element maxOccurs="unbounded" name="level">
+              <xs:element maxOccurs="unbounded" name="layer">
                 <xs:annotation>
                   <xs:documentation>
-                    The different levels in each keyboard; each level is the set of mappings corresponding to a combination of modifiers (e.g. shifted, unshifted, AltGr).
-                    Each level may be given an alias, which does not affect functionality.
+                    The different layers in each keyboard; each layer is the set of mappings corresponding to a combination of modifiers (e.g. shifted, unshifted, AltGr).
+                    Each layer may be given an alias, which does not affect functionality.
                   </xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
@@ -58,8 +58,8 @@
                     <xs:element minOccurs="0" maxOccurs="unbounded" name="modifier" type="xs:string">
                       <xs:annotation>
                         <xs:documentation>
-                          Each modifier, identified only by name, that must be pressed down in order to activate this level.
-                          For a modifier to be specified in a level, it must also be defined for the keyboard containing this level.
+                          Each modifier, identified only by name, that must be pressed down in order to activate this layer.
+                          For a modifier to be specified in a layer, it must also be defined for the keyboard containing this layer.
                         </xs:documentation>
                       </xs:annotation>
                     </xs:element>

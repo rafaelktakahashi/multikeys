@@ -19,15 +19,15 @@ namespace MultikeysGUITests
             return
                 $"\n{@this.Alias}: {@this.UniqueName}\n"
                 + $"Modifiers:\n{@this.Modifiers.Select(it => it.Print()).JoinIntoString()}\n"
-                + $"Levels:\n{@this.Levels.Select(it => it.Print()).JoinIntoString()}\n";
+                + $"Layers:\n{@this.Layers.Select(it => it.Print()).JoinIntoString()}\n";
         }
         public static string Print(this Modifier @this)
         {
             return $"    {@this.Name}: {@this.Scancodes.Select(it => it.MakeCode.ToString()).JoinIntoString()}\n";
         }
-        public static string Print(this Level @this)
+        public static string Print(this Layer @this)
         {
-            return $"    Level {@this.Alias}\n" +
+            return $"    Layer {@this.Alias}\n" +
                 $"    Activates with: {@this.ModifierCombination.JoinIntoString()}\n" +
                 $"    Contains: {@this.Commands.Select(it => it.Value.Print()).JoinIntoString()}\n";
         }
@@ -41,23 +41,19 @@ namespace MultikeysGUITests
         }
         public static string Print(this UnicodeCommand @this)
         {
-            return $"        Unicode, sc {@this.Scancode.MakeCode}\n" +
-                $"{@this.Codepoints.Select(it => $"{it.ToString()} ({it.AsCharacter()})").JoinIntoStringManyLines("            ")}\n";
+            return $"{@this.Codepoints.Select(it => $"{it.ToString()} ({it.AsCharacter()})").JoinIntoStringManyLines("            ")}\n";
         }
         public static string Print(this MacroCommand @this)
         {
-            return $"        Macro, sc {@this.Scancode.MakeCode}\n" +
-                $"{@this.VKeyCodes.Select(it => it.VirtualKeyCode.ToString()).JoinIntoStringManyLines("            ")}\n";
+            return $"{@this.VKeyCodes.Select(it => it.VirtualKeyCode.ToString()).JoinIntoStringManyLines("            ")}\n";
         }
         public static string Print(this ExecutableCommand @this)
         {
-            return $"        Executable, sc {@this.Scancode.MakeCode}\n" +
-                $"            {@this.Command} {@this.Arguments}\n";
+            return $"            {@this.Command} {@this.Arguments}\n";
         }
         public static string Print(this DeadKeyCommand @this)
         {
-            return $"        Dead key, sc {@this.Scancode.MakeCode}\n" +
-                $"            Printed form currently unavailable.\n";
+            return $"            Printed form currently unavailable.\n";
         }
 
         private static string JoinIntoString(this IEnumerable<string> strings)

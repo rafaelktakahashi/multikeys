@@ -7,20 +7,20 @@
 namespace Multikeys
 {
 	Keyboard::Keyboard(const std::wstring name,
-		const std::vector<Level*>& levels, ModifierStateMap* modifiers)
-		: levels(levels), modifierStateMap(modifiers), deviceName(name)
+		const std::vector<Layer*>& layers, ModifierStateMap* modifiers)
+		: layers(layers), modifierStateMap(modifiers), deviceName(name)
 	{
 		noAction = new EmptyCommand();
 		activeDeadKey = nullptr;
 
-		// Initialize the current level to whichever level activates with no modifier
+		// Initialize the current layer to whichever layer activates with no modifier
 		// Note: iterator dereferences into a pointer
-		this->activeLevel = nullptr;
-		for (auto it = this->levels.begin(); it != this->levels.end(); it++)
+		this->activeLayer = nullptr;
+		for (auto it = this->layers.begin(); it != this->layers.end(); it++)
 		{
 			if (this->modifierStateMap->checkState(*it))
 			{
-				this->activeLevel = *it;
+				this->activeLayer = *it;
 				break;
 			}
 		}
@@ -34,14 +34,14 @@ namespace Multikeys
 		if (!modifierStateMap->updateState(sc, !flag_keyup))
 			return false;
 
-		// Then, if a modifier changed state, update the currently active level
+		// Then, if a modifier changed state, update the currently active layer
 		// Note: iterator dereferences into a pointer
-		this->activeLevel = nullptr;
-		for (auto it = this->levels.begin(); it != this->levels.end(); it++)
+		this->activeLayer = nullptr;
+		for (auto it = this->layers.begin(); it != this->layers.end(); it++)
 		{
 			if (this->modifierStateMap->checkState(*it))
 			{
-				this->activeLevel = *it;
+				this->activeLayer = *it;
 				break;
 			}
 		}
@@ -87,17 +87,17 @@ namespace Multikeys
 			return true;	// Since no action should be taken, input should also be blocked.
 		}
 
-		// 3. Ask the currently active level for the action corresponding to this.
-		// If there is no currently active level (probably because of an invalid
+		// 3. Ask the currently active layer for the action corresponding to this.
+		// If there is no currently active layer (probably because of an invalid
 		// combination of modifiers), then the resulting action should be no action.
 		BaseKeystrokeCommand* command;
-		if (activeLevel == nullptr)
+		if (activeLayer == nullptr)
 		{
 			command = noAction;
 		}
 		else
 		{
-			command = activeLevel->getCommand(scancode);
+			command = activeLayer->getCommand(scancode);
 		}
 
 
@@ -143,23 +143,23 @@ namespace Multikeys
 	{
 		// Lets the modifier state take care of this
 		this->modifierStateMap->resetAllModifiers();
-		// But also update the current level
-		for (auto it = this->levels.begin(); it != this->levels.end(); it++)
+		// But also update the current layer
+		for (auto it = this->layers.begin(); it != this->layers.end(); it++)
 		{
 			if (this->modifierStateMap->checkState(*it))
 			{
-				this->activeLevel = *it;
+				this->activeLayer = *it;
 				break;
 			}
-			this->activeLevel = nullptr;
+			this->activeLayer = nullptr;
 		}
 		return;
 	}
 
 	Keyboard::~Keyboard()
 	{
-		// Destroy all levels
-		for (auto it = this->levels.begin(); it != this->levels.end(); it++)
+		// Destroy all layers
+		for (auto it = this->layers.begin(); it != this->layers.end(); it++)
 		{
 			delete (*it);
 		}

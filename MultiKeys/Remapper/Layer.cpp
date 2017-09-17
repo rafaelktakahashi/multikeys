@@ -1,17 +1,17 @@
 #include "stdafx.h"
-#include "Level.h"
+#include "Layer.h"
 
-// Implementation of methods defined in Level.h
+// Implementation of methods defined in Layer.h
 
 namespace Multikeys
 {
-	Level::Level(const std::vector<std::wstring>& _modifierCombination,
+	Layer::Layer(const std::vector<std::wstring>& _modifierCombination,
 		const std::unordered_map<Scancode, BaseKeystrokeCommand*>& _layout)
 		:	modifierCombination(_modifierCombination),
 			layout(_layout)
 	{ }
 
-	BaseKeystrokeCommand* Level::getCommand(Scancode sc) const
+	BaseKeystrokeCommand* Layer::getCommand(Scancode sc) const
 	{
 		// Because maps do not allow duplicate keys,
 		// unordered_map::count actually returns either 0 or 1
@@ -23,10 +23,10 @@ namespace Multikeys
 			);
 	}
 
-	Level::~Level()
+	Layer::~Layer()
 	{
 		// Delete every command.
-		// No command appears in more than one level, or in more than one keyboard.
+		// No command appears in more than one layer, or in more than one keyboard.
 		for (auto it = this->layout.begin(); it != this->layout.end(); it++)
 		{
 			delete it->second;

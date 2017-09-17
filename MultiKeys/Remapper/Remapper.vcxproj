@@ -178,7 +178,7 @@ exit 0</Command>
   <ItemGroup>
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="KeystrokeCommands.h" />
-    <ClInclude Include="Level.h" />
+    <ClInclude Include="Layer.h" />
     <ClInclude Include="Modifier.h" />
     <ClInclude Include="RemapperAPI.h" />
     <ClInclude Include="Remapper.h" />
@@ -189,7 +189,7 @@ exit 0</Command>
   <ItemGroup>
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="KeystrokeCommands.cpp" />
-    <ClCompile Include="Level.cpp" />
+    <ClCompile Include="Layer.cpp" />
     <ClCompile Include="Modifier.cpp" />
     <ClCompile Include="Remapper.cpp" />
     <ClCompile Include="stdafx.cpp">

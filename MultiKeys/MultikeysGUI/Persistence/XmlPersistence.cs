@@ -168,9 +168,9 @@ namespace MultikeysGUI.Persistence
 
         }
 
-        private static Level ReadLevel(XElement el)
+        private static Layer ReadLayer(XElement el)
         {
-            return new Level
+            return new Layer
             {
                 ModifierCombination = el.Elements("modifier").Select(it => it.Value).ToList(),
                 Commands = (
@@ -205,7 +205,7 @@ namespace MultikeysGUI.Persistence
                 UniqueName = el.Attribute("Name").Value,
                 Alias = el.Attribute("Alias")?.Value,   // may be null
                 Modifiers = ReadModifiers(el.Element("modifiers")),
-                Levels = el.Elements("level").Select(it => ReadLevel(it)).ToList()
+                Layers = el.Elements("layer").Select(it => ReadLayer(it)).ToList()
             };
         }
 
@@ -334,9 +334,9 @@ namespace MultikeysGUI.Persistence
             return new XElement("command", "ERROR WRITING COMMAND");
         }
 
-        private static XElement WriteLevel(Level entity)
+        private static XElement WriteLayer(Layer entity)
         {
-            var element = new XElement("level");
+            var element = new XElement("layer");
             element.Add(new XAttribute("Alias", entity.Alias));
             foreach (string modifierName in entity.ModifierCombination)
             {
@@ -370,9 +370,9 @@ namespace MultikeysGUI.Persistence
             if (entity.Alias != null)
                 element.Add(new XAttribute("Alias", entity.Alias));
             element.Add(WriteModifiers(entity.Modifiers));
-            foreach (var level in entity.Levels)
+            foreach (var layer in entity.Layers)
             {
-                element.Add(WriteLevel(level));
+                element.Add(WriteLayer(layer));
             }
             return element;
         }

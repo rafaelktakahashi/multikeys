@@ -4,7 +4,7 @@
 
 #include "Remapper.h"
 #include "Keyboard.h"
-#include "Level.h"
+#include "Layer.h"
 #include "Scancode.h"
 #include "KeystrokeCommands.h"
 
@@ -71,9 +71,9 @@ bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard);
 // Receives a keyboard element, and instantiates a modifier state map with its remap in it
 bool ParseModifier(const PXmlElement modElement, OUT ModifierStateMap* *const pModifiers);
 
-// Parses a level element and places its data in a Level class;
-// pLevel - (pointer to) level structure that will hold this node's data
-bool ParseLevel(const PXmlElement lvlElement, OUT Level* *const pLevel);
+// Parses a layer element and places its data in a Layer class;
+// pLayer - (pointer to) layer structure that will hold this node's data
+bool ParseLayer(const PXmlElement lvlElement, OUT Layer* *const pLayer);
 bool ParseUnicode(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
 bool ParseMacro(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
 bool ParseExecutable(const PXmlElement rmpElement, OUT BaseKeystrokeCommand* *const pCommand);
@@ -220,35 +220,35 @@ bool ParseKeyboard(const PXmlElement kbElement, OUT Keyboard* *const pKeyboard)
 		return false;
 	if (!ptrModStateMap) return false;
 	// ptrModStateMap should now point to an instantiated modifier state map.
-	// We'll instantiate it after making all levels
+	// We'll instantiate it after making all layers
 
 
-	// Get all levels
-	PXmlNodeList levelElements = kbElement->getElementsByTagName(u"level");
+	// Get all layers
+	PXmlNodeList layerElements = kbElement->getElementsByTagName(u"layer");
 
-	// Allocate memory for levels
-	std::vector<Level*> levelVector;
+	// Allocate memory for layers
+	std::vector<Layer*> layerVector;
 
-	for (XMLSize_t i = 0; i < levelElements->getLength(); i++)
+	for (XMLSize_t i = 0; i < layerElements->getLength(); i++)
 	{
-		if (levelElements->item(i)->getNodeType() != XmlNode::ELEMENT_NODE)
-			return false;	// there was a "level" that's not an element
-		PXmlElement levelElement = (PXmlElement)levelElements->item(i);
+		if (layerElements->item(i)->getNodeType() != XmlNode::ELEMENT_NODE)
+			return false;	// there was a "layer" that's not an element
+		PXmlElement layerElement = (PXmlElement)layerElements->item(i);
 
-		// Declare a pointer to level
-		Level* pLevel = nullptr;
+		// Declare a pointer to layer
+		Layer* pLayer = nullptr;
 		// This call will place an actual instance there
-		if (!ParseLevel(levelElement, &pLevel))
+		if (!ParseLayer(layerElement, &pLayer))
 			return false;
 		// Add the new instance into the vector
-		if (!pLevel) return false;
-		levelVector.push_back(pLevel);
+		if (!pLayer) return false;
+		layerVector.push_back(pLayer);
 		// The pointer dies, but not the object.
 	}
 
-	// levelArray is ready, and so is the modifier state map
+	// layerArray is ready, and so is the modifier state map
 	*pKeyboard =
-		new Keyboard(keyboardName, levelVector, ptrModStateMap);
+		new Keyboard(keyboardName, layerVector, ptrModStateMap);
 
 	return true;
 }
@@ -346,17 +346,17 @@ bool ParseModifier(const PXmlElement modElement, OUT ModifierStateMap**const pMo
 
 
 
-bool ParseLevel(const PXmlElement lvlElement, OUT Level** const pLevel)
+bool ParseLayer(const PXmlElement lvlElement, OUT Layer** const pLayer)
 {
 	// Get a copy of the modifier state map
-	// ModifierStateMap * ptrLevelModMap = new ModifierStateMap(*pModifiers);
+	// ModifierStateMap * ptrLayerModMap = new ModifierStateMap(*pModifiers);
 	// no longer necessary to create a modifier state map
 
-	// This will contain the modifiers that are necessary to trigger this level,
+	// This will contain the modifiers that are necessary to trigger this layer,
 	// identified only by name.
 	std::vector<std::wstring> modifierCombination;
 
-	// Get all modifiers that are required to trigger this level
+	// Get all modifiers that are required to trigger this layer
 	PXmlNodeList modifierList = lvlElement->getElementsByTagName(u"modifier");
 	for (XMLSize_t i = 0; i < modifierList->getLength(); i++)
 	{
@@ -433,10 +433,10 @@ bool ParseLevel(const PXmlElement lvlElement, OUT Level** const pLevel)
 
 	}
 
-	*pLevel =
-		new Level(modifierCombination, layout);
+	*pLayer =
+		new Layer(modifierCombination, layout);
 	// It's okay that these containers die at the end of this function.
-	// Level will copy them in its constructor.
+	// Layer will copy them in its constructor.
 
 	return true;
 }

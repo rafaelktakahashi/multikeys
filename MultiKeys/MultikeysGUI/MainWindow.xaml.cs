@@ -33,12 +33,7 @@ namespace MultikeysGUI
                     new List<uint> { 0x1f630, 0x1f650 }
                 }
             };
-            Scancode01.UpdateCommand(command);
         }
-
-        public void UpdateSummaryPanel(object sender, EventArgs e)
-        {
-            SummaryPanel.UpdateCommand(Scancode01.Command);
-        }
+        
     }
 }

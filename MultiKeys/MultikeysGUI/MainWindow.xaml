@@ -5,9 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MultikeysGUI.Pages.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="368" Width="639">
+        Title="MainWindow" Height="552" Width="970">
     <Grid>
-        <local:KeyControl x:Name="Scancode01" Margin="10,10,0,0" Width="50" Height="50" HorizontalAlignment="Left" VerticalAlignment="Top" KeyClicked="UpdateSummaryPanel" />
-        <local:CommandPanel x:Name="SummaryPanel" Margin="359,10,10,10"/>
+        <local:LayerControl HorizontalAlignment="Left" Height="521" VerticalAlignment="Top" Width="962"/>
     </Grid>
 </Window>

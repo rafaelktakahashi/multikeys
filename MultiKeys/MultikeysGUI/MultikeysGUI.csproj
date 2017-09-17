@@ -53,8 +53,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Layout\PhysicalKey.cs" />
+    <Compile Include="Layout\IPhysicalLayout.cs" />
+    <Compile Include="Layout\PhysicalLayoutFactory.cs" />
+    <Compile Include="Layout\PhysicalLayouts.cs" />
+    <Compile Include="Layout\PhysicalLayoutStandard.cs" />
     <Compile Include="Pages\Controls\KeyboardControl.xaml.cs">
       <DependentUpon>KeyboardControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Controls\LayerControl.xaml.cs">
+      <DependentUpon>LayerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Controls\ModifiersControl.xaml.cs">
       <DependentUpon>ModifiersControl.xaml</DependentUpon>
@@ -85,6 +93,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\Controls\KeyControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Controls\LayerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -13,6 +13,7 @@ namespace MultikeysGUI.Model
     {
         /// <summary>
         /// Constructs a new scancode from a string.
+        /// Note: The Pause/Break key is identified by e1 1d instead of its full sequence (e1 1d 45).
         /// </summary>
         /// <param name="sc">A 16-bit integer, represented in hexadecimal
         /// in the form [0x]AA[:]BB.
@@ -24,6 +25,15 @@ namespace MultikeysGUI.Model
                       System.Globalization.NumberStyles.HexNumber)
                   )
         { }
+
+        public static Scancode FromString(string sc)
+        {
+            return new Scancode(
+                  UInt16.Parse(
+                      new string(sc.Where(c => !char.IsPunctuation(c) && !char.IsWhiteSpace(c)).ToArray()),
+                      System.Globalization.NumberStyles.HexNumber)
+                  );
+        }
 
         /// <summary>
         /// Constructs a new scancode from a value.

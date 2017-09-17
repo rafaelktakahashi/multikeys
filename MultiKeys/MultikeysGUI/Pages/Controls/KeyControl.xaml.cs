@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using MultikeysGUI.Model;
 using System.ComponentModel;
 using MultikeysGUI.Pages.Dialogues;
+using System.Globalization;
 
 namespace MultikeysGUI.Pages.Controls
 {
@@ -28,12 +29,47 @@ namespace MultikeysGUI.Pages.Controls
         {
             InitializeComponent();
             Command = null;
+            Scancode = null;
             UpdateText();
         }
 
 
-
+        
         public IKeystrokeCommand Command { get; private set; }
+
+        
+        public class ScancodeConverter : TypeConverter
+        {
+            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                if (sourceType == typeof(string)) return true;
+                else return base.CanConvertFrom(context, sourceType);
+            }
+            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+            {
+                if (destinationType == typeof(string)) return true;
+                else return base.CanConvertTo(context, destinationType);
+            }
+            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+            {
+                if (!(value is string)) return null;
+                return new Scancode(value as string);
+            }
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+            {
+                if (!(value is Scancode))
+                    return null;
+                if (destinationType != typeof(string))
+                    return base.ConvertTo(context, culture, value, destinationType);
+                return (value as Scancode).ToString();
+            }
+        }
+        /// <summary>
+        /// This property is not used internally, but provides a useful id for this control.
+        /// </summary>
+        [TypeConverter(typeof(ScancodeConverter))]
+        public Scancode Scancode { get; set; }
+        
 
         /// <summary>
         /// 
@@ -52,16 +88,16 @@ namespace MultikeysGUI.Pages.Controls
         {
             if (Command == null)
             {
-                textBlock.Text = "N/A";
-                textBlock.Foreground = Brushes.Gray;
+                MiddleLabel.Text = "N/A";
+                MiddleLabel.Foreground = Brushes.Gray;
             }
-            else textBlock.Foreground = Brushes.Black;
+            else MiddleLabel.Foreground = Brushes.Black;
 
             if (Command is UnicodeCommand)
             {
-                textBlock.Text = (Command as UnicodeCommand).ContentAsText;
+                MiddleLabel.Text = (Command as UnicodeCommand).ContentAsText;
             }
-            else textBlock.Text = "...";
+            else MiddleLabel.Text = "...";
         }
 
         #region Exposing properties
@@ -71,26 +107,32 @@ namespace MultikeysGUI.Pages.Controls
             "Other types of command may display an icon or symbol.")]
         public string Text
         {
-            get { return textBlock.Text; }
-            private set { textBlock.Text = value; } // normally set only by UpdateText
+            get { return MiddleLabel.Text; }
+            private set { MiddleLabel.Text = value; } // normally set only by UpdateText
         }
 
         public double FontSize
         {
-            get { return textBlock.FontSize; }
-            set { textBlock.FontSize = value; }
+            get { return MiddleLabel.FontSize; }
+            set { MiddleLabel.FontSize = value; }
         }
 
         public FontFamily FontFamily
         {
-            get { return textBlock.FontFamily; }
-            set { textBlock.FontFamily = value; }
+            get { return MiddleLabel.FontFamily; }
+            set { MiddleLabel.FontFamily = value; }
         }
 
         public Brush ForegroundBrush
         {
-            get { return textBlock.Foreground; }
-            set { textBlock.Foreground = value; border.BorderBrush = value; }
+            get { return MiddleLabel.Foreground; }
+            set { MiddleLabel.Foreground = value; border.BorderBrush = value; }
+        }
+
+        public string BottomLabelText
+        {
+            get { return BottomLabel.Text; }
+            set { BottomLabel.Text = value; }
         }
 
         #endregion

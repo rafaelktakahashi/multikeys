@@ -117,4 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DeadKeyReplacementFrom" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="DeadKeyReplacements" xml:space="preserve">
+    <value>Replacements</value>
+  </data>
+  <data name="DeadKeyReplacementTo" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="ExecutableKeyArguments" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="ExecutableKeyCommand" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="KeyPress" xml:space="preserve">
+    <value>Key press</value>
+  </data>
+  <data name="KeyRelease" xml:space="preserve">
+    <value>Key release</value>
+  </data>
+  <data name="MacroSequence" xml:space="preserve">
+    <value>Sequence</value>
+  </data>
+  <data name="ReadableNameDeadkey" xml:space="preserve">
+    <value>Dead key</value>
+  </data>
+  <data name="ReadableNameExecutablekey" xml:space="preserve">
+    <value>Command key</value>
+  </data>
+  <data name="ReadableNameMacroKey" xml:space="preserve">
+    <value>Macro key</value>
+  </data>
+  <data name="ReadableNameUnicodeKey" xml:space="preserve">
+    <value>Text key</value>
+  </data>
+  <data name="ThisKeyIsNotRemapped" xml:space="preserve">
+    <value>This key is not remapped.</value>
+  </data>
+  <data name="VirtualKeyCode" xml:space="preserve">
+    <value>Virtual key code</value>
+  </data>
 </root>

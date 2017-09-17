@@ -5,12 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MultikeysGUI.Pages.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="200"
-             MinHeight="200" MinWidth="200">
+             d:DesignHeight="382" d:DesignWidth="280">
     <Grid>
-        <Rectangle Margin="0,0,0,0" Fill="White" Opacity="0.7" />
-        <Border BorderThickness="3" BorderBrush="Black" />
-        <TextBlock x:Name="lblTitle" Margin="10, 10, 10, 0" VerticalAlignment="Top" TextWrapping="Wrap" Text="TypeOfCommand"/>
-        
+        <Rectangle Margin="0,0,0,0" Fill="White" Opacity="0.625" />
+        <Border BorderThickness="3" BorderBrush="Black" Panel.ZIndex="1" />
+        <StackPanel x:Name="StackPanelData">
+        </StackPanel>
     </Grid>
 </UserControl>

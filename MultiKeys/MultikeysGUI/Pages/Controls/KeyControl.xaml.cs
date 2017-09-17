@@ -33,7 +33,7 @@ namespace MultikeysGUI.Pages.Controls
 
 
 
-        public IKeystrokeCommand Command { get; set; }
+        public IKeystrokeCommand Command { get; private set; }
 
         /// <summary>
         /// 
@@ -42,7 +42,7 @@ namespace MultikeysGUI.Pages.Controls
         public void UpdateCommand(IKeystrokeCommand value)
         {
             this.Command = value;
-            UpdateCommand(value);
+            UpdateText();
         }
 
         /// <summary>
@@ -95,14 +95,16 @@ namespace MultikeysGUI.Pages.Controls
 
         #endregion
 
+        #region Custom Events
+
+        public event EventHandler KeyClicked;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new UnicodeCommandDialog();
-            if (dialog.ShowDialog() ?? false)
-            {
-                Command = dialog.Command;
-                UpdateText();
-            }
+            KeyClicked?.Invoke(this, e);        // <- this control raises the KeyClicked event
         }
+
+        #endregion
+        
     }
+    
 }

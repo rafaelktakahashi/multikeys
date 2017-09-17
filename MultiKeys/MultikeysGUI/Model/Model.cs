@@ -75,6 +75,12 @@ namespace MultikeysGUI.Model
 
         public byte VirtualKeyCode { get; set; }
         public bool KeyDown { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Properties.Strings.VirtualKeyCode}: {VirtualKeyCode.ToString("X")};" +
+                $"({(KeyDown ? Properties.Strings.KeyPress : Properties.Strings.KeyRelease)})";
+        }
     }
 
     /// <summary>
@@ -252,4 +258,5 @@ namespace MultikeysGUI.Model
         /// </summary>
         public IDictionary<IList<UInt32>, IList<UInt32>> Replacements { get; set; }
     }
+    
 }

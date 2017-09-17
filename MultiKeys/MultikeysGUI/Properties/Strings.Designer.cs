@@ -133,6 +133,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Modifiers.
+        /// </summary>
+        internal static string Modifiers {
+            get {
+                return ResourceManager.GetString("Modifiers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dead key.
         /// </summary>
         internal static string ReadableNameDeadkey {

@@ -141,6 +141,9 @@
   <data name="MacroSequence" xml:space="preserve">
     <value>Sequence</value>
   </data>
+  <data name="Modifiers" xml:space="preserve">
+    <value>Modifiers</value>
+  </data>
   <data name="ReadableNameDeadkey" xml:space="preserve">
     <value>Dead key</value>
   </data>

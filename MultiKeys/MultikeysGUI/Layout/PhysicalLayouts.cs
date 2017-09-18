@@ -13,9 +13,9 @@ namespace MultikeysGUI.Layout
     /// It is important that whatever class inheriting from this one does not forget to define
     /// each key that is missing. An inheriting class is also free to overwrite any of these definitions.
     /// </summary>
-    abstract class BasePhysicalLayout : IPhysicalLayout
+    public abstract class BasePhysicalLayout : IPhysicalLayout
     {
-        BasePhysicalLayout()
+        public BasePhysicalLayout()
         {
             // Initializing each physical key
             //
@@ -27,6 +27,8 @@ namespace MultikeysGUI.Layout
             // Right Shift              Extra 73 key in JIS and ABNT-2 layouts
             // Space                    Multiple extra keys in JIS and Dubeolsik layouts
             // Plus symbol (numpad)     Extra 7e key in ABNT-2 layout
+            //
+            // The inheriting class must add those keys to this list.
             _layout = new List<PhysicalKey>()
             {
                 // Topmost row: Escape key and function keys
@@ -39,12 +41,12 @@ namespace MultikeysGUI.Layout
                 new PhysicalKey("40", 1, 1, 7.5, 0),  // F6
                 new PhysicalKey("41", 1, 1, 8.5, 0),  // F7
                 new PhysicalKey("42", 1, 1, 9.5, 0),  // F8
-                new PhysicalKey("43", 1, 1, 12, 0),   // F9
-                new PhysicalKey("44", 1, 1, 13, 0),   // F10
-                new PhysicalKey("57", 1, 1, 14, 0),   // F11
-                new PhysicalKey("58", 1, 1, 15, 0),   // F12
+                new PhysicalKey("43", 1, 1, 11, 0),   // F9
+                new PhysicalKey("44", 1, 1, 12, 0),   // F10
+                new PhysicalKey("57", 1, 1, 13, 0),   // F11
+                new PhysicalKey("58", 1, 1, 14, 0),   // F12
                 // First alphanumeric row, except backspace
-                new PhysicalKey("29", 1, 1, 0, 1.5),    // Tilde
+                new PhysicalKey("29", 1, 1, 0, 1.5),    // Grave
                 new PhysicalKey("02", 1, 1, 1, 1.5),    // 1
                 new PhysicalKey("03", 1, 1, 2, 1.5),    // 2
                 new PhysicalKey("04", 1, 1, 3, 1.5),    // 3
@@ -55,8 +57,8 @@ namespace MultikeysGUI.Layout
                 new PhysicalKey("09", 1, 1, 8, 1.5),    // 8
                 new PhysicalKey("0a", 1, 1, 9, 1.5),    // 9
                 new PhysicalKey("0b", 1, 1, 10, 1.5),   // 0
-                new PhysicalKey("0c", 1, 1, 11, 1.5),   // dash
-                new PhysicalKey("0d", 1, 1, 12, 1.5),   // equals
+                new PhysicalKey("0c", 1, 1, 11, 1.5),   // Dash
+                new PhysicalKey("0d", 1, 1, 12, 1.5),   // Equals
                 // Second row, except enter key and the 2b key
                 new PhysicalKey("0f", 1.5, 1, 0, 2.5),  // Tab
                 new PhysicalKey("10", 1, 1, 1.5, 2.5),  // q
@@ -69,8 +71,8 @@ namespace MultikeysGUI.Layout
                 new PhysicalKey("17", 1, 1, 8.5, 2.5),  // i
                 new PhysicalKey("18", 1, 1, 9.5, 2.5),  // o
                 new PhysicalKey("19", 1, 1, 10.5, 2.5), // p
-                new PhysicalKey("1a", 1, 1, 11.5, 2.5), // [
-                new PhysicalKey("1b", 1, 1, 12.5, 2.5), // ]
+                new PhysicalKey("1a", 1, 1, 11.5, 2.5), // [ {
+                new PhysicalKey("1b", 1, 1, 12.5, 2.5), // ] }
                 // Third row, except enter
                 new PhysicalKey("3a", 1.75, 1, 0, 3.5),   // CapsLock
                 new PhysicalKey("1e", 1, 1, 1.75, 3.5),   // a
@@ -82,8 +84,8 @@ namespace MultikeysGUI.Layout
                 new PhysicalKey("24", 1, 1, 7.75, 3.5),   // j
                 new PhysicalKey("25", 1, 1, 8.75, 3.5),   // k
                 new PhysicalKey("26", 1, 1, 9.75, 3.5),   // l
-                new PhysicalKey("27", 1, 1, 10.75, 3.5),  // ;
-                new PhysicalKey("28", 1, 1, 11.75, 3.5),  // '
+                new PhysicalKey("27", 1, 1, 10.75, 3.5),  // Semicolon
+                new PhysicalKey("28", 1, 1, 11.75, 3.5),  // Apostrophe
                 // Fourth row, except both shifts
                 new PhysicalKey("2c", 1, 1, 2.25, 4.5),   // z
                 new PhysicalKey("2d", 1, 1, 3.25, 4.5),   // x
@@ -92,9 +94,9 @@ namespace MultikeysGUI.Layout
                 new PhysicalKey("30", 1, 1, 6.25, 4.5),   // b
                 new PhysicalKey("31", 1, 1, 7.25, 4.5),   // n
                 new PhysicalKey("32", 1, 1, 8.25, 4.5),   // m
-                new PhysicalKey("33", 1, 1, 9.25, 4.5),   // ,
-                new PhysicalKey("34", 1, 1, 10.25, 4.5),  // .
-                new PhysicalKey("35", 1, 1, 11.25, 4.5),
+                new PhysicalKey("33", 1, 1, 9.25, 4.5),   // Comma
+                new PhysicalKey("34", 1, 1, 10.25, 4.5),  // Dot
+                new PhysicalKey("35", 1, 1, 11.25, 4.5),  // Slash
                 // Fifth row, except space bar
                 new PhysicalKey("1d", 1.25, 1, 0, 5.5),         // LCtrl
                 new PhysicalKey("e0:5b", 1.25, 1, 1.25, 5.5),   // LWin
@@ -148,8 +150,27 @@ namespace MultikeysGUI.Layout
         /// <summary>
         /// Exposed property.
         /// </summary>
-        public IEnumerable<PhysicalKey> Layout { get { return _layout; } }
+        public IEnumerable<PhysicalKey> Keys { get { return _layout; } }
     }
+
+
+
+
+    public class ANSIPhysicalLayout : BasePhysicalLayout
+    {
+        public ANSIPhysicalLayout() : base()
+        {
+            _layout.Add(new PhysicalKey("0e", 2, 1, 13, 1.5));       // 2-wide backspace
+            _layout.Add(new PhysicalKey("2b", 1.5, 1, 13.5, 2.5));   // 1.5-wide backslash
+            _layout.Add(new PhysicalKey("1c", 2.25, 1, 12.75, 3.5)); // 2.25-wide horizontal enter
+            _layout.Add(new PhysicalKey("2a", 2.25, 1, 0, 4.5));     // 2.25-wide left shift
+            _layout.Add(new PhysicalKey("36", 2.75, 1, 12.25, 4.5)); // 2.75-wide right shift
+            _layout.Add(new PhysicalKey("39", 6.25, 1, 3.75, 5.5));  // full-width (6.25) space bar
+            _layout.Add(new PhysicalKey("4e", 1, 2, 22, 2.5));       // 2-tall plus symbol
+        }
+    }
+
+    // Other layouts will be implemented once the big enters are coded.
 
 
 

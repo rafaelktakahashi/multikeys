@@ -22,7 +22,7 @@ namespace MultikeysGUI.Layout
         /// Collection of physical keys. Each element carries the location, size and scancode of a physical
         /// key on the keyboard, but not its printed label.
         /// </summary>
-        IEnumerable<PhysicalKey> Layout { get; }
+        IEnumerable<PhysicalKey> Keys { get; }
     }
 
 

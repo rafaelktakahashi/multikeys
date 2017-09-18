@@ -30,7 +30,7 @@ namespace MultikeysGUI.Model
         {
             return new Scancode(
                   UInt16.Parse(
-                      new string(sc.Where(c => !char.IsPunctuation(c) && !char.IsWhiteSpace(c)).ToArray()),
+                      sc.Replace(":", ""),
                       System.Globalization.NumberStyles.HexNumber)
                   );
         }
@@ -43,8 +43,8 @@ namespace MultikeysGUI.Model
         /// 8 bits are interpreted as either an e0 or an e1 flag.</param>
         public Scancode(UInt16 sc)
             : this(
-                    (sc >> 8) == 0xe0,
-                    (sc >> 8) == 0xe1,
+                    (sc & 0xff00) == 0xe000,
+                    (sc & 0xff00) == 0xe100,
                     (byte)(sc & 0xff)
                   )
         { }
@@ -73,9 +73,18 @@ namespace MultikeysGUI.Model
 
         public override string ToString()
         {
-            if (E0) return "E0" + MakeCode.ToString("X2");
-            else if (E1) return "E1" + MakeCode.ToString("X2");
+            if (E0) return "E0" + ':' + MakeCode.ToString("X2");
+            else if (E1) return "E1" + ':' + MakeCode.ToString("X2");
             else return MakeCode.ToString("X2");
+        }
+
+        public static bool operator ==(Scancode x, Scancode y)
+        {
+            return (x.E0 == y.E0) && (x.E1 == y.E0) && (x.MakeCode == y.MakeCode);
+        }
+        public static bool operator !=(Scancode x, Scancode y)
+        {
+            return (x.E0 != y.E0) || (x.E1 != y.E0) || (x.MakeCode != y.MakeCode);
         }
     }
 

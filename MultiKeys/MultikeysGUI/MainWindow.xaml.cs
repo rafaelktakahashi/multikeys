@@ -1,4 +1,6 @@
-﻿using MultikeysGUI.Model;
+﻿using MultikeysGUI.Layout;
+using MultikeysGUI.Model;
+using MultikeysGUI.Pages.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +35,23 @@ namespace MultikeysGUI
                     new List<uint> { 0x1f630, 0x1f650 }
                 }
             };
+            var command2 = new UnicodeCommand(true, char.ConvertFromUtf32(0x1f604));
+            Dictionary<Scancode, IKeystrokeCommand> layout = new Dictionary<Scancode, IKeystrokeCommand>
+            {
+                { Scancode.FromString("04"), command },
+                { Scancode.FromString("e0:52"), command2 }
+            };
+
+
+            ExampleLayout.LoadLayout(PhysicalLayoutFactory.FromStandard(PhysicalLayoutStandard.ANSI));
+            ExampleLayout.Layout = layout;
+            ExampleLayout.RefreshView();
+        }
+
+
+        public void HandleKeyClicked(object sender, EventArgs e)
+        {
+            SummaryPanel.UpdateCommand( (sender as KeyControl).Command );
         }
         
     }

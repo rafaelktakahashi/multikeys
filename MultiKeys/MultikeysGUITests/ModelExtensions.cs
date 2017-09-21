@@ -23,7 +23,7 @@ namespace MultikeysGUITests
         }
         public static string Print(this Modifier @this)
         {
-            return $"    {@this.Name}: {@this.Scancodes.Select(it => it.MakeCode.ToString()).JoinIntoString()}\n";
+            return $"    {@this.Name}: {@this.Scancodes.Select(it => it.Code.ToString()).JoinIntoString()}\n";
         }
         public static string Print(this Layer @this)
         {

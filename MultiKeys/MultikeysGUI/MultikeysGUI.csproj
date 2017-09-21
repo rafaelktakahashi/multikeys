@@ -55,6 +55,7 @@
     </ApplicationDefinition>
     <Compile Include="Layout\PhysicalKey.cs" />
     <Compile Include="Layout\IPhysicalLayout.cs" />
+    <Compile Include="Layout\PhysicalKeyShape.cs" />
     <Compile Include="Layout\PhysicalLayoutFactory.cs" />
     <Compile Include="Layout\PhysicalLayouts.cs" />
     <Compile Include="Layout\PhysicalLayoutStandard.cs" />

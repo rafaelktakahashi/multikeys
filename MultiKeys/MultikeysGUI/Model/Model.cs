@@ -53,7 +53,7 @@ namespace MultikeysGUI.Model
         {
             this.E0 = e0;
             this.E1 = e1;
-            this.MakeCode = makeCode;
+            this.Code = makeCode;
         }
 
         public Scancode() { }
@@ -69,22 +69,22 @@ namespace MultikeysGUI.Model
         /// <summary>
         /// Byte for the make code, in scancode set 2.
         /// </summary>
-        public byte MakeCode { get; set; }
+        public byte Code { get; set; }
 
         public override string ToString()
         {
-            if (E0) return "E0" + ':' + MakeCode.ToString("X2");
-            else if (E1) return "E1" + ':' + MakeCode.ToString("X2");
-            else return MakeCode.ToString("X2");
+            if (E0) return "E0" + ':' + Code.ToString("X2");
+            else if (E1) return "E1" + ':' + Code.ToString("X2");
+            else return Code.ToString("X2");
         }
 
         public static bool operator ==(Scancode x, Scancode y)
         {
-            return (x.E0 == y.E0) && (x.E1 == y.E0) && (x.MakeCode == y.MakeCode);
+            return (x.E0 == y.E0) && (x.E1 == y.E1) && (x.Code == y.Code);
         }
         public static bool operator !=(Scancode x, Scancode y)
         {
-            return (x.E0 != y.E0) || (x.E1 != y.E0) || (x.MakeCode != y.MakeCode);
+            return (x.E0 != y.E0) || (x.E1 != y.E1) || (x.Code != y.Code);
         }
     }
 

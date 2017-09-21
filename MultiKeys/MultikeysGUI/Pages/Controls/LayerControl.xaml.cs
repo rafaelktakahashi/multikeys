@@ -22,16 +22,18 @@ namespace MultikeysGUI.Pages.Controls
     /// </summary>
     public partial class LayerControl : UserControl
     {
+
+        // Comparer class to be used in a dictionary
         class ScancodeComparer : IEqualityComparer<Scancode>
         {
             public bool Equals(Scancode x, Scancode y)
             {
-                return x == y;  // operator is defined for Scancode
+                return x == y;  // operator == is defined for Scancode
             }
 
             public int GetHashCode(Scancode obj)
             {
-                return obj.MakeCode;
+                return obj.Code;
             }
         }
 
@@ -39,9 +41,35 @@ namespace MultikeysGUI.Pages.Controls
         {
             InitializeComponent();
 
-            Layout = new Dictionary<Scancode, IKeystrokeCommand>(new ScancodeComparer());
-            KeyControls = new Dictionary<Scancode, KeyControl>(new ScancodeComparer());
+            // The following dictionaries hold the command and the key control on screen
+            // that correspond to each scancode.
+            // The layout may change at any time, and that change should reflect on the key controls.
+            Layout = new Dictionary<Scancode, IKeystrokeCommand>(200, new ScancodeComparer());
+            KeyControls = new Dictionary<Scancode, KeyControl>(200, new ScancodeComparer());
         }
+
+
+        /// <summary>
+        /// Alias of this layer given by the user.
+        /// </summary>
+        public string Alias { get; set; }
+
+        /// <summary>
+        /// The mapping between scancodes and keystroke commands.<para/>
+        /// Setting or changing this property does not refresh the view. For that, call RefreshView.
+        /// <para/>
+        /// Scancodes present in this control but not in Layout are considered not remapped.
+        /// <para/>
+        /// This property may be set to null in case of a non-remapped layer.
+        /// </summary>
+        public IDictionary<Scancode, IKeystrokeCommand> Layout { get; private set; }
+
+        /// <summary>
+        /// Private dictionary for all KeyControls.
+        /// </summary>
+        private IDictionary<Scancode, KeyControl> KeyControls { get; set; }
+
+
 
         /// <summary>
         /// Creates and renders the collection of keys on the screen.<para/>
@@ -68,7 +96,40 @@ namespace MultikeysGUI.Pages.Controls
                 KeyControls.Add(newKey.Scancode, newKey);
             }
         }
-        
+
+        /// <summary>
+        /// Refreshes every key in this view according to the commands in specified layout.<para/>
+        /// </summary>
+        public void RefreshView(IDictionary<Scancode, IKeystrokeCommand> commands)
+        {
+            // When setting the new commands, we must specify the custom comparer:
+            Layout = new Dictionary<Scancode, IKeystrokeCommand>(commands, new ScancodeComparer());
+
+            // This algorithm doesn't look as fast as it could be.
+            foreach (var controlPair in KeyControls)
+            {
+                // get its corresponding command
+                if (Layout.ContainsKey(controlPair.Key))
+                {
+                    KeyControls[controlPair.Key].UpdateCommand(Layout[controlPair.Key]);
+                }
+                else
+                {
+                    KeyControls[controlPair.Key].UpdateCommand(null);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the specified key in this view according to the specified command.
+        /// </summary>
+        public void RefreshView(Scancode key, IKeystrokeCommand command)
+        {
+            Layout[key] = command;
+            // Notify the key control about this change.
+            KeyControls[key].UpdateCommand(command);
+        }
+
         /// <summary>
         /// Make a new KeyControl that's ready to be rendered, based on the information provided.
         /// </summary>
@@ -89,47 +150,10 @@ namespace MultikeysGUI.Pages.Controls
             };
         }
 
-        /// <summary>
-        /// Alias of this layer given by the user.
-        /// </summary>
-        public string Alias { get; set; }
-
-        /// <summary>
-        /// The mapping between scancodes and keystroke commands.<para/>
-        /// Setting or changing this property does not refresh the view. For that, call RefreshView.
-        /// <para/>
-        /// Scancodes present in this control but not in Layout are considered not remapped.
-        /// <para/>
-        /// This property may be set to null in case of a non-remapped layer.
-        /// </summary>
-        public IDictionary<Scancode, IKeystrokeCommand> Layout { get; set; }
-
-        /// <summary>
-        /// Private dictionary for all KeyControls.
-        /// </summary>
-        private IDictionary<Scancode, KeyControl> KeyControls { get; set; }
+        
 
 
-        /// <summary>
-        /// Refreshes every key in this view according to the commands in Layout.<para/>
-        /// Call this function after setting the Layout.
-        /// </summary>
-        public void RefreshView()
-        {
-            // This algorithm doesn't look as fast as it could be.
-            foreach (var controlPair in KeyControls)
-            {
-                // get its corresponding command
-                if (Layout.ContainsKey(controlPair.Key))
-                {
-                    KeyControls[controlPair.Key].UpdateCommand(Layout[controlPair.Key]);
-                }
-                else
-                {
-                    KeyControls[controlPair.Key].UpdateCommand(null);
-                }
-            }
-        }
+        
 
         #region Events
 

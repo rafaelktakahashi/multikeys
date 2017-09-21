@@ -7,13 +7,6 @@ using System.Threading.Tasks;
 
 namespace MultikeysGUI.Layout
 {
-    public enum PhysicalKeyShape
-    {
-        Rectangular = 0,
-        StandardEnter = 1,
-        BigEnter = 2
-    }
-
     public class PhysicalKey
     {
         public PhysicalKey(Scancode sc, double width, double height, double xOffset, double yOffset, PhysicalKeyShape shape = PhysicalKeyShape.Rectangular)

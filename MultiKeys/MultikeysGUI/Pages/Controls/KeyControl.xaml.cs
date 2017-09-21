@@ -17,6 +17,7 @@ using MultikeysGUI.Model;
 using System.ComponentModel;
 using MultikeysGUI.Pages.Dialogues;
 using System.Globalization;
+using MultikeysGUI.Layout;
 
 namespace MultikeysGUI.Pages.Controls
 {
@@ -25,19 +26,70 @@ namespace MultikeysGUI.Pages.Controls
     /// </summary>
     public partial class KeyControl : UserControl
     {
-        public KeyControl()
+        public KeyControl(PhysicalKeyShape shape = PhysicalKeyShape.Rectangular)
         {
             InitializeComponent();
+
+            // Create graphical elements based on key shape
+            
+
             Command = null;
             Scancode = null;
             UpdateText();
+
+            /*
+             <Border x:Name="border" BorderBrush="#FF000000" BorderThickness="3" CornerRadius="5" Margin="1" Panel.ZIndex="-1"/>
+             */
         }
 
 
-        
+        /// <summary>
+        /// Draws the borders according to the shape.
+        /// </summary>
+        /// <param name="shape"></param>
+        private void DrawShape(PhysicalKeyShape shape)
+        {
+            BorderGrid.Children.Clear();
+
+            if (shape == PhysicalKeyShape.Rectangular)
+            {
+                // Build one simple rectangle that covers the whole rectangular control
+                var border = new Border
+                {
+                    BorderBrush = Brushes.Black,
+                    BorderThickness = new Thickness(3),
+                    CornerRadius = new CornerRadius(5),
+                    Margin = new Thickness(1)
+                };
+                Panel.SetZIndex(border, -1);
+                Grid.SetRowSpan(border, 2);
+                Grid.SetColumnSpan(border, 2);
+                BorderGrid.Children.Add(border);
+            }
+            else if (shape == PhysicalKeyShape.StandardEnter)
+            {
+                // Build a top-left border that covers the top half
+                var tlBorder = new Border
+                {
+                    BorderBrush = Brushes.Black,
+                    BorderThickness = new Thickness(3, 3, 0, 0),
+                    CornerRadius = new CornerRadius(5),
+                    Margin = new Thickness(1)
+                };
+                Panel.SetZIndex(tlBorder, -1);
+                Grid.SetColumnSpan(tlBorder, 2);
+                BorderGrid.Children.Add(tlBorder);
+
+            }
+        }
+
+
         public IKeystrokeCommand Command { get; private set; }
 
-        
+        /// <summary>
+        /// This converter is necessary for exposing a property of type Scancode that can be set from
+        /// xaml as a string.
+        /// </summary>
         public class ScancodeConverter : TypeConverter
         {
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
@@ -83,21 +135,26 @@ namespace MultikeysGUI.Pages.Controls
 
         /// <summary>
         /// Updates the displayed text on this control.
+        /// This is a separate method from UpdateCommand, mostly
+        /// so that it can be called in the constructor.
         /// </summary>
         private void UpdateText()
         {
             if (Command == null)
             {
-                MiddleLabel.Text = "N/A";
+                MiddleLabel.Text = " ";
                 MiddleLabel.Foreground = Brushes.Gray;
             }
-            else MiddleLabel.Foreground = Brushes.Black;
-
-            if (Command is UnicodeCommand)
+            else
             {
-                MiddleLabel.Text = (Command as UnicodeCommand).ContentAsText;
+                MiddleLabel.Foreground = Brushes.Black;
+
+                if (Command is UnicodeCommand)
+                {
+                    MiddleLabel.Text = (Command as UnicodeCommand).ContentAsText;
+                }
+                else MiddleLabel.Text = "...";
             }
-            else MiddleLabel.Text = "...";
         }
 
         #region Exposing properties
@@ -111,13 +168,13 @@ namespace MultikeysGUI.Pages.Controls
             private set { MiddleLabel.Text = value; } // normally set only by UpdateText
         }
 
-        public double FontSize
+        public new double FontSize
         {
             get { return MiddleLabel.FontSize; }
             set { MiddleLabel.FontSize = value; }
         }
 
-        public FontFamily FontFamily
+        public new FontFamily FontFamily
         {
             get { return MiddleLabel.FontFamily; }
             set { MiddleLabel.FontFamily = value; }
@@ -126,7 +183,7 @@ namespace MultikeysGUI.Pages.Controls
         public Brush ForegroundBrush
         {
             get { return MiddleLabel.Foreground; }
-            set { MiddleLabel.Foreground = value; border.BorderBrush = value; }
+            set { MiddleLabel.Foreground = value; }
         }
 
         public string BottomLabelText

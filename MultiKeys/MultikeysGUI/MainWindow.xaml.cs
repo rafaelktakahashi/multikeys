@@ -26,13 +26,15 @@ namespace MultikeysGUI
         public MainWindow()
         {
             InitializeComponent();
-            var command = new DeadKeyCommand();
-            command.Codepoints = new List<uint> { 0x1f604, 0x40 };
-            command.Replacements = new Dictionary<IList<uint>, IList<uint>>
+            var command = new DeadKeyCommand
             {
+                Codepoints = new List<uint> { 0x1f604, 0x40 },
+                Replacements = new Dictionary<IList<uint>, IList<uint>>
                 {
-                    new List<uint> { 0x30, 0x31 },
-                    new List<uint> { 0x1f630, 0x1f650 }
+                    {
+                        new List<uint> { 0x30, 0x31 },
+                        new List<uint> { 0x1f630, 0x1f650 }
+                    }
                 }
             };
             var command2 = new UnicodeCommand(true, char.ConvertFromUtf32(0x1f604));
@@ -44,8 +46,7 @@ namespace MultikeysGUI
 
 
             ExampleLayout.LoadLayout(PhysicalLayoutFactory.FromStandard(PhysicalLayoutStandard.ANSI));
-            ExampleLayout.Layout = layout;
-            ExampleLayout.RefreshView();
+            ExampleLayout.RefreshView(layout);
         }
 
 

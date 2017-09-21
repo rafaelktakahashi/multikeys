@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MultikeysGUI.Pages.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="45" d:DesignWidth="45">
+             d:DesignHeight="67.5" d:DesignWidth="45">
 
     <UserControl.Resources>
         <!-- Invisible button to be placed on top of control (higher ZIndex), for its Click event. -->
@@ -22,8 +22,24 @@
         </Style>
     </UserControl.Resources>
     
-    <Grid>
-        <Border x:Name="border" BorderBrush="#FF000000" BorderThickness="4" CornerRadius="5" Margin="0,0,0,0" Panel.ZIndex="-1"/>
+    <Grid x:Name="RootElement">
+        <Grid x:Name="BorderGrid" Margin="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5*"/>
+            </Grid.ColumnDefinitions>
+            <Border x:Name="border" Grid.ColumnSpan="2" BorderBrush="#FF000000" BorderThickness="3, 3, 0, 0" CornerRadius="5" Panel.ZIndex="-1"/>
+            <Border x:Name="border2" Grid.ColumnSpan="2" Grid.RowSpan="2" BorderBrush="#FF000000" BorderThickness="0, 3, 3, 0" CornerRadius="5" Panel.ZIndex="-1"/>
+            <Border x:Name="border3" Grid.Column="1" Grid.RowSpan="2" BorderBrush="#FF000000" BorderThickness="0, 0, 3, 3" CornerRadius="5" Panel.ZIndex="-1"/>
+
+            <Border x:Name="border4" Grid.Column="1" HorizontalAlignment="left" VerticalAlignment="Bottom" BorderBrush="#FF000000" BorderThickness="0, 3, 3, 0" CornerRadius="5" Panel.ZIndex="-1"/>
+            <Border x:Name="border5" Grid.Column="1" Grid.Row="2"  BorderBrush="#FF000000" BorderThickness="3, 0, 0, 3" CornerRadius="5" Panel.ZIndex="-1"/>
+        </Grid>
+        
         <TextBlock x:Name="MiddleLabel" Margin="0,0,0,8" TextAlignment="Center" VerticalAlignment="Center" FontSize="18" FontFamily="Arial Unicode" Panel.ZIndex="-2" />
         <TextBlock x:Name="BottomLabel" Margin="6, 0, 4, 4" TextAlignment="Left" VerticalAlignment="Bottom" FontSize="11" FontFamily="Segoe UI" FontWeight="SemiBold" Panel.ZIndex="-3"/>
         <Button Style="{StaticResource InvisibleButton}" Panel.ZIndex="0" Click="Button_Click" />

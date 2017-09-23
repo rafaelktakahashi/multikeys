@@ -86,6 +86,15 @@ namespace MultikeysGUI.Model
         {
             return (x.E0 != y.E0) || (x.E1 != y.E1) || (x.Code != y.Code);
         }
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Scancode)) return false;
+            else return this == (obj as Scancode);
+        }
+        public override int GetHashCode()
+        {
+            return this.Code % 32;  // don't worry too much about it.
+        }
     }
 
     public class VirtualKeystroke

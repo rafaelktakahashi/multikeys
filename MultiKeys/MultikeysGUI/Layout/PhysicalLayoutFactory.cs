@@ -19,8 +19,16 @@ namespace MultikeysGUI.Layout
             {
                 case PhysicalLayoutStandard.ANSI:
                     return new ANSIPhysicalLayout();
+                case PhysicalLayoutStandard.ISO:
+                    return new ISOPhysicalLayout();
+                case PhysicalLayoutStandard.ABNT_2:
+                    return new ABNTPhysicalLayout();
+                case PhysicalLayoutStandard.JIS:
+                    return new JISPhysicalLayout();
+                case PhysicalLayoutStandard.DUBEOLSIK:
+                    throw new NotImplementedException("The Dubeolsik keyboard layout is not implemented yet.");
                 default:
-                    throw new NotImplementedException("Other physical layouts will be implemented after the big enters are available.");
+                    throw new Exception("Unsupported keyboard layout.");
             }
         }
     }

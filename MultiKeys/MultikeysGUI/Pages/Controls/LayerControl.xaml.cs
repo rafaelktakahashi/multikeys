@@ -138,7 +138,7 @@ namespace MultikeysGUI.Pages.Controls
         /// <returns></returns>
         private KeyControl MakeKey(PhysicalKey key, double unitLength)
         {
-            return new KeyControl
+            return new KeyControl()
             {
                 Scancode = key.Scancode,
                 Width = key.Width * unitLength,
@@ -146,7 +146,7 @@ namespace MultikeysGUI.Pages.Controls
                 VerticalAlignment = VerticalAlignment.Top,
                 HorizontalAlignment = HorizontalAlignment.Left,     // its position in the control is set through Margin
                 Margin = new Thickness(key.XOffset * unitLength, key.YOffset * unitLength, 0, 0),
-                // Set shape when implemented
+                Shape = key.Shape,
             };
         }
 

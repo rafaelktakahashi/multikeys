@@ -21,7 +21,7 @@ namespace MultikeysGUI.Layout
             //
             // Missing keys             Reason
             // Backspace                Extra 7d key in JIS layout
-            // Enter key                Different position in non-ANSI layouts
+            // Return key               Different position and shape in non-ANSI layouts
             // 2b (backslash in US)     Different position in non-ANSI layouts
             // Left Shift               Extra 56 key in ISO, ABNT-2 and Dubeolsik layouts
             // Right Shift              Extra 73 key in JIS and ABNT-2 layouts
@@ -162,7 +162,7 @@ namespace MultikeysGUI.Layout
         {
             _layout.Add(new PhysicalKey("0e", 2, 1, 13, 1.5));       // 2-wide backspace
             _layout.Add(new PhysicalKey("2b", 1.5, 1, 13.5, 2.5));   // 1.5-wide backslash
-            _layout.Add(new PhysicalKey("1c", 2.25, 1, 12.75, 3.5)); // 2.25-wide horizontal enter
+            _layout.Add(new PhysicalKey("1c", 2.25, 1, 12.75, 3.5)); // 2.25-wide horizontal return
             _layout.Add(new PhysicalKey("2a", 2.25, 1, 0, 4.5));     // 2.25-wide left shift
             _layout.Add(new PhysicalKey("36", 2.75, 1, 12.25, 4.5)); // 2.75-wide right shift
             _layout.Add(new PhysicalKey("39", 6.25, 1, 3.75, 5.5));  // full-width (6.25) space bar
@@ -170,7 +170,61 @@ namespace MultikeysGUI.Layout
         }
     }
 
-    // Other layouts will be implemented once the big enters are coded.
+    public class ISOPhysicalLayout : BasePhysicalLayout
+    {
+        public ISOPhysicalLayout() : base()
+        {
+            _layout.Add(new PhysicalKey("0e", 2, 1, 13, 1.5));       // 2-wide backspace
+            _layout.Add(new PhysicalKey("1c", 1.5, 2, 13.5, 2.5,     // L-shaped Return key
+                PhysicalKeyShape.StandardEnter));
+            _layout.Add(new PhysicalKey("2b", 1, 1, 12.75, 3.5));    // 1x1 key to the left of return
+            _layout.Add(new PhysicalKey("2a", 1.25, 1, 0, 4.5));     // 1.25-wide left shift
+            _layout.Add(new PhysicalKey("56", 1, 1, 1, 4.5));        // 1x1 key to the right of left shift
+            _layout.Add(new PhysicalKey("36", 2.75, 1, 12.25, 4.5)); // 2.75-wide right shift
+            _layout.Add(new PhysicalKey("39", 6.25, 1, 3.75, 5.5));  // full-width (6.25) space bar
+            _layout.Add(new PhysicalKey("4e", 1, 2, 22, 2.5));       // 2-tall plus symbol
+        }
+    }
+
+    public class ABNTPhysicalLayout : BasePhysicalLayout
+    {
+        public ABNTPhysicalLayout() : base()
+        {
+            _layout.Add(new PhysicalKey("0e", 2, 1, 13, 1.5));       // 2-wide backspace
+            _layout.Add(new PhysicalKey("1c", 1.5, 2, 13.5, 2.5,     // L-shaped Return key
+                PhysicalKeyShape.StandardEnter));
+            _layout.Add(new PhysicalKey("2b", 1, 1, 12.75, 3.5));    // 1x1 key to the left of return
+            _layout.Add(new PhysicalKey("2a", 1.25, 1, 0, 4.5));     // 1.25-wide left shift
+            _layout.Add(new PhysicalKey("56", 1, 1, 1.25, 4.5));     // 1x1 key to the right of left shift (backslash)
+            _layout.Add(new PhysicalKey("73", 1, 1, 12.25, 4.5));    // 1x1 key to the left of right shift (slash)
+            _layout.Add(new PhysicalKey("36", 1.75, 1, 13.25, 4.5)); // 1.75-wide right shift
+            _layout.Add(new PhysicalKey("39", 6.25, 1, 3.75, 5.5));  // full-width (6.25) space bar
+            _layout.Add(new PhysicalKey("4e", 1, 1, 22, 2.5));       // 1-tall plus symbol
+            _layout.Add(new PhysicalKey("7e", 1, 1, 22, 3.5));       // Numpad thousands separator (dot)
+        }
+    }
+
+    public class JISPhysicalLayout : BasePhysicalLayout
+    {
+        public JISPhysicalLayout() : base()
+        {
+            {
+                _layout.Add(new PhysicalKey("7d", 1, 1, 13, 1.5));       // 1x1 key to the left of backspace (Yen)
+                _layout.Add(new PhysicalKey("0e", 1, 1, 14, 1.5));       // 1-wide backspace
+                _layout.Add(new PhysicalKey("1c", 1.5, 2, 13.5, 2.5,     // L-shaped Return key
+                    PhysicalKeyShape.StandardEnter));
+                _layout.Add(new PhysicalKey("2b", 1, 1, 12.75, 3.5));    // 1x1 key to the left of return
+                _layout.Add(new PhysicalKey("2a", 2.25, 1, 0, 4.5));     // 2.25-wide left shift
+                _layout.Add(new PhysicalKey("73", 1, 1, 12.25, 4.5));    // 1x1 key to the left of right shift
+                _layout.Add(new PhysicalKey("36", 1.75, 1, 13.25, 4.5)); // 1.75-wide right shift
+                _layout.Add(new PhysicalKey("7b", 1, 1, 3.75, 5.5));     // Mukenhan key to the left of space bar
+                _layout.Add(new PhysicalKey("39", 3.25, 1, 4.75, 5.5));  // reduced-width (3.5) space bar
+                _layout.Add(new PhysicalKey("79", 1, 1, 8, 5.5));        // Henkan key to the right of space bar
+                _layout.Add(new PhysicalKey("70", 1, 1, 9, 5.5));        // Kana key to the right of henkan
+                _layout.Add(new PhysicalKey("4e", 1, 2, 22, 2.5));       // 2-tall plus symbol
+            }
+        }
+    }
 
 
 

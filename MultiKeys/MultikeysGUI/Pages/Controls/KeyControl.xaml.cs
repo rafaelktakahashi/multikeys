@@ -31,17 +31,13 @@ namespace MultikeysGUI.Pages.Controls
             InitializeComponent();
 
             // Create graphical elements based on key shape
-            
 
             Command = null;
             Scancode = null;
             UpdateText();
 
-            /*
-             <Border x:Name="border" BorderBrush="#FF000000" BorderThickness="3" CornerRadius="5" Margin="1" Panel.ZIndex="-1"/>
-             */
+            // Draw shape
         }
-
 
         /// <summary>
         /// Draws the borders according to the shape.
@@ -49,38 +45,84 @@ namespace MultikeysGUI.Pages.Controls
         /// <param name="shape"></param>
         private void DrawShape(PhysicalKeyShape shape)
         {
-            BorderGrid.Children.Clear();
 
             if (shape == PhysicalKeyShape.Rectangular)
             {
+                BorderGrid.Children.Clear();
+
+
                 // Build one simple rectangle that covers the whole rectangular control
-                var border = new Border
-                {
-                    BorderBrush = Brushes.Black,
-                    BorderThickness = new Thickness(3),
-                    CornerRadius = new CornerRadius(5),
-                    Margin = new Thickness(1)
-                };
-                Panel.SetZIndex(border, -1);
-                Grid.SetRowSpan(border, 2);
-                Grid.SetColumnSpan(border, 2);
-                BorderGrid.Children.Add(border);
+                var rectangle = MakeRectangle();
+                Panel.SetZIndex(rectangle, -1);
+                BorderGrid.Children.Add(rectangle);
             }
             else if (shape == PhysicalKeyShape.StandardEnter)
             {
-                // Build a top-left border that covers the top half
-                var tlBorder = new Border
-                {
-                    BorderBrush = Brushes.Black,
-                    BorderThickness = new Thickness(3, 3, 0, 0),
-                    CornerRadius = new CornerRadius(5),
-                    Margin = new Thickness(1)
-                };
-                Panel.SetZIndex(tlBorder, -1);
-                Grid.SetColumnSpan(tlBorder, 2);
-                BorderGrid.Children.Add(tlBorder);
+                
 
+                
+
+                /*
+             <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="15*"/>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="50*"/>
+                    <ColumnDefinition Width="50*"/>
+                </Grid.ColumnDefinitions>
+
+                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.RowSpan="2" Width="1000"   Panel.ZIndex="-7" />
+                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.ColumnSpan="4" Height="1000" Margin="0, 0, 1.8, 0"   Panel.ZIndex="-6"/>
+                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="3" Grid.RowSpan="4" Width="1000" HorizontalAlignment="Right"  Margin="0, 0, 1.5, 0" Panel.ZIndex="-5"/>
+                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.ColumnSpan="2" Grid.Column="2" Grid.Row="3" VerticalAlignment="Bottom" Height="1000" Margin="0, 0, 1.5, 0" Panel.ZIndex="-4"/>
+                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="1" Grid.Row="2" Margin="-3" VerticalAlignment="Top" HorizontalAlignment="Right" Height="1000" Width="1000" Panel.ZIndex="-3" />
+                
+                <!-- The following two exist to smoothen out the line thickness -->
+                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.RowSpan="2" Width="1000"   Panel.ZIndex="-7" />
+                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="1" Grid.Row="2" Margin="-3.49" VerticalAlignment="Top" HorizontalAlignment="Right" Height="1000" Width="1000" Panel.ZIndex="-3" />
+                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="2" HorizontalAlignment="Center" Height="1000" Width="1000"  Panel.ZIndex="-1" />
+                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="2" Grid.Row="3" VerticalAlignment="Bottom" Height="1000" Width="1000"  Panel.ZIndex="-1" />
+            </Grid>    
+             */
             }
+        }
+        /// <summary>
+        /// For use in DrawShape()
+        /// </summary>
+        private Rectangle MakeRectangle()
+        {
+            return new Rectangle
+            {
+                Fill = Brushes.Transparent,
+                Stroke = Brushes.Black,
+                StrokeThickness = 3,
+                StrokeLineJoin = PenLineJoin.Round,
+                RadiusX = 4,
+                RadiusY = 4,
+            };
+        }
+
+        /// <summary>
+        /// This holds actions that should be done during rendering.
+        /// Good for clipping, which requires the elements to exist on screen in order to clip.
+        /// </summary>
+        private ICollection<Action> doOnRender = new List<Action>();
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            foreach (var action in doOnRender)
+                action.Invoke();
+        }
+
+        private PhysicalKeyShape _shape;
+        public PhysicalKeyShape Shape
+        {
+            get { return _shape; }
+            set { _shape = value; DrawShape(_shape); }
         }
 
 

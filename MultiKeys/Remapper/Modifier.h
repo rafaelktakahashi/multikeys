@@ -10,10 +10,10 @@ namespace Multikeys
 	//
 	// Splitting modifiers into either simple or composite
 	// is particular to this implementation.
-	typedef class AbstractModifier
+	typedef class BaseModifier
 	{
 	protected:
-		AbstractModifier(std::wstring name);
+		BaseModifier(std::wstring name);
 	public:
 
 		// This name should uniquely identify each modifier.
@@ -23,12 +23,12 @@ namespace Multikeys
 		virtual bool matches(Scancode sc) const = 0;
 
 		// Ensure that derived constructors are called
-		virtual ~AbstractModifier() = 0;
+		virtual ~BaseModifier() = 0;
 	} *PModifier;
 
 
 	// Modifiers identified by a single scancode
-	class SimpleModifier : public AbstractModifier
+	class SimpleModifier : public BaseModifier
 	{
 	protected:
 		Scancode sc;
@@ -43,7 +43,7 @@ namespace Multikeys
 
 
 	// Modifiers identified by multiple scancodes (ex. Shift)
-	class CompositeModifier : public AbstractModifier
+	class CompositeModifier : public BaseModifier
 	{
 	protected:
 		Scancode* scanArray;

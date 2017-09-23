@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace MultikeysGUI.Layout
 {
+    /// <summary>
+    /// Represents a single physical key in a keyboard;
+    /// These are used to describe a physical layout.
+    /// </summary>
     public class PhysicalKey
     {
         public PhysicalKey(Scancode sc, double width, double height, double xOffset, double yOffset, PhysicalKeyShape shape = PhysicalKeyShape.Rectangular)

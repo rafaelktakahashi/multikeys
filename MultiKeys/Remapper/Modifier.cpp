@@ -7,14 +7,14 @@ namespace Multikeys
 {
 
 	/*
-	AbstractModifier
+	BaseModifier
 	*/
 
-	AbstractModifier::AbstractModifier(std::wstring name) : name(name)
+	BaseModifier::BaseModifier(std::wstring name) : name(name)
 	{ }
 
 	// Pure virtual destructors need an implementation
-	AbstractModifier::~AbstractModifier() { }
+	BaseModifier::~BaseModifier() { }
 
 
 
@@ -23,7 +23,7 @@ namespace Multikeys
 	*/
 
 	SimpleModifier::SimpleModifier(std::wstring name, Scancode scancode) :
-		AbstractModifier(name), sc(scancode)
+		BaseModifier(name), sc(scancode)
 	{}
 
 	bool SimpleModifier::matches(Scancode sc) const
@@ -41,7 +41,7 @@ namespace Multikeys
 
 	CompositeModifier::
 		CompositeModifier(std::wstring name, std::vector<Scancode> scancodeVector) :
-		AbstractModifier(name), scanCount(scancodeVector.size())
+		BaseModifier(name), scanCount(scancodeVector.size())
 	{
 		scanArray = new Scancode[scancodeVector.size()];
 		for (size_t i = 0; i < scancodeVector.size(); i++)

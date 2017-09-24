@@ -53,19 +53,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Layout\PhysicalKey.cs" />
-    <Compile Include="Layout\IPhysicalLayout.cs" />
-    <Compile Include="Layout\PhysicalKeyShape.cs" />
-    <Compile Include="Layout\PhysicalLayoutFactory.cs" />
-    <Compile Include="Layout\PhysicalLayouts.cs" />
-    <Compile Include="Layout\PhysicalLayoutStandard.cs" />
-    <Compile Include="Pages\Controls\KeyboardControl.xaml.cs">
+    <Compile Include="Domain\DomainFacade.cs" />
+    <Compile Include="Domain\Layout\PhysicalKey.cs" />
+    <Compile Include="Domain\Layout\IPhysicalLayout.cs" />
+    <Compile Include="Domain\Layout\PhysicalKeyShape.cs" />
+    <Compile Include="Domain\Layout\PhysicalLayoutFactory.cs" />
+    <Compile Include="Domain\Layout\PhysicalLayouts.cs" />
+    <Compile Include="Domain\Layout\PhysicalLayoutStandard.cs" />
+    <Compile Include="View\Controls\KeyboardControl.xaml.cs">
       <DependentUpon>KeyboardControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\Controls\LayerControl.xaml.cs">
+    <Compile Include="View\Controls\LayerControl.xaml.cs">
       <DependentUpon>LayerControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\Controls\ModifiersControl.xaml.cs">
+    <Compile Include="View\Controls\ModifiersControl.xaml.cs">
       <DependentUpon>ModifiersControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\Strings.Designer.cs">
@@ -85,40 +86,40 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Pages\Controls\CommandPanel.xaml">
+    <Page Include="View\Controls\CommandPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\Controls\KeyboardControl.xaml">
+    <Page Include="View\Controls\KeyboardControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\Controls\KeyControl.xaml">
+    <Page Include="View\Controls\KeyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\Controls\LayerControl.xaml">
+    <Page Include="View\Controls\LayerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\Controls\ModifiersControl.xaml">
+    <Page Include="View\Controls\ModifiersControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\Dialogues\UnicodeCommandDialog.xaml">
+    <Page Include="View\Dialogues\UnicodeCommandDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Model.cs" />
-    <Compile Include="Pages\Controls\CommandPanel.xaml.cs">
+    <Compile Include="View\Controls\CommandPanel.xaml.cs">
       <DependentUpon>CommandPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\Controls\KeyControl.xaml.cs">
+    <Compile Include="View\Controls\KeyControl.xaml.cs">
       <DependentUpon>KeyControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\Dialogues\UnicodeCommandDialog.xaml.cs">
+    <Compile Include="View\Dialogues\UnicodeCommandDialog.xaml.cs">
       <DependentUpon>UnicodeCommandDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Persistence\XmlPersistence.cs" />

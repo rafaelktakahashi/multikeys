@@ -71,7 +71,6 @@ namespace MultikeysGUITests
                 new Scancode(2),
                 new UnicodeCommand
                 {
-                    Scancode = new Scancode(2),
                     TriggerOnRepeat = true,
                     Codepoints = new System.Collections.Generic.List<uint> { 0x1F642 }
                 }

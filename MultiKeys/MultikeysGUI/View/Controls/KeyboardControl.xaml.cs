@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MultikeysGUI.Pages.Controls
+namespace MultikeysGUI.View.Controls
 {
     /// <summary>
     /// Interaction logic for KeyboardControl.xaml

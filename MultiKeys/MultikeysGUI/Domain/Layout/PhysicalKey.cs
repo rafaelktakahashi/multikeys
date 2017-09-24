@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MultikeysGUI.Layout
+namespace MultikeysGUI.Domain.Layout
 {
     /// <summary>
     /// Represents a single physical key in a keyboard;

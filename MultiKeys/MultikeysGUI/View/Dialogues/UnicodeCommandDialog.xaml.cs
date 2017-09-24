@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace MultikeysGUI.Pages.Dialogues
+namespace MultikeysGUI.View.Dialogues
 {
     /// <summary>
     /// Interaction logic for UnicodeCommandDialog.xaml

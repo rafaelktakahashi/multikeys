@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MultikeysGUI.Layout
+namespace MultikeysGUI.Domain.Layout
 {
     /// <summary>
     /// This class contains the physical keys that do not change across physical layouts.

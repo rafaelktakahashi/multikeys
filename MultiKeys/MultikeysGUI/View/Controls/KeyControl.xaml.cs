@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 
 using MultikeysGUI.Model;
 using System.ComponentModel;
-using MultikeysGUI.Pages.Dialogues;
+using MultikeysGUI.View.Dialogues;
 using System.Globalization;
-using MultikeysGUI.Layout;
+using MultikeysGUI.Domain.Layout;
 
-namespace MultikeysGUI.Pages.Controls
+namespace MultikeysGUI.View.Controls
 {
     /// <summary>
     /// Interaction logic for KeyControl.xaml

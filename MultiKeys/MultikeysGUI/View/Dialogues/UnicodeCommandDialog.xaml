@@ -1,9 +1,9 @@
-﻿<Window x:Class="MultikeysGUI.Pages.Dialogues.UnicodeCommandDialog"
+﻿<Window x:Class="MultikeysGUI.View.Dialogues.UnicodeCommandDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MultikeysGUI.Pages.Dialogues"
+        xmlns:local="clr-namespace:MultikeysGUI.View.Dialogues"
         mc:Ignorable="d"
         Title="Insert Text" Height="141.22" Width="172.525"
         ResizeMode="NoResize">

@@ -1,4 +1,5 @@
-﻿using MultikeysGUI.Domain.Layout;
+﻿using MultikeysGUI.Domain;
+using MultikeysGUI.Domain.Layout;
 using MultikeysGUI.Model;
 using MultikeysGUI.View.Controls;
 using System;
@@ -27,6 +28,11 @@ namespace MultikeysGUI
         public MainWindow()
         {
             InitializeComponent();
+
+
+            // Initializing the facade
+            IDomainFacade applicationFacade = new DomainFacade();
+
             var command = new DeadKeyCommand
             {
                 Codepoints = new List<uint> { 0x1f604, 0x40 },
@@ -45,15 +51,14 @@ namespace MultikeysGUI
                 { Scancode.FromString("e0:52"), command2 }
             };
 
-
-            ExampleLayout.LoadLayout(PhysicalLayoutFactory.FromStandard(PhysicalLayoutStandard.ISO));
-            ExampleLayout.RefreshView(layout);
+            
         }
 
+        
 
         public void HandleKeyClicked(object sender, EventArgs e)
         {
-            SummaryPanel.UpdateCommand( (sender as KeyControl).Command );
+            ;
         }
         
     }

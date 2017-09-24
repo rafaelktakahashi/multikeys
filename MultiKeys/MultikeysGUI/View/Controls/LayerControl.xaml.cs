@@ -81,7 +81,7 @@ namespace MultikeysGUI.View.Controls
         /// <param name="layout">Physical layout representing the scancode, size and position of each physical key.</param>
         /// <param name="unitLength">Lenght in px used as the unit length.
         /// The resulting keyboard is always 23 units wide and 6.5 units high.</param>
-        public void LoadLayout(IPhysicalLayout layout, double unitLength = 45)
+        public void RenderLayout(IPhysicalLayout layout, double unitLength = 45)
         {
             KeyControls.Clear();
             foreach (var key in layout.Keys)

@@ -6,8 +6,5 @@
         xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="573" Width="1410">
-    <Grid>
-        <local:LayerControl x:Name="ExampleLayout" HorizontalAlignment="Left" Height="308" VerticalAlignment="Top" Width="1050" KeyClicked="HandleKeyClicked" />
-        <local:CommandPanel x:Name="SummaryPanel" HorizontalAlignment="Left" Height="376" Margin="1075,64,0,0" VerticalAlignment="Top" Width="284"/>
-    </Grid>
+    <Grid/>
 </Window>

@@ -5,10 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="382" d:DesignWidth="280">
+             d:DesignHeight="382" d:DesignWidth="280"
+             MinHeight="200" MinWidth="200">
     <Grid>
-        <Rectangle Margin="0,0,0,0" Fill="White" Opacity="0.625" />
-        <Border BorderThickness="3" BorderBrush="Black" Panel.ZIndex="1" />
+        <Rectangle Margin="0,0,0,0" Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Fill="White" Opacity="0.625" />
         <StackPanel x:Name="StackPanelData">
         </StackPanel>
     </Grid>

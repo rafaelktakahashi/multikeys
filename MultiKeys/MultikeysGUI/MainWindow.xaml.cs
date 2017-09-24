@@ -33,23 +33,16 @@ namespace MultikeysGUI
             // Initializing the facade
             IDomainFacade applicationFacade = new DomainFacade();
 
-            var command = new DeadKeyCommand
+            var layout = applicationFacade.LoadLayout(@"C:\Users\Rafael\git\Multikeys\MultiKeys\XML\Multikeys.xml");
+
+            var kbControl = new KeyboardControl(layout.Keyboards[0], applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ISO))
             {
-                Codepoints = new List<uint> { 0x1f604, 0x40 },
-                Replacements = new Dictionary<IList<uint>, IList<uint>>
-                {
-                    {
-                        new List<uint> { 0x30, 0x31 },
-                        new List<uint> { 0x1f630, 0x1f650 }
-                    }
-                }
+                Width = 1300,
+                Height = 400,
+                Margin = new Thickness(5),
             };
-            var command2 = new UnicodeCommand(true, char.ConvertFromUtf32(0x1f604));
-            Dictionary<Scancode, IKeystrokeCommand> layout = new Dictionary<Scancode, IKeystrokeCommand>
-            {
-                { Scancode.FromString("04"), command },
-                { Scancode.FromString("e0:52"), command2 }
-            };
+
+            Root.Children.Add(kbControl);
 
             
         }

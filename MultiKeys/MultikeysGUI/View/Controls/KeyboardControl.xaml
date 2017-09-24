@@ -7,11 +7,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="800">
     <Grid>
-        <DockPanel LastChildFill="False" Margin="0, 5, 0, 5" >
+        <DockPanel LastChildFill="False" Margin="0" >
 
-            <local:ModifiersControl x:Name="Modifiers" Margin="0, 0, 0, 0" DockPanel.Dock="Top"/>
-            <local:LayerControl x:Name="Layer" Margin="0, 0, 0, 0" />
-            <local:CommandPanel x:Name="SummaryPanel" Margin="0, 0, 0, 0" DockPanel.Dock="Right"/>
+            <local:ModifiersControl x:Name="Modifiers" Margin="0" DockPanel.Dock="Top"/>
+            <local:LayerControl x:Name="Layer" Margin="0" Width="Auto" KeyClicked="LayerKeyClicked" />
+            <local:CommandPanel x:Name="SummaryPanel" Margin="0" DockPanel.Dock="Right"/>
 
         </DockPanel>
 

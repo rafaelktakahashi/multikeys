@@ -6,5 +6,6 @@
         xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="573" Width="1410">
-    <Grid/>
+    <Grid x:Name="Root">
+    </Grid>
 </Window>

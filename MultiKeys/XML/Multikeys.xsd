@@ -21,7 +21,7 @@
                 </xs:annotation>
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element maxOccurs="unbounded" name="modifier">
+                    <xs:element minOccurs="0" maxOccurs="unbounded" name="modifier">
                       <xs:annotation>
                         <xs:documentation>
                           A modifier key, identified by scancode (in hexadecimal, one or two bytes without space). The used scancode becomes unavailable for other mappings.

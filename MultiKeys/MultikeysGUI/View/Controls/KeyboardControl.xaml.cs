@@ -40,6 +40,14 @@ namespace MultikeysGUI.View.Controls
 
 
 
+        // Event handlers
+        private void LayerKeyClicked(object sender, EventArgs e)
+        {
+            // Update the panel
+            // We assume that the sender is necessarily a KeyControl.
+            // Things might break if it isn't.
+            SummaryPanel.UpdateCommand((sender as KeyControl).Command);
+        }
 
     }
 }

@@ -50,7 +50,7 @@ namespace MultikeysGUITests
         [TestMethod]
         public void WriteFile()
         {
-            var layout = new MultikeysRoot()
+            var layout = new MultikeysLayout()
             {
                 Keyboards = new System.Collections.Generic.List<Keyboard>()
             };

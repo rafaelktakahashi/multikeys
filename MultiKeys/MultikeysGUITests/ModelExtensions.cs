@@ -10,7 +10,7 @@ namespace MultikeysGUITests
 {
     public static class ModelExtensions
     {
-        public static string Print(this MultikeysRoot @this)
+        public static string Print(this MultikeysLayout @this)
         {
             return $"{@this.Keyboards.Select(it => it.Print()).JoinIntoString()}";
         }

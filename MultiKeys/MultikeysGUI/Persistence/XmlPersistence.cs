@@ -51,7 +51,7 @@ namespace MultikeysGUI.Persistence
         /// </summary>
         /// <param name="filename">Fully qualified path to the configuration file to be read.</param>
         /// <returns>An object containing the contents of the configuration file.</returns>
-        public static MultikeysRoot Load(string filename)
+        public static MultikeysLayout Load(string filename)
         {
             if (filename == null)
             { throw new ArgumentNullException("Filename provided was null."); }
@@ -209,9 +209,9 @@ namespace MultikeysGUI.Persistence
             };
         }
 
-        private static MultikeysRoot ReadConfiguration(XDocument doc)
+        private static MultikeysLayout ReadConfiguration(XDocument doc)
         {
-            return new MultikeysRoot
+            return new MultikeysLayout
             {
                 Keyboards = doc.Descendants("keyboard").Select(it => ReadKeyboard(it)).ToList()
             };
@@ -225,7 +225,7 @@ namespace MultikeysGUI.Persistence
         /// </summary>
         /// <param name="content">Object containing the data to be written.</param>
         /// <param name="filename">Fully qualified path where the configuration file will be saved.</param>
-        public static void Save(MultikeysRoot content, string filename)
+        public static void Save(MultikeysLayout content, string filename)
         {
             WriteConfiguration(content).Save(filename);
         }
@@ -377,7 +377,7 @@ namespace MultikeysGUI.Persistence
             return element;
         }
 
-        private static XElement WriteConfiguration(MultikeysRoot entity)
+        private static XElement WriteConfiguration(MultikeysLayout entity)
         {
             var element = new XElement("Multikeys");
             foreach (var keyboard in entity.Keyboards)

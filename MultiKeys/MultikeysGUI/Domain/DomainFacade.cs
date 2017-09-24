@@ -14,12 +14,12 @@ namespace MultikeysGUI.Domain
     /// </summary>
     class DomainFacade : IDomainFacade
     {
-        public MultikeysRoot LoadLayout(string path)
+        public MultikeysLayout LoadLayout(string path)
         {
             return XmlPersistence.Load(path);
         }
 
-        public void SaveLayout(MultikeysRoot model, string path)
+        public void SaveLayout(MultikeysLayout model, string path)
         {
             // TODO: Apply validation rules, such as not allowing a <keyboard> without <layer>s.
             XmlPersistence.Save(model, path);

@@ -114,7 +114,7 @@ namespace MultikeysGUI.Model
     /// <summary>
     /// Root element; contains a list of keyboards.
     /// </summary>
-    public class MultikeysRoot
+    public class MultikeysLayout
     {
         public IList<Keyboard> Keyboards { get; set; }
     }

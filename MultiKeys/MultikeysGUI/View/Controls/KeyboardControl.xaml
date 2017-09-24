@@ -11,7 +11,6 @@
 
             <local:ModifiersControl x:Name="Modifiers" Margin="0" DockPanel.Dock="Top"/>
             <local:LayerControl x:Name="Layer" Margin="0" Width="Auto" KeyClicked="LayerKeyClicked" />
-            <local:CommandPanel x:Name="SummaryPanel" Margin="0" DockPanel.Dock="Right"/>
 
         </DockPanel>
 

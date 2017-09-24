@@ -6,6 +6,12 @@
         xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="573" Width="1410">
-    <Grid x:Name="Root">
+    <Grid>
+        <DockPanel>
+            <ScrollViewer Width="1080">
+                <StackPanel x:Name="KeyboardStack" Margin="5" />
+            </ScrollViewer>
+            <local:CommandPanel x:Name="SummaryPanel" DockPanel.Dock="Right" Margin="10" Width="300" Height="500"/>
+        </DockPanel>
     </Grid>
 </Window>

@@ -18,6 +18,32 @@ using MultikeysGUI.Domain.Layout;
 namespace MultikeysGUI.View.Controls
 {
     /// <summary>
+    /// Event that is raised by a KeyboardControl when any key in it is pressed on screen.
+    /// </summary>
+    public class KeyClickedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Identifies the keyboard where the key click came from.
+        /// </summary>
+        public Keyboard Keyboard { get; set; }
+        /// <summary>
+        /// Identifies the key that was clicked.
+        /// </summary>
+        public Scancode Scancode { get; set; }
+        /// <summary>
+        /// The command that the clicked key is mapped to.
+        /// This may be null, in which case the clicked key is not remapped.
+        /// </summary>
+        public IKeystrokeCommand Command { get; set; }
+    }
+
+    /// <summary>
+    /// When a key is clicked on this keyboard, an event containing information about
+    /// the clicked key is sent.
+    /// </summary>
+    public delegate void KeyClickedDelegate(object sender, KeyClickedEventArgs args);
+
+    /// <summary>
     /// Interaction logic for KeyboardControl.xaml
     /// </summary>
     public partial class KeyboardControl : UserControl
@@ -39,14 +65,21 @@ namespace MultikeysGUI.View.Controls
         private Keyboard _keyboard;   // not a property
 
 
+        // Events
+        public event KeyClickedDelegate KeyClicked;
+        
 
         // Event handlers
-        private void LayerKeyClicked(object sender, EventArgs e)
+        public void LayerKeyClicked(object sender, EventArgs e)
         {
-            // Update the panel
-            // We assume that the sender is necessarily a KeyControl.
-            // Things might break if it isn't.
-            SummaryPanel.UpdateCommand((sender as KeyControl).Command);
+            // Bubble up the event
+            KeyControl kc = sender as KeyControl;
+            KeyClicked?.Invoke(this, new KeyClickedEventArgs
+            {
+                Command = kc.Command,
+                Keyboard = this._keyboard,
+                Scancode = kc.Scancode,
+            });
         }
 
     }

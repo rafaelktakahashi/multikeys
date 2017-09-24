@@ -35,23 +35,32 @@ namespace MultikeysGUI
 
             var layout = applicationFacade.LoadLayout(@"C:\Users\Rafael\git\Multikeys\MultiKeys\XML\Multikeys.xml");
 
-            var kbControl = new KeyboardControl(layout.Keyboards[0], applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ISO))
+            foreach (var keyboard in layout.Keyboards)
             {
-                Width = 1300,
-                Height = 400,
-                Margin = new Thickness(5),
-            };
-
-            Root.Children.Add(kbControl);
+                var kbControl = new KeyboardControl(keyboard, applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ISO))
+                {
+                    Width = 1300,
+                    Height = 400,
+                    Margin = new Thickness(5),
+                };
+                kbControl.KeyClicked += HandleKeyClicked;
+                KeyboardStack.Children.Add(kbControl);
+            }
+            
+            
 
             
         }
 
         
 
-        public void HandleKeyClicked(object sender, EventArgs e)
+        /// <summary>
+        /// This event handler is notified of any key that is clicked on any keyboard on screen.
+        /// </summary>
+        public void HandleKeyClicked(object sender, KeyClickedEventArgs e)
         {
-            ;
+            // Use the provided information to update the information panel.
+            SummaryPanel.UpdateCommand(e.Command);
         }
         
     }

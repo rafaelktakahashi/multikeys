@@ -7,21 +7,12 @@ using System.Threading.Tasks;
 namespace MultikeysGUI.Domain
 {
     /// <summary>
-    /// Singleton for a facade.
+    /// Implementation of the domain facade.
     /// </summary>
     class DomainFacade
     {
-        private DomainFacade() { }
+        
 
-        private static DomainFacade _instance = null;
 
-        public static DomainFacade Instance
-        {
-            get
-            {
-                if (_instance == null) _instance = new DomainFacade();
-                return _instance;
-            }
-        }
     }
 }

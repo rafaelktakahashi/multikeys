@@ -26,7 +26,7 @@ namespace MultikeysGUI.Domain.Layout
                 case PhysicalLayoutStandard.JIS:
                     return new JISPhysicalLayout();
                 case PhysicalLayoutStandard.DUBEOLSIK:
-                    throw new NotImplementedException("The Dubeolsik keyboard layout is not implemented yet.");
+                    return new DubeolsikPhysicalLayout();
                 default:
                     throw new Exception("Unsupported keyboard layout.");
             }

@@ -54,6 +54,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Domain\DomainFacade.cs" />
+    <Compile Include="Domain\IDomainFacade.cs" />
     <Compile Include="Domain\Layout\PhysicalKey.cs" />
     <Compile Include="Domain\Layout\IPhysicalLayout.cs" />
     <Compile Include="Domain\Layout\PhysicalKeyShape.cs" />

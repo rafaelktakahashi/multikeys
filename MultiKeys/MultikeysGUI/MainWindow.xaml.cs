@@ -46,7 +46,7 @@ namespace MultikeysGUI
             };
 
 
-            ExampleLayout.LoadLayout(PhysicalLayoutFactory.FromStandard(PhysicalLayoutStandard.ABNT_2));
+            ExampleLayout.LoadLayout(PhysicalLayoutFactory.FromStandard(PhysicalLayoutStandard.ISO));
             ExampleLayout.RefreshView(layout);
         }
 

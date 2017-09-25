@@ -14,6 +14,7 @@ namespace MultikeysGUI.Domain
     /// </summary>
     class DomainFacade : IDomainFacade
     {
+        /// <throws>XmlSchemValidationException</throws>
         public MultikeysLayout LoadLayout(string path)
         {
             return XmlPersistence.Load(path);

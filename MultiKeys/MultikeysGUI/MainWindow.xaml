@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="573" Width="1410">
+        Title="MainWindow" Height="575" Width="1438">
     <Grid>
         <DockPanel>
             <ScrollViewer Width="1080">

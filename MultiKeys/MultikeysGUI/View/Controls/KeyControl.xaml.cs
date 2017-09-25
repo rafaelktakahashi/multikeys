@@ -26,7 +26,11 @@ namespace MultikeysGUI.View.Controls
     /// </summary>
     public partial class KeyControl : UserControl
     {
-        public KeyControl(PhysicalKeyShape shape = PhysicalKeyShape.Rectangular)
+        /// <summary>
+        /// Although this constructor initializes certain properties,
+        /// the Shape property must be called in order to determine which shape of key to draw.
+        /// </summary>
+        public KeyControl()
         {
             InitializeComponent();
 
@@ -35,8 +39,6 @@ namespace MultikeysGUI.View.Controls
             Command = null;
             Scancode = null;
             UpdateText();
-
-            // Draw shape
         }
 
         /// <summary>
@@ -45,78 +47,18 @@ namespace MultikeysGUI.View.Controls
         /// <param name="shape"></param>
         private void DrawShape(PhysicalKeyShape shape)
         {
+            // Choose the correct resource from this control's resource dictionary
 
             if (shape == PhysicalKeyShape.Rectangular)
             {
-                BorderGrid.Children.Clear();
-
-
-                // Build one simple rectangle that covers the whole rectangular control
-                var rectangle = MakeRectangle();
-                Panel.SetZIndex(rectangle, -1);
-                BorderGrid.Children.Add(rectangle);
+                KeyContainerGrid.Children.Add(this.Resources["RectangularKey"] as Grid);
             }
             else if (shape == PhysicalKeyShape.StandardEnter)
             {
-                
-
-                
-
-                /*
-             <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="15*"/>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="50*"/>
-                    <ColumnDefinition Width="50*"/>
-                </Grid.ColumnDefinitions>
-
-                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.RowSpan="2" Width="1000"   Panel.ZIndex="-7" />
-                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.ColumnSpan="4" Height="1000" Margin="0, 0, 1.8, 0"   Panel.ZIndex="-6"/>
-                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="3" Grid.RowSpan="4" Width="1000" HorizontalAlignment="Right"  Margin="0, 0, 1.5, 0" Panel.ZIndex="-5"/>
-                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.ColumnSpan="2" Grid.Column="2" Grid.Row="3" VerticalAlignment="Bottom" Height="1000" Margin="0, 0, 1.5, 0" Panel.ZIndex="-4"/>
-                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="1" Grid.Row="2" Margin="-3" VerticalAlignment="Top" HorizontalAlignment="Right" Height="1000" Width="1000" Panel.ZIndex="-3" />
-                
-                <!-- The following two exist to smoothen out the line thickness -->
-                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.RowSpan="2" Width="1000"   Panel.ZIndex="-7" />
-                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="1" Grid.Row="2" Margin="-3.49" VerticalAlignment="Top" HorizontalAlignment="Right" Height="1000" Width="1000" Panel.ZIndex="-3" />
-                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="2" HorizontalAlignment="Center" Height="1000" Width="1000"  Panel.ZIndex="-1" />
-                <Rectangle Stroke="Black" StrokeThickness="3" RadiusX="4" RadiusY="4" Grid.Column="2" Grid.Row="3" VerticalAlignment="Bottom" Height="1000" Width="1000"  Panel.ZIndex="-1" />
-            </Grid>    
-             */
+                KeyContainerGrid.Children.Add(this.Resources["EnterKey"] as Grid);
             }
         }
-        /// <summary>
-        /// For use in DrawShape()
-        /// </summary>
-        private Rectangle MakeRectangle()
-        {
-            return new Rectangle
-            {
-                Fill = Brushes.Transparent,
-                Stroke = Brushes.Black,
-                StrokeThickness = 3,
-                StrokeLineJoin = PenLineJoin.Round,
-                RadiusX = 4,
-                RadiusY = 4,
-            };
-        }
-
-        /// <summary>
-        /// This holds actions that should be done during rendering.
-        /// Good for clipping, which requires the elements to exist on screen in order to clip.
-        /// </summary>
-        private ICollection<Action> doOnRender = new List<Action>();
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            foreach (var action in doOnRender)
-                action.Invoke();
-        }
+        
 
         private PhysicalKeyShape _shape;
         public PhysicalKeyShape Shape
@@ -163,7 +105,6 @@ namespace MultikeysGUI.View.Controls
         /// </summary>
         [TypeConverter(typeof(ScancodeConverter))]
         public Scancode Scancode { get; set; }
-        
 
         /// <summary>
         /// 

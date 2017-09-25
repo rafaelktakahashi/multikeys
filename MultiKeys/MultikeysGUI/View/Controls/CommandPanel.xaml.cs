@@ -35,16 +35,18 @@ namespace MultikeysGUI.View.Controls
         /// <summary>
         /// Template for creating new lines in the StackPanelData
         /// </summary>
-        private TextBlock MakeNewLine()
+        private TextBlock MakeNewLine(string content)
         {
-            return new TextBlock
-            {
-                AllowDrop = false,
-                FontSize = 18,
-                FontWeight = FontWeights.Bold,
-                Margin = new Thickness { Left = 10, Top = 5, Right = 10, Bottom = 0 },
-                TextTrimming = TextTrimming.CharacterEllipsis
-            };
+            var line = this.Resources["Content"] as TextBlock;
+            line.Text = content;
+            return line;
+        }
+
+        private TextBlock MakeNewTitle(string content)
+        {
+            var title = this.Resources["Title"] as TextBlock;
+            title.Text = content;
+            return title;
         }
 
 
@@ -74,8 +76,7 @@ namespace MultikeysGUI.View.Controls
 
         private void WriteSummaryNotRemapped()
         {
-            TextBlock notRemappedLine = MakeNewLine();
-            notRemappedLine.Text = Properties.Strings.ThisKeyIsNotRemapped;
+            TextBlock notRemappedLine = MakeNewLine(Properties.Strings.ThisKeyIsNotRemapped);
             notRemappedLine.Foreground = Brushes.DarkGray;
             StackPanelData.Children.Add(notRemappedLine);
         }
@@ -83,21 +84,17 @@ namespace MultikeysGUI.View.Controls
         private void WriteSummaryDeadKey(DeadKeyCommand newCommand)
         {
             // Title
-            TextBlock titleLine = MakeNewLine();
-            titleLine.Foreground = Brushes.Blue;
-            titleLine.Text = Properties.Strings.ReadableNameDeadkey;
+            TextBlock titleLine = MakeNewTitle(Properties.Strings.ReadableNameDeadkey);
             StackPanelData.Children.Add(titleLine);
 
             // Independent codepoints:
-            TextBlock independentLine = MakeNewLine();
-            independentLine.Text = newCommand.ContentAsText;
+            TextBlock independentLine = MakeNewLine(newCommand.ContentAsText);
             if (independentLine.Text.Length <= 2) independentLine.FontSize = 20;
             independentLine.TextWrapping = TextWrapping.Wrap;
             StackPanelData.Children.Add(independentLine);
 
             // Replacements:
-            TextBlock replacementsLine = MakeNewLine();
-            replacementsLine.Text = Properties.Strings.DeadKeyReplacements;
+            TextBlock replacementsLine = MakeNewLine(Properties.Strings.DeadKeyReplacements);
             StackPanelData.Children.Add(replacementsLine);
             DataGrid dg = new DataGrid()
             {
@@ -132,14 +129,11 @@ namespace MultikeysGUI.View.Controls
         private void WriteSummaryUnicode(UnicodeCommand newCommand)
         {
             // Title
-            TextBlock titleLine = MakeNewLine();
-            titleLine.Foreground = Brushes.Blue;
-            titleLine.Text = Properties.Strings.ReadableNameUnicodeKey;
+            TextBlock titleLine = MakeNewTitle(Properties.Strings.ReadableNameUnicodeKey);
             StackPanelData.Children.Add(titleLine);
 
             // Text
-            TextBlock textLine = MakeNewLine();
-            textLine.Text = newCommand.ContentAsText;
+            TextBlock textLine = MakeNewLine(newCommand.ContentAsText);
             if (textLine.Text.Length <= 2) textLine.FontSize = 20;
             textLine.TextWrapping = TextWrapping.Wrap;
             StackPanelData.Children.Add(textLine);
@@ -149,13 +143,11 @@ namespace MultikeysGUI.View.Controls
         private void WriteSummaryMacro(MacroCommand newCommand)
         {
             // Title
-            TextBlock titleLine = MakeNewLine();
-            titleLine.Foreground = Brushes.Blue;
-            titleLine.Text = Properties.Strings.ReadableNameMacroKey;
+            TextBlock titleLine = MakeNewTitle(Properties.Strings.ReadableNameMacroKey);
             StackPanelData.Children.Add(titleLine);
 
             // Text
-            TextBlock textLine = MakeNewLine();
+            TextBlock textLine = MakeNewLine("");
             string textLineContent = Properties.Strings.MacroSequence + ":\n";
             foreach (var vkey in newCommand.VKeyCodes)
                 textLineContent += vkey.ToString() + "\n";
@@ -166,20 +158,16 @@ namespace MultikeysGUI.View.Controls
         private void WriteSummaryExecutable(ExecutableCommand newCommand)
         {
             // Title
-            TextBlock titleLine = MakeNewLine();
-            titleLine.Foreground = Brushes.Blue;
-            titleLine.Text = Properties.Strings.ReadableNameExecutablekey;
+            TextBlock titleLine = MakeNewTitle(Properties.Strings.ReadableNameExecutablekey);
             StackPanelData.Children.Add(titleLine);
 
             // Command
-            TextBlock commandLine = MakeNewLine();
-            commandLine.Text = "Command: " + newCommand.Command;
+            TextBlock commandLine = MakeNewLine("Command: " + newCommand.Command);
             commandLine.TextWrapping = TextWrapping.Wrap;
             StackPanelData.Children.Add(commandLine);
 
             // Arguments
-            TextBlock argumentsLine = MakeNewLine();
-            argumentsLine.Text = "Arguments: " + newCommand.Arguments;
+            TextBlock argumentsLine = MakeNewLine("Arguments: " + newCommand.Arguments);
             argumentsLine.TextWrapping = TextWrapping.Wrap;
             StackPanelData.Children.Add(argumentsLine);
         }

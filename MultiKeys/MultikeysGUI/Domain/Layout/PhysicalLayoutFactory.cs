@@ -12,9 +12,16 @@ namespace MultikeysGUI.Domain.Layout
         /// Creates a new IPhysicalLayout that conforms to the specified standard.
         /// </summary>
         /// <param name="standard">Physical keyboard standard that determines the shape and existence of certains keys.</param>
+        /// <param name="useBigReturn">If set to true, the return key will be replaced by a large return key. Has no effect on JIS layout.</param>
         /// <returns></returns>
-        public static IPhysicalLayout FromStandard(PhysicalLayoutStandard standard)
+        public static IPhysicalLayout FromStandard(PhysicalLayoutStandard standard, bool useBigReturn)
         {
+            if (useBigReturn)
+            {
+                // TODO: Put a switch in here
+                return new BigReturnANSIPhysicalLayout();
+            }
+
             switch (standard)
             {
                 case PhysicalLayoutStandard.ANSI:

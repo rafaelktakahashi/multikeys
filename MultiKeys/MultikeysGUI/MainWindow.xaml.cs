@@ -37,7 +37,7 @@ namespace MultikeysGUI
 
             foreach (var keyboard in layout.Keyboards)
             {
-                var kbControl = new KeyboardControl(keyboard, applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ISO))
+                var kbControl = new KeyboardControl(keyboard, applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ANSI, true))
                 {
                     Width = 1300,
                     Height = 400,

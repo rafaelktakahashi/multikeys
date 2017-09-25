@@ -26,9 +26,9 @@ namespace MultikeysGUI.Domain
             XmlPersistence.Save(model, path);
         }
 
-        public IPhysicalLayout GetPhysicalLayout(PhysicalLayoutStandard standard)
+        public IPhysicalLayout GetPhysicalLayout(PhysicalLayoutStandard standard, bool useBigReturn = false)
         {
-            return PhysicalLayoutFactory.FromStandard(standard);
+            return PhysicalLayoutFactory.FromStandard(standard, useBigReturn);
         }
     }
 }

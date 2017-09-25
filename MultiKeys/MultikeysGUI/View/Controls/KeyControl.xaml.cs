@@ -48,15 +48,21 @@ namespace MultikeysGUI.View.Controls
         private void DrawShape(PhysicalKeyShape shape)
         {
             // Choose the correct resource from this control's resource dictionary
+            KeyContainerGrid.Children.Clear();
 
-            if (shape == PhysicalKeyShape.Rectangular)
+            switch (shape)
             {
-                KeyContainerGrid.Children.Add(this.Resources["RectangularKey"] as Grid);
+                case PhysicalKeyShape.Rectangular:
+                    KeyContainerGrid.Children.Add(this.Resources["RectangularKey"] as Grid);
+                    break;
+                case PhysicalKeyShape.LShapedReturn:
+                    KeyContainerGrid.Children.Add(this.Resources["ReturnKey"] as Grid);
+                    break;
+                case PhysicalKeyShape.BigReturn:
+                    KeyContainerGrid.Children.Add(this.Resources["BigReturnKey"] as Grid);
+                    break;
             }
-            else if (shape == PhysicalKeyShape.StandardEnter)
-            {
-                KeyContainerGrid.Children.Add(this.Resources["EnterKey"] as Grid);
-            }
+
         }
         
 

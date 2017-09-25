@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MultikeysGUI.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -176,7 +177,7 @@ namespace MultikeysGUI.Domain.Layout
         {
             _layout.Add(new PhysicalKey("0e", 2, 1, 13, 1.5));       // 2-wide backspace
             _layout.Add(new PhysicalKey("1c", 1.5, 2, 13.5, 2.5,     // L-shaped Return key
-                PhysicalKeyShape.StandardEnter));
+                PhysicalKeyShape.LShapedReturn));
             _layout.Add(new PhysicalKey("2b", 1, 1, 12.75, 3.5));    // 1x1 key to the left of return
             _layout.Add(new PhysicalKey("2a", 1.25, 1, 0, 4.5));     // 1.25-wide left shift
             _layout.Add(new PhysicalKey("56", 1, 1, 1.25, 4.5));        // 1x1 key to the right of left shift
@@ -192,7 +193,7 @@ namespace MultikeysGUI.Domain.Layout
         {
             _layout.Add(new PhysicalKey("0e", 2, 1, 13, 1.5));       // 2-wide backspace
             _layout.Add(new PhysicalKey("1c", 1.5, 2, 13.5, 2.5,     // L-shaped Return key
-                PhysicalKeyShape.StandardEnter));
+                PhysicalKeyShape.LShapedReturn));
             _layout.Add(new PhysicalKey("2b", 1, 1, 12.75, 3.5));    // 1x1 key to the left of return
             _layout.Add(new PhysicalKey("2a", 1.25, 1, 0, 4.5));     // 1.25-wide left shift
             _layout.Add(new PhysicalKey("56", 1, 1, 1.25, 4.5));     // 1x1 key to the right of left shift (backslash)
@@ -211,7 +212,7 @@ namespace MultikeysGUI.Domain.Layout
             _layout.Add(new PhysicalKey("7d", 1, 1, 13, 1.5));       // 1x1 key to the left of backspace (Yen)
             _layout.Add(new PhysicalKey("0e", 1, 1, 14, 1.5));       // 1-wide backspace
             _layout.Add(new PhysicalKey("1c", 1.5, 2, 13.5, 2.5,     // L-shaped Return key
-                PhysicalKeyShape.StandardEnter));
+                PhysicalKeyShape.LShapedReturn));
             _layout.Add(new PhysicalKey("2b", 1, 1, 12.75, 3.5));    // 1x1 key to the left of return
             _layout.Add(new PhysicalKey("2a", 2.25, 1, 0, 4.5));     // 2.25-wide left shift
             _layout.Add(new PhysicalKey("73", 1, 1, 12.25, 4.5));    // 1x1 key to the left of right shift
@@ -230,7 +231,7 @@ namespace MultikeysGUI.Domain.Layout
         {
             _layout.Add(new PhysicalKey("0e", 2, 1, 13, 1.5));       // 2-wide backspace
             _layout.Add(new PhysicalKey("1c", 1.5, 2, 13.5, 2.5,     // L-shaped Return key
-                PhysicalKeyShape.StandardEnter));
+                PhysicalKeyShape.LShapedReturn));
             _layout.Add(new PhysicalKey("2b", 1, 1, 12.75, 3.5));    // 1x1 key to the left of return
             _layout.Add(new PhysicalKey("2a", 1.25, 1, 0, 4.5));     // 1.25-wide left shift
             _layout.Add(new PhysicalKey("56", 1, 1, 1.25, 4.5));     // 1x1 key to the right of left shift
@@ -242,6 +243,19 @@ namespace MultikeysGUI.Domain.Layout
         }
     }
 
-
+    public class BigReturnANSIPhysicalLayout : BasePhysicalLayout
+    {
+        public BigReturnANSIPhysicalLayout() : base()
+        {
+            _layout.Add(new PhysicalKey("0e", 1, 1, 14, 1.5));       // 1-wide backspace
+            _layout.Add(new PhysicalKey("2b", 1, 1, 13, 1.5));     // 1-wide backslash
+            _layout.Add(new PhysicalKey("1c", 2.25, 2, 12.75, 2.5,   // Big return
+                PhysicalKeyShape.BigReturn));
+            _layout.Add(new PhysicalKey("2a", 2.25, 1, 0, 4.5));     // 2.25-wide left shift
+            _layout.Add(new PhysicalKey("36", 2.75, 1, 12.25, 4.5)); // 2.75-wide right shift
+            _layout.Add(new PhysicalKey("39", 6.25, 1, 3.75, 5.5));  // full-width (6.25) space bar
+            _layout.Add(new PhysicalKey("4e", 1, 2, 22, 2.5));       // 2-tall plus symbol
+        }
+    }
 
 }

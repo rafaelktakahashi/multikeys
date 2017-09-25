@@ -9,7 +9,7 @@ namespace MultikeysGUI.Domain.Layout
     public enum PhysicalKeyShape
     {
         Rectangular = 0,
-        StandardEnter = 1,
-        BigEnter = 2
+        LShapedReturn = 1,
+        BigReturn = 2
     }
 }

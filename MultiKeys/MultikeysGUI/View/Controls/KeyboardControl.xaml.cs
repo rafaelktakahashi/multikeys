@@ -55,15 +55,21 @@ namespace MultikeysGUI.View.Controls
         {
             InitializeComponent();
 
-            _keyboard = kb;
+            Keyboard = kb;
             Layer.RenderLayout(physLayout);
             Layer.RefreshView(kb.Layers[0].Commands);
         }
 
-        // Fields
+        /// <summary>
+        /// This control represent this object's state.
+        /// </summary>
+        public Keyboard Keyboard { get; private set; }
 
-        private Keyboard _keyboard;   // not a property
-
+        /// <summary>
+        /// Currently selected layer that should be rendered on screen.
+        /// This changes when the combination of pressed modifiers changes.
+        /// </summary>
+        private Layer _activeLayer;
 
         // Events
         public event KeyClickedDelegate KeyClicked;
@@ -77,9 +83,31 @@ namespace MultikeysGUI.View.Controls
             KeyClicked?.Invoke(this, new KeyClickedEventArgs
             {
                 Command = kc.Command,
-                Keyboard = this._keyboard,
+                Keyboard = this.Keyboard,
                 Scancode = kc.Scancode,
             });
+        }
+
+        public void ModifierSelectionChanged(object sender, EventArgs e)
+        {
+            // Get the current selection of modifiers
+            IEnumerable<string> selectedModifierNames = ModifiersControl.SelectedModifiers;
+            // Update the active layer according to the modifiers
+            foreach (Layer layer in Keyboard.Layers)
+            {
+                if (layer.ModifierCombination.All(selectedModifierNames.Contains)
+                    && layer.ModifierCombination.Count == selectedModifierNames.Count())
+                {
+                    // The current combination of modifiers matches a layer
+                    _activeLayer = layer;
+                    // Render it on screen
+                    Layer.RefreshView(layer.Commands);
+                }
+                // if got here, there's no remapped layer.
+            }
+
+            // TODO: This code for checking layers should be moved into a lookup container that
+            // returns null for invalid combinations and can be queried for all valid ones.
         }
 
     }

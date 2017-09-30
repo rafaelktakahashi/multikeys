@@ -6,13 +6,22 @@
              xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="61.653" d:DesignWidth="401.695">
+
+    <UserControl.Resources>
+        <ToggleButton x:Key="ModifierButton"
+                      x:Shared="false" 
+                      Margin="5"
+                      Height="30"
+                      Width="auto" MinWidth="70"
+                      FontSize="16" FontWeight="SemiBold"
+                      Checked="ModifierClicked" Unchecked="ModifierClicked" />
+    </UserControl.Resources>
+    
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
             <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
                 <TextBlock x:Name="lblModifiers" Margin="10,0, 0, 0" Text="Placeholder: " TextAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="DemiBold" />
-                <StackPanel x:Name="ModifierButtons" Margin="0, 0, 0, 0" Orientation="Horizontal">
-                    <ToggleButton Content="ToggleButton" Margin="10, 0, 10, 0" Height="30" Width="auto" FontSize="16" FontWeight="SemiBold"/>
-                </StackPanel>
+                <StackPanel x:Name="ModifierButtons" Margin="0" Orientation="Horizontal" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

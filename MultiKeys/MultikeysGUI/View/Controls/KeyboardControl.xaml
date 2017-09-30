@@ -9,7 +9,7 @@
     <Grid>
         <DockPanel LastChildFill="False" Margin="0" >
 
-            <local:ModifiersControl x:Name="Modifiers" Margin="0" DockPanel.Dock="Top"/>
+            <local:ModifiersControl x:Name="ModifiersControl" Margin="0" DockPanel.Dock="Top" ModifierSelectionChanged="ModifierSelectionChanged"/>
             <local:LayerControl x:Name="Layer" Margin="0" Width="Auto" KeyClicked="LayerKeyClicked" />
 
         </DockPanel>

@@ -44,7 +44,7 @@ namespace MultikeysGUI.View.Controls
         /// <summary>
         /// Draws the borders according to the shape.
         /// </summary>
-        /// <param name="shape"></param>
+        /// <param name="shape">Shape to be drawn; some shapes require specific dimensions.</param>
         private void DrawShape(PhysicalKeyShape shape)
         {
             // Choose the correct resource from this control's resource dictionary

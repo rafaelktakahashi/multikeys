@@ -149,13 +149,16 @@ namespace MultikeysGUI.View.Controls
         /// </summary>
         public void ModifierClicked(object sender, RoutedEventArgs e)
         {
+            // Filter the modifiers for those that are selected.
+            // Selected modifiers are those whose associated button on screen is toggled.
             SelectedModifiers =
-                Modifiers
-                .Where(mod =>
-                    ModifierButtonList
-                    .Where(btn => btn.Name == mod.Name)
-                    .All(btn => btn.IsChecked ?? false)
-                );
+                from mod in Modifiers
+                join btn in ModifierButtonList
+                on mod.Name equals btn.Name
+                where btn.IsChecked ?? false
+                select mod;
+
+            // Fire an event
             ModifierSelectionChanged?.Invoke(sender, new EventArgs());
         }
 

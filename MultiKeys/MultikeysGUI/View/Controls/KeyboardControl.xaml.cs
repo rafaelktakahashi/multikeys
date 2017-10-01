@@ -185,29 +185,11 @@ namespace MultikeysGUI.View.Controls
             // render no command
             Layer.RefreshView(EmptyLayerCommands);
 
-
-            //// Get the current selection of modifiers
-            //IEnumerable<Modifier> selectedModifierNames = ModifiersControl.SelectedModifiers;
-            //// Update the active layer according to the modifiers
-            //foreach (Layer layer in _layers)
-            //{
-            //    if (layer.ModifierCombination.All(selectedModifierNames.Select(it => it.Name).Contains)
-            //        && layer.ModifierCombination.Count == selectedModifierNames.Count())
-            //    {
-            //        // The current combination of modifiers matches a layer
-            //        _activeLayer = layer;
-            //        // Render it on screen
-            //        Layer.RefreshView(layer.Commands);
-            //    }
-            //    // if got here, there's no remapped layer.
-            //    // Render no command
-            //    Layer.RefreshView(EmptyLayerCommands);
-            //}
         }
 
         private void ButtonAssignCommand_Click(object sender, RoutedEventArgs e)
         {
-
+            // 
         }
 
         private void ButtonEditCommand_Click(object sender, RoutedEventArgs e)

@@ -22,7 +22,7 @@ namespace MultikeysGUI.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace MultikeysGUI.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MultikeysGUI.Properties.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace MultikeysGUI.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to From.
         /// </summary>
-        internal static string DeadKeyReplacementFrom {
+        public static string DeadKeyReplacementFrom {
             get {
                 return ResourceManager.GetString("DeadKeyReplacementFrom", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Replacements.
         /// </summary>
-        internal static string DeadKeyReplacements {
+        public static string DeadKeyReplacements {
             get {
                 return ResourceManager.GetString("DeadKeyReplacements", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to To.
         /// </summary>
-        internal static string DeadKeyReplacementTo {
+        public static string DeadKeyReplacementTo {
             get {
                 return ResourceManager.GetString("DeadKeyReplacementTo", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Arguments.
         /// </summary>
-        internal static string ExecutableKeyArguments {
+        public static string ExecutableKeyArguments {
             get {
                 return ResourceManager.GetString("ExecutableKeyArguments", resourceCulture);
             }
@@ -99,16 +99,61 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Command.
         /// </summary>
-        internal static string ExecutableKeyCommand {
+        public static string ExecutableKeyCommand {
             get {
                 return ResourceManager.GetString("ExecutableKeyCommand", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Assign command.
+        /// </summary>
+        public static string KeyOptionsAssignCommand {
+            get {
+                return ResourceManager.GetString("KeyOptionsAssignCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit command.
+        /// </summary>
+        public static string KeyOptionsEditCommand {
+            get {
+                return ResourceManager.GetString("KeyOptionsEditCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register as modifier.
+        /// </summary>
+        public static string KeyOptionsRegisterModifier {
+            get {
+                return ResourceManager.GetString("KeyOptionsRegisterModifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove command.
+        /// </summary>
+        public static string KeyOptionsRemoveCommand {
+            get {
+                return ResourceManager.GetString("KeyOptionsRemoveCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unregister as modifier.
+        /// </summary>
+        public static string KeyOptionsUnregisterModifier {
+            get {
+                return ResourceManager.GetString("KeyOptionsUnregisterModifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Key press.
         /// </summary>
-        internal static string KeyPress {
+        public static string KeyPress {
             get {
                 return ResourceManager.GetString("KeyPress", resourceCulture);
             }
@@ -117,7 +162,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Key release.
         /// </summary>
-        internal static string KeyRelease {
+        public static string KeyRelease {
             get {
                 return ResourceManager.GetString("KeyRelease", resourceCulture);
             }
@@ -126,7 +171,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Sequence.
         /// </summary>
-        internal static string MacroSequence {
+        public static string MacroSequence {
             get {
                 return ResourceManager.GetString("MacroSequence", resourceCulture);
             }
@@ -135,7 +180,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Modifiers.
         /// </summary>
-        internal static string Modifiers {
+        public static string Modifiers {
             get {
                 return ResourceManager.GetString("Modifiers", resourceCulture);
             }
@@ -144,7 +189,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Dead key.
         /// </summary>
-        internal static string ReadableNameDeadkey {
+        public static string ReadableNameDeadkey {
             get {
                 return ResourceManager.GetString("ReadableNameDeadkey", resourceCulture);
             }
@@ -153,7 +198,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Command key.
         /// </summary>
-        internal static string ReadableNameExecutablekey {
+        public static string ReadableNameExecutablekey {
             get {
                 return ResourceManager.GetString("ReadableNameExecutablekey", resourceCulture);
             }
@@ -162,7 +207,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Macro key.
         /// </summary>
-        internal static string ReadableNameMacroKey {
+        public static string ReadableNameMacroKey {
             get {
                 return ResourceManager.GetString("ReadableNameMacroKey", resourceCulture);
             }
@@ -171,7 +216,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Text key.
         /// </summary>
-        internal static string ReadableNameUnicodeKey {
+        public static string ReadableNameUnicodeKey {
             get {
                 return ResourceManager.GetString("ReadableNameUnicodeKey", resourceCulture);
             }
@@ -180,7 +225,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to This key is not remapped..
         /// </summary>
-        internal static string ThisKeyIsNotRemapped {
+        public static string ThisKeyIsNotRemapped {
             get {
                 return ResourceManager.GetString("ThisKeyIsNotRemapped", resourceCulture);
             }
@@ -189,7 +234,7 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Virtual key code.
         /// </summary>
-        internal static string VirtualKeyCode {
+        public static string VirtualKeyCode {
             get {
                 return ResourceManager.GetString("VirtualKeyCode", resourceCulture);
             }

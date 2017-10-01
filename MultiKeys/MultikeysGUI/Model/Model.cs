@@ -148,7 +148,7 @@ namespace MultikeysGUI.Model
     /// Alternatively, more than one physical key might correspond
     /// to the same logical modifier (e.g. Shift and Ctrl keys on a normal keyboard).
     /// </summary>
-    public class Modifier
+    public class Modifier : IComparable<Modifier>
     {
         /// <summary>
         /// Name of this modifier; this is mandatory, and is used to uniquely identify modifiers.
@@ -161,6 +161,11 @@ namespace MultikeysGUI.Model
         /// associated with it are pressed down.
         /// </summary>
         public IList<Scancode> Scancodes { get; set; }
+
+        public int CompareTo(Modifier other)
+        {
+            return this.Name.CompareTo(other.Name);
+        }
     }
 
     /// <summary>

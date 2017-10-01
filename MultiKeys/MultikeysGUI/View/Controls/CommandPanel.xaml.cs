@@ -17,6 +17,9 @@ using System.Windows.Shapes;
 
 namespace MultikeysGUI.View.Controls
 {
+
+    
+
     /// <summary>
     /// Interaction logic for CommandPanel.xaml
     /// </summary>

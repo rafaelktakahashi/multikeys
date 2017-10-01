@@ -162,4 +162,19 @@
   <data name="VirtualKeyCode" xml:space="preserve">
     <value>Virtual key code</value>
   </data>
+  <data name="KeyOptionsAssignCommand" xml:space="preserve">
+    <value>Assign command</value>
+  </data>
+  <data name="KeyOptionsEditCommand" xml:space="preserve">
+    <value>Edit command</value>
+  </data>
+  <data name="KeyOptionsRegisterModifier" xml:space="preserve">
+    <value>Register as modifier</value>
+  </data>
+  <data name="KeyOptionsRemoveCommand" xml:space="preserve">
+    <value>Remove command</value>
+  </data>
+  <data name="KeyOptionsUnregisterModifier" xml:space="preserve">
+    <value>Unregister as modifier</value>
+  </data>
 </root>

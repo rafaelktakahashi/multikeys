@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
+             xmlns:p="clr-namespace:MultikeysGUI.Properties"
              mc:Ignorable="d" 
              d:DesignHeight="61.653" d:DesignWidth="401.695">
 
@@ -18,10 +19,10 @@
     </UserControl.Resources>
     
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-            <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
-                <TextBlock x:Name="lblModifiers" Margin="10,0, 0, 0" Text="Placeholder: " TextAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="DemiBold" />
-                <StackPanel x:Name="ModifierButtons" Margin="0" Orientation="Horizontal" />
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Auto">
+            <StackPanel Margin="0" Orientation="Horizontal">
+                <TextBlock x:Name="lblModifiers" Margin="10,0, 0, 0" Text="{Binding Source={x:Static p:Strings.Modifiers}, StringFormat='{}{0}: '}" TextAlignment="Center" VerticalAlignment="Center" FontSize="16" FontWeight="DemiBold" />
+                <StackPanel x:Name="ModifierButtons" Margin="0" Width="Auto" Orientation="Horizontal" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -4,15 +4,35 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="800">
+             xmlns:p="clr-namespace:MultikeysGUI.Properties"
+             mc:Ignorable="d" d:DesignWidth="800" Height="350">
     <Grid>
-        <DockPanel LastChildFill="False" Margin="0" >
+        <StackPanel >
 
-            <local:ModifiersControl x:Name="ModifiersControl" Margin="0" DockPanel.Dock="Top" ModifierSelectionChanged="ModifierSelectionChanged"/>
-            <local:LayerControl x:Name="Layer" Margin="0" Width="Auto" KeyClicked="LayerKeyClicked" />
+            <local:ModifiersControl x:Name="ModifiersControl" Margin="5" Width="Auto" ModifierSelectionChanged="ModifierSelectionChanged" HorizontalAlignment="Left" />
+            
+            <local:LayerControl x:Name="Layer" Margin="0" Width="Auto" Height="Auto" KeyClicked="LayerKeyClicked" HorizontalAlignment="Left" />
+            
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" >
+                
+                <Button x:Name="ButtonAssignCommand" Margin="5" Height="20" Width="Auto" MinWidth="80"
+                        Content="{x:Static p:Strings.KeyOptionsAssignCommand}" Click="ButtonAssignCommand_Click" />
+                
+                <Button x:Name="ButtonEditCommand" Margin="5" Height="20" Width="Auto" MinWidth="80"
+                        Content="{x:Static p:Strings.KeyOptionsEditCommand}" Click="ButtonEditCommand_Click" />
+                
+                <Button x:Name="ButtonRemoveCommand" Margin="5" Height="20" Width="Auto" MinWidth="80"
+                        Content="{x:Static p:Strings.KeyOptionsRemoveCommand}" Click="ButtonRemoveCommand_Click" />
+                
+                <Button x:Name="ButtonRegisterModifier" Margin="5" Height="20" Width="Auto" MinWidth="80"
+                        Content="{x:Static p:Strings.KeyOptionsRegisterModifier}" Click="ButtonRegisterModifier_Click" />
+                
+                <Button x:Name="ButtonUnregisterModifier" Margin="5" Height="20" Width="Auto" MinWidth="80"
+                        Content="{x:Static p:Strings.KeyOptionsUnregisterModifier}" Click="ButtonUnregisterModifier_Click" />
+                
+            </StackPanel>
 
-        </DockPanel>
+        </StackPanel>
 
     </Grid>
 </UserControl>

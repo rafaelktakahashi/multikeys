@@ -28,7 +28,7 @@ namespace MultikeysGUI.View.Controls
         {
             InitializeComponent();
             Modifiers = new List<Modifier>();
-            SelectedModifiers = new List<string>();
+            SelectedModifiers = new List<Modifier>();
             ModifierButtonList = new List<ToggleButton>();
 
             lblModifiers.Text = Properties.Strings.Modifiers;
@@ -43,12 +43,36 @@ namespace MultikeysGUI.View.Controls
         /// Collection containing only the modifiers registered in this keyboard
         /// that are set as active in this control.
         /// </summary>
-        public IEnumerable<string> SelectedModifiers { get; private set; }
+        public IEnumerable<Modifier> SelectedModifiers { get; private set; }
 
         /// <summary>
         /// List of references to the buttons that represent each modifier.
         /// </summary>
         private IList<ToggleButton> ModifierButtonList;
+
+        /// <summary>
+        /// Registers all modifiers in the informed collection into this control.
+        /// </summary>
+        /// <param name="modifiers"></param>
+        public void InitializeModifiers(IList<Modifier> modifiers)
+        {
+            Modifiers = modifiers;
+            foreach (var mod in Modifiers)
+            {
+                // Add a new button
+                ToggleButton newToggleButton = this.Resources["ModifierButton"] as ToggleButton;
+                newToggleButton.Name = mod.Name;
+                // Add its text
+                newToggleButton.Content = mod.Name;
+                // Subscribe to its toggled events
+                newToggleButton.Checked += ModifierClicked;
+                newToggleButton.Unchecked += ModifierClicked;
+                // add to layout
+                ModifierButtons.Children.Add(newToggleButton);
+                // and keep a reference to it
+                ModifierButtonList.Add(newToggleButton);
+            }
+        }
 
         /// <summary>
         /// Register a new modifier key; if a modifier with the specified name is already
@@ -78,7 +102,9 @@ namespace MultikeysGUI.View.Controls
                 // and also add a new button for that modifier
                 ToggleButton newToggleButton = this.Resources["ModifierButton"] as ToggleButton;
                 newToggleButton.Name = name;
-                // Subscribe to its toggled event
+                // Add its text
+                newToggleButton.Content = name;
+                // Subscribe to its toggled events
                 newToggleButton.Checked += ModifierClicked;
                 newToggleButton.Unchecked += ModifierClicked;
                 // add to layout
@@ -123,6 +149,13 @@ namespace MultikeysGUI.View.Controls
         /// </summary>
         public void ModifierClicked(object sender, RoutedEventArgs e)
         {
+            SelectedModifiers =
+                Modifiers
+                .Where(mod =>
+                    ModifierButtonList
+                    .Where(btn => btn.Name == mod.Name)
+                    .All(btn => btn.IsChecked ?? false)
+                );
             ModifierSelectionChanged?.Invoke(sender, new EventArgs());
         }
 

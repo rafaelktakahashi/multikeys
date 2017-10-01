@@ -39,8 +39,8 @@ namespace MultikeysGUI
             {
                 var kbControl = new KeyboardControl(keyboard, applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ANSI, true))
                 {
-                    Width = 1300,
-                    Height = 400,
+                    Width = 2000,
+                    Height = 480,
                     Margin = new Thickness(5),
                 };
                 kbControl.KeyClicked += HandleKeyClicked;

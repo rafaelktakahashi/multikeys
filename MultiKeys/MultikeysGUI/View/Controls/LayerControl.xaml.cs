@@ -46,6 +46,8 @@ namespace MultikeysGUI.View.Controls
             // The layout may change at any time, and that change should reflect on the key controls.
             Layout = new Dictionary<Scancode, IKeystrokeCommand>(200, new ScancodeComparer());
             KeyControls = new Dictionary<Scancode, KeyControl>(200, new ScancodeComparer());
+
+            CurrentKey = new Tuple<Scancode, IKeystrokeCommand>(null, null);
         }
 
 
@@ -70,6 +72,14 @@ namespace MultikeysGUI.View.Controls
         private IDictionary<Scancode, KeyControl> KeyControls { get; set; }
 
 
+        /// <summary>
+        /// Stores the currently selected key, by scancode and IKeystrokeCommand.
+        /// 1. If there is no currently selected key, both items in the tuple are null.
+        /// 2. If the currently selected key is not remapped or is a modifier, the second item is null.
+        /// </summary>
+        public Tuple<Scancode, IKeystrokeCommand> CurrentKey { get; private set; }
+
+        // TODO: Keep track of which keys are modifiers.
 
         /// <summary>
         /// Creates and renders the collection of keys on the screen.<para/>
@@ -126,12 +136,13 @@ namespace MultikeysGUI.View.Controls
         public void RefreshView(Scancode key, IKeystrokeCommand command)
         {
             Layout[key] = command;
-            // Notify the key control about this change.
+            // Notify the key control about this change, as to render the new command.
             KeyControls[key].UpdateCommand(command);
         }
 
         /// <summary>
         /// Make a new KeyControl that's ready to be rendered, based on the information provided.
+        /// The resulting object contains information about its size and position on screen.
         /// </summary>
         /// <param name="key">Object representing scancode, size and position of a physical key.</param>
         /// <param name="unitLength">Length, in pixels, to be used as the unit length for size and position.</param>
@@ -159,9 +170,23 @@ namespace MultikeysGUI.View.Controls
 
         public event EventHandler KeyClicked;
 
-        // bubble up the event
+        // Occurs when any key control in this layer control is clicked.
         private void OnAnyKeyControlClicked(object sender, EventArgs e)
         {
+            // Update the currently selected key.
+            var scancode = (sender as KeyControl).Scancode;
+            if (Layout.ContainsKey(scancode))
+            {
+                // If key is mapped to something
+                CurrentKey = new Tuple<Scancode, IKeystrokeCommand>(scancode, Layout[scancode]);
+            }
+            else
+            {
+                // If key is not mapped, or is a modifier
+                CurrentKey = new Tuple<Scancode, IKeystrokeCommand>(scancode, null);
+            }
+
+            // Bubble up the event to the keyboard control.
             KeyClicked?.Invoke(sender, e);
         }
 

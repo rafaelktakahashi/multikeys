@@ -80,10 +80,14 @@ namespace MultikeysGUI.Model
 
         public static bool operator ==(Scancode x, Scancode y)
         {
+            if (ReferenceEquals(x, null) ^ ReferenceEquals(y, null)) return false;
+            if (ReferenceEquals(x, null) && ReferenceEquals(y, null)) return true;
             return (x.E0 == y.E0) && (x.E1 == y.E1) && (x.Code == y.Code);
         }
         public static bool operator !=(Scancode x, Scancode y)
         {
+            if (ReferenceEquals(x, null) ^ ReferenceEquals(y, null)) return true;
+            if (ReferenceEquals(x, null) && ReferenceEquals(y, null)) return false;
             return (x.E0 != y.E0) || (x.E1 != y.E1) || (x.Code != y.Code);
         }
         public override bool Equals(object obj)

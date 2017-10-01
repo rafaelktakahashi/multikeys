@@ -21,6 +21,7 @@ using MultikeysGUI.Domain.Layout;
 
 namespace MultikeysGUI.View.Controls
 {
+
     /// <summary>
     /// Interaction logic for KeyControl.xaml
     /// </summary>
@@ -74,7 +75,21 @@ namespace MultikeysGUI.View.Controls
         }
 
 
+        // If both Command and Modifier are null at the same time, then this key is not remapped.
+
+        /// <summary>
+        /// Represents the command mapped to this key.
+        /// Note that this cannot be non-null at the same time as Modifier is non-null.
+        /// </summary>
         public IKeystrokeCommand Command { get; private set; }
+
+        /// <summary>
+        /// Represents the modifier mapped to this key.
+        /// Note that this cannot be non-null at the same time as Command is non-null.
+        /// </summary>
+        public Modifier Modifier { get; private set; }
+
+
 
         /// <summary>
         /// This converter is necessary for exposing a property of type Scancode that can be set from
@@ -112,29 +127,65 @@ namespace MultikeysGUI.View.Controls
         [TypeConverter(typeof(ScancodeConverter))]
         public Scancode Scancode { get; set; }
 
+
         /// <summary>
-        /// 
+        /// Tells this control to render the informed command.
+        /// The command will be remembered. If this key was previously a modifier,
+        /// then it is changed into a command key.
         /// </summary>
         /// <param name="value"></param>
-        public void UpdateCommand(IKeystrokeCommand value)
+        public void SetCommand(IKeystrokeCommand value)
         {
             this.Command = value;
+            if (this.Modifier != null) this.Modifier = null;
             UpdateText();
         }
 
         /// <summary>
-        /// Updates the displayed text on this control.
+        /// Tells this control to render as the informed modifier.
+        /// If this key was previously a command, then it is changed into a modifier key.
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetModifier(Modifier value)
+        {
+            this.Modifier = value;
+            if (this.Command != null) this.Command = null;
+            UpdateText();
+        }
+
+        private void SetOutlineColor(Brush color)
+        {
+            // Change the stroke brush of every rectangle in KeyContainerGrid
+            foreach (var element in KeyContainerGrid.Children)
+            {
+                if (element is Rectangle)
+                {
+                    (element as Rectangle).Stroke = color;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the displayed text on this control.         TODO: Add modifier logic here
         /// This is a separate method from UpdateCommand, mostly
         /// so that it can be called in the constructor.
         /// </summary>
         private void UpdateText()
         {
-            if (Command == null)
+            // Check for possible states. For each of them, set:
+            //          The label that appears on this key
+            //          The text's color
+            //          The key's outline color
+
+            // 1. This key is not remapped
+            if (Command == null && Modifier == null)
             {
                 MiddleLabel.Text = " ";
                 MiddleLabel.Foreground = Brushes.Gray;
+                SetOutlineColor(Brushes.DarkGray);
             }
-            else
+            // 2. This key is remapped to a command
+            else if (Command != null)
             {
                 MiddleLabel.Foreground = Brushes.Black;
 
@@ -143,6 +194,15 @@ namespace MultikeysGUI.View.Controls
                     MiddleLabel.Text = (Command as UnicodeCommand).ContentAsText;
                 }
                 else MiddleLabel.Text = "...";
+
+                SetOutlineColor(Brushes.Black);
+            }
+            // 3. This key is remapped to a modifier, and that modifier is not pressed down
+            else if (Modifier != null)
+            {
+                MiddleLabel.Text = "mod";       // TODO: May have to change this
+                MiddleLabel.Foreground = Brushes.Blue;
+                SetOutlineColor(Brushes.Blue);
             }
         }
 
@@ -188,7 +248,10 @@ namespace MultikeysGUI.View.Controls
         public event EventHandler KeyClicked;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            KeyClicked?.Invoke(this, e);        // <- this control raises the KeyClicked event
+            // Raises the key clicked event, with itself as sender.
+            // It's up to its parent to handle what happens afterwards, such as
+            // changing the content of this key.
+            KeyClicked?.Invoke(this, e);
         }
 
         #endregion

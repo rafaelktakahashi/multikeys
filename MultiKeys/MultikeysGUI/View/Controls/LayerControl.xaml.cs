@@ -79,7 +79,11 @@ namespace MultikeysGUI.View.Controls
         /// </summary>
         public Tuple<Scancode, IKeystrokeCommand> CurrentKey { get; private set; }
 
-        // TODO: Keep track of which keys are modifiers.
+        /// <summary>
+        /// This property is used by this control to keep track of which keys are currently being used as modifiers.
+        /// The value of each modifier is true if that modifier is currently selected.
+        /// </summary>
+        public IDictionary<Modifier, bool> Modifiers { get; set; }
 
         /// <summary>
         /// Creates and renders the collection of keys on the screen.<para/>
@@ -121,11 +125,11 @@ namespace MultikeysGUI.View.Controls
                 // get its corresponding command
                 if (Layout.ContainsKey(controlPair.Key))
                 {
-                    KeyControls[controlPair.Key].UpdateCommand(Layout[controlPair.Key]);
+                    KeyControls[controlPair.Key].SetCommand(Layout[controlPair.Key]);
                 }
                 else
                 {
-                    KeyControls[controlPair.Key].UpdateCommand(null);
+                    KeyControls[controlPair.Key].SetCommand(null);
                 }
             }
         }
@@ -137,7 +141,7 @@ namespace MultikeysGUI.View.Controls
         {
             Layout[key] = command;
             // Notify the key control about this change, as to render the new command.
-            KeyControls[key].UpdateCommand(command);
+            KeyControls[key].SetCommand(command);
         }
 
         /// <summary>

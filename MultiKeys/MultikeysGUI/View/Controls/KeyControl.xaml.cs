@@ -39,7 +39,7 @@ namespace MultikeysGUI.View.Controls
 
             Command = null;
             Scancode = null;
-            UpdateText();
+            Refresh();
         }
 
         /// <summary>
@@ -88,6 +88,11 @@ namespace MultikeysGUI.View.Controls
         /// Note that this cannot be non-null at the same time as Command is non-null.
         /// </summary>
         public Modifier Modifier { get; private set; }
+
+        /// <summary>
+        /// Whether or not this modifier key is selected. Has no effect if Modifier is null.
+        /// </summary>
+        public bool IsModifierSelected { get; set; }
 
 
 
@@ -138,7 +143,7 @@ namespace MultikeysGUI.View.Controls
         {
             this.Command = value;
             if (this.Modifier != null) this.Modifier = null;
-            UpdateText();
+            Refresh();
         }
 
         /// <summary>
@@ -150,7 +155,7 @@ namespace MultikeysGUI.View.Controls
         {
             this.Modifier = value;
             if (this.Command != null) this.Command = null;
-            UpdateText();
+            Refresh();
         }
 
         private void SetOutlineColor(Brush color)
@@ -158,19 +163,27 @@ namespace MultikeysGUI.View.Controls
             // Change the stroke brush of every rectangle in KeyContainerGrid
             foreach (var element in KeyContainerGrid.Children)
             {
-                if (element is Rectangle)
+                if (element is Grid)
                 {
-                    (element as Rectangle).Stroke = color;
+                    foreach (var child in (element as Grid).Children)
+                    {
+                        if (child is Rectangle) try
+                            {
+                                (child as Rectangle).Stroke = color;
+                            }
+                            catch (Exception) { }
+                    }
+                    return;
                 }
             }
         }
 
         /// <summary>
-        /// Updates the displayed text on this control.         TODO: Add modifier logic here
+        /// Updates the displayed text on this control.
         /// This is a separate method from UpdateCommand, mostly
         /// so that it can be called in the constructor.
         /// </summary>
-        private void UpdateText()
+        private void Refresh()
         {
             // Check for possible states. For each of them, set:
             //          The label that appears on this key
@@ -182,7 +195,7 @@ namespace MultikeysGUI.View.Controls
             {
                 MiddleLabel.Text = " ";
                 MiddleLabel.Foreground = Brushes.Gray;
-                SetOutlineColor(Brushes.DarkGray);
+                SetOutlineColor(Brushes.SlateGray);
             }
             // 2. This key is remapped to a command
             else if (Command != null)
@@ -198,9 +211,16 @@ namespace MultikeysGUI.View.Controls
                 SetOutlineColor(Brushes.Black);
             }
             // 3. This key is remapped to a modifier, and that modifier is not pressed down
-            else if (Modifier != null)
+            else if (Modifier != null && !IsModifierSelected)
             {
-                MiddleLabel.Text = "mod";       // TODO: May have to change this
+                MiddleLabel.Text = Modifier.Name;
+                MiddleLabel.Foreground = Brushes.Blue;
+                SetOutlineColor(Brushes.Black);
+            }
+            // 4. This key is remapped to a modifier, and that modifier is pressed down
+            else if (Modifier != null && IsModifierSelected)
+            {
+                MiddleLabel.Text = Modifier.Name;
                 MiddleLabel.Foreground = Brushes.Blue;
                 SetOutlineColor(Brushes.Blue);
             }

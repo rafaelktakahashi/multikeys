@@ -139,6 +139,27 @@ namespace MultikeysGUI.View.Controls
 
 
         /// <summary>
+        /// Updates the modifier by code. This does not fire an event.
+        /// Will throw an ArgumentException if the specified modifier does not exist,
+        /// which is checked by name.
+        /// </summary>
+        /// <param name="mod">Modifier to update</param>
+        /// <param name="newState">New state, not necessarily different from the current state</param>
+        public void UpdateModifierState(Modifier mod, bool newState)
+        {
+            foreach (var modifierButton in ModifierButtonList)
+            {
+                if (modifierButton.Name == mod.Name)
+                {
+                    modifierButton.IsChecked = newState;
+                    return;
+                }
+            }
+        }
+
+
+
+        /// <summary>
         /// Event that fires whenever modifiers are registered or unregistered,
         /// and also whenever the combination of selected modifiers changes.
         /// </summary>

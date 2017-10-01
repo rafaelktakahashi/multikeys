@@ -33,8 +33,14 @@ namespace MultikeysGUI.View.Controls
         /// <summary>
         /// The command that the clicked key is mapped to.
         /// This may be null, in which case the clicked key is not remapped.
+        /// This must be null if Modifier is non-null.
         /// </summary>
         public IKeystrokeCommand Command { get; set; }
+        /// <summary>
+        /// The modifier that this clicked key is registered as.
+        /// This must be null if Command is non-null.
+        /// </summary>
+        public Modifier Modifier { get; set; }
     }
 
     /// <summary>
@@ -78,8 +84,8 @@ namespace MultikeysGUI.View.Controls
             ModifiersControl.InitializeModifiers(_modifiers);
 
             // Setup the layer to the default one (no modifiers)
-            Layer.RenderLayout(physLayout);
-            Layer.RefreshView(kb.Layers[0].Commands);
+            Layer.SetLayoutToRender(physLayout);
+            Layer.RefreshView(kb.Layers[0].Commands, _modifiers);
         }
 
         /// <summary>
@@ -127,11 +133,28 @@ namespace MultikeysGUI.View.Controls
         // Event handlers
         public void LayerKeyClicked(object sender, EventArgs e)
         {
-            // Bubble up the event
             var keyControl = sender as KeyControl;
+
+            // If the pressed key was a modifier, then the modifier state must be updated
+            // in this control, in the layer control and in the modifier control (not in the key control, that's the layer's problem)
+            if (keyControl.Modifier != null)
+            {
+                bool newModifierState = !keyControl.IsModifierSelected;
+
+                // update the modifier control
+                ModifiersControl.UpdateModifierState(keyControl.Modifier, newModifierState);
+
+                // update the layer control and rerender it
+                Layer.RefreshView(keyControl.Modifier, newModifierState);
+            }
+
+            // Enable or diable buttons according to the newly selected item.
+
+            // Bubble up the event, as to transmit information
             KeyClicked?.Invoke(this, new KeyClickedEventArgs
             {
                 Command = keyControl.Command,
+                Modifier = keyControl.Modifier,
                 KeyboardName = UniqueName,
                 Scancode = keyControl.Scancode,
             });
@@ -175,7 +198,7 @@ namespace MultikeysGUI.View.Controls
                     // found the correct layer
                     _activeLayer = layer;
                     // render it
-                    Layer.RefreshView(layer.Commands);
+                    Layer.RefreshView(layer.Commands, _modifiers);
                     // done
                     return;
                 }
@@ -183,9 +206,9 @@ namespace MultikeysGUI.View.Controls
 
             // No layer was found
             // render no command
-            Layer.RefreshView(EmptyLayerCommands);
-
+            Layer.RefreshView(EmptyLayerCommands, _modifiers);
         }
+
 
         private void ButtonAssignCommand_Click(object sender, RoutedEventArgs e)
         {

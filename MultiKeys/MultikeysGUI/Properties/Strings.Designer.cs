@@ -214,6 +214,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Modifier key.
+        /// </summary>
+        public static string ReadableNameModifier {
+            get {
+                return ResourceManager.GetString("ReadableNameModifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Text key.
         /// </summary>
         public static string ReadableNameUnicodeKey {

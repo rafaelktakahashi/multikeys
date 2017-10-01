@@ -177,4 +177,7 @@
   <data name="KeyOptionsUnregisterModifier" xml:space="preserve">
     <value>Unregister as modifier</value>
   </data>
+  <data name="ReadableNameModifier" xml:space="preserve">
+    <value>Modifier key</value>
+  </data>
 </root>

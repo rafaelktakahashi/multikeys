@@ -95,7 +95,7 @@ namespace MultikeysGUI.View.Controls
         /// <param name="layout">Physical layout representing the scancode, size and position of each physical key.</param>
         /// <param name="unitLength">Lenght in px used as the unit length.
         /// The resulting keyboard is always 23 units wide and 6.5 units high.</param>
-        public void RenderLayout(IPhysicalLayout layout, double unitLength = 45)
+        public void SetLayoutToRender(IPhysicalLayout layout, double unitLength = 45)
         {
             KeyControls.Clear();
             foreach (var key in layout.Keys)
@@ -112,18 +112,28 @@ namespace MultikeysGUI.View.Controls
         }
 
         /// <summary>
-        /// Refreshes every key in this view according to the commands in specified layout.<para/>
+        /// Refreshes every key in this view according to the commands in specified layout and modifiers.<para/>
         /// </summary>
-        public void RefreshView(IDictionary<Scancode, IKeystrokeCommand> commands)
+        public void RefreshView(IDictionary<Scancode, IKeystrokeCommand> commands,
+            ICollection<Modifier> modifiers)
         {
             // When setting the new commands, we must specify the custom comparer:
             Layout = new Dictionary<Scancode, IKeystrokeCommand>(commands, new ScancodeComparer());
 
+            Modifiers = new Dictionary<Modifier, bool>();
+            foreach (var mod in modifiers)
+                Modifiers.Add(mod, false);
+
             // This algorithm doesn't look as fast as it could be.
             foreach (var controlPair in KeyControls)
             {
+                // check if it's a modifier; if so, set it
+                if (Modifiers.Keys.Any(mod => mod.Scancodes.Contains(controlPair.Key)))
+                {
+                    KeyControls[controlPair.Key].SetModifier(Modifiers.Keys.First(mod => mod.Scancodes.Contains(controlPair.Key)));
+                }
                 // get its corresponding command
-                if (Layout.ContainsKey(controlPair.Key))
+                else if (Layout.ContainsKey(controlPair.Key))
                 {
                     KeyControls[controlPair.Key].SetCommand(Layout[controlPair.Key]);
                 }
@@ -142,6 +152,19 @@ namespace MultikeysGUI.View.Controls
             Layout[key] = command;
             // Notify the key control about this change, as to render the new command.
             KeyControls[key].SetCommand(command);
+        }
+
+        /// <summary>
+        /// This probably doesn't do what I initially wanted.
+        /// </summary>
+        public void RefreshView(Modifier modifier, bool isPressed)
+        {
+            foreach (var scancode in modifier.Scancodes)
+            {
+                // notify each relevant key control;
+                KeyControls[scancode].IsModifierSelected = isPressed;
+                KeyControls[scancode].SetModifier(modifier);
+            }
         }
 
         /// <summary>

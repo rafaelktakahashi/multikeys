@@ -74,7 +74,13 @@ namespace MultikeysGUI.View.Controls
                 if (newCommand is MacroCommand) { WriteSummaryMacro(newCommand as MacroCommand); return; }
                 if (newCommand is ExecutableCommand) { WriteSummaryExecutable(newCommand as ExecutableCommand); return; }
             }
+        }
 
+        public void UpdateCommand(Modifier modifier)
+        {
+            StackPanelData.Children.Clear();
+
+            WriteSummaryModifier(modifier);
         }
 
         private void WriteSummaryNotRemapped()
@@ -173,6 +179,13 @@ namespace MultikeysGUI.View.Controls
             TextBlock argumentsLine = MakeNewLine("Arguments: " + newCommand.Arguments);
             argumentsLine.TextWrapping = TextWrapping.Wrap;
             StackPanelData.Children.Add(argumentsLine);
+        }
+
+        private void WriteSummaryModifier(Modifier mod)
+        {
+            // Title
+            TextBlock titleLine = MakeNewTitle(Properties.Strings.ReadableNameModifier + ": " + mod.Name);
+            StackPanelData.Children.Add(titleLine);
         }
 
         /// <summary>

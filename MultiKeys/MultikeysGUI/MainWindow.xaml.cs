@@ -59,8 +59,10 @@ namespace MultikeysGUI
         /// </summary>
         public void HandleKeyClicked(object sender, KeyClickedEventArgs e)
         {
-            // Use the provided information to update the information panel.
-            SummaryPanel.UpdateCommand(e.Command);
+            if (e.Modifier != null)
+                SummaryPanel.UpdateCommand(e.Modifier);
+            else
+                SummaryPanel.UpdateCommand(e.Command);
         }
         
     }

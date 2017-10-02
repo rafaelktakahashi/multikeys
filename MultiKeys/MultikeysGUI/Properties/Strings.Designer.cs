@@ -248,5 +248,23 @@ namespace MultikeysGUI.Properties {
                 return ResourceManager.GetString("VirtualKeyCode", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit command.
+        /// </summary>
+        public static string WindowTitleEditCommandDialog {
+            get {
+                return ResourceManager.GetString("WindowTitleEditCommandDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New command.
+        /// </summary>
+        public static string WindowTitleNewCommandDialog {
+            get {
+                return ResourceManager.GetString("WindowTitleNewCommandDialog", resourceCulture);
+            }
+        }
     }
 }

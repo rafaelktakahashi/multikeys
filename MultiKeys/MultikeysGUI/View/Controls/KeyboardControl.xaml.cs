@@ -212,7 +212,7 @@ namespace MultikeysGUI.View.Controls
 
         private void ButtonAssignCommand_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
         private void ButtonEditCommand_Click(object sender, RoutedEventArgs e)

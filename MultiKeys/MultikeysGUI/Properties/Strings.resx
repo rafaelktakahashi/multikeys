@@ -180,4 +180,10 @@
   <data name="ReadableNameModifier" xml:space="preserve">
     <value>Modifier key</value>
   </data>
+  <data name="WindowTitleEditCommandDialog" xml:space="preserve">
+    <value>Edit command</value>
+  </data>
+  <data name="WindowTitleNewCommandDialog" xml:space="preserve">
+    <value>New command</value>
+  </data>
 </root>

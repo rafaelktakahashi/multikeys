@@ -77,6 +77,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
+    <Compile Include="View\Dialogues\KeystrokeCommandDialog.xaml.cs">
+      <DependentUpon>KeystrokeCommandDialog.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -109,7 +112,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\Dialogues\UnicodeCommandDialog.xaml">
+    <Page Include="View\Dialogues\KeystrokeCommandDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -121,9 +124,6 @@
     </Compile>
     <Compile Include="View\Controls\KeyControl.xaml.cs">
       <DependentUpon>KeyControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\Dialogues\UnicodeCommandDialog.xaml.cs">
-      <DependentUpon>UnicodeCommandDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Persistence\XmlPersistence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Unicode;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -102,6 +103,16 @@ namespace MultikeysGUI.View.Controls
             independentLine.TextWrapping = TextWrapping.Wrap;
             StackPanelData.Children.Add(independentLine);
 
+            // Name of each
+            string text = newCommand.ContentAsText;
+            for (int i = 0; i < text.Length; i++)
+            {
+                int codePoint = char.ConvertToUtf32(text, i);
+                if (codePoint > 0xffff) i++;
+                TextBlock textLineInfo = MakeNewLine(UnicodeInfo.GetName(codePoint));
+                StackPanelData.Children.Add(textLineInfo);
+            }
+
             // Replacements:
             TextBlock replacementsLine = MakeNewLine(Properties.Strings.DeadKeyReplacements);
             StackPanelData.Children.Add(replacementsLine);
@@ -145,7 +156,19 @@ namespace MultikeysGUI.View.Controls
             TextBlock textLine = MakeNewLine(newCommand.ContentAsText);
             if (textLine.Text.Length <= 2) textLine.FontSize = 20;
             textLine.TextWrapping = TextWrapping.Wrap;
+            textLine.FontWeight = FontWeights.Bold;
             StackPanelData.Children.Add(textLine);
+
+            // Name of each character (needs improvement, would be nice to show as a table of some sort)
+            string text = newCommand.ContentAsText;
+            for (int i = 0; i < text.Length; i++)
+            {
+                int codePoint = char.ConvertToUtf32(text, i);
+                if (codePoint > 0xffff) i++;
+                TextBlock textLineInfo = MakeNewLine(UnicodeInfo.GetName(codePoint));
+                StackPanelData.Children.Add(textLineInfo);
+            }
+
             
         }
 

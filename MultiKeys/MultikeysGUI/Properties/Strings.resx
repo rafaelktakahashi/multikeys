@@ -186,9 +186,24 @@
   <data name="WindowTitleNewCommandDialog" xml:space="preserve">
     <value>New command</value>
   </data>
-  <data name="Name" xml:space="preserve">
+  <data name="KeyboardName" xml:space="preserve">
     <value>Name: </value>
     <comment>For displaying the name of a keyboard</comment>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="MenuFileClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="MenuFileOpen" xml:space="preserve">
+    <value>Open...</value>
+  </data>
+  <data name="MenuFileSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="MenuFileSaveAs" xml:space="preserve">
+    <value>Save as...</value>
   </data>
   <data name="No" xml:space="preserve">
     <value>No</value>

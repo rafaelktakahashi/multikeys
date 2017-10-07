@@ -4,14 +4,27 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
+        xmlns:p="clr-namespace:MultikeysGUI.Properties"
         mc:Ignorable="d"
         Title="MainWindow" Height="575" Width="1438">
     <Grid>
-        <DockPanel>
-            <ScrollViewer Width="1080">
-                <StackPanel x:Name="KeyboardStack" Margin="5" />
-            </ScrollViewer>
-            <local:CommandPanel x:Name="SummaryPanel" DockPanel.Dock="Right" Margin="10" Width="300" Height="500"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <MenuItem Header="{x:Static p:Strings.MenuFile}">
+                <MenuItem Header="{x:Static p:Strings.MenuFileSave}" Click="FileSave_Click"/>
+                <MenuItem Header="{x:Static p:Strings.MenuFileSaveAs}" Click="FileSaveAs_Click"/>
+                <MenuItem Header="{x:Static p:Strings.MenuFileOpen}" Click="FileOpen_Click"/>
+                <Separator/>
+                <MenuItem Header="{x:Static p:Strings.MenuFileClose}" Click="FileClose_Click"/>
+            </MenuItem>
+        </Menu>
+        <DockPanel x:Name="dockPanel" Grid.Row="1">
+            
         </DockPanel>
     </Grid>
 </Window>

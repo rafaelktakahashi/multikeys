@@ -1,4 +1,5 @@
-﻿using MultikeysGUI.Domain;
+﻿using Microsoft.Win32;
+using MultikeysGUI.Domain;
 using MultikeysGUI.Domain.Layout;
 using MultikeysGUI.Model;
 using MultikeysGUI.View.Controls;
@@ -28,44 +29,57 @@ namespace MultikeysGUI
         public MainWindow()
         {
             InitializeComponent();
-
-
-            // Initializing the facade
-            IDomainFacade applicationFacade = new DomainFacade();
-
-            var layout = applicationFacade.LoadLayout(@"C:\Users\Rafael\git\Multikeys\MultiKeys\XML\Multikeys.xml");
-
-            foreach (var keyboard in layout.Keyboards)
-            {
-                var kbControl = new KeyboardControl(keyboard, applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ANSI, true))
-                {
-                    Width = 2000,
-                    Height = 480,
-                    Margin = new Thickness(5),
-                };
-                kbControl.KeyClicked += HandleKeyClicked;
-                KeyboardStack.Children.Add(kbControl);
-            }
-
-            var dialog = new MultikeysGUI.View.Dialogues.KeystrokeCommandDialog();
-            dialog.ShowDialog();
-            
-
-            
         }
-
-        
 
         /// <summary>
-        /// This event handler is notified of any key that is clicked on any keyboard on screen.
+        /// The currently opened file; null if no file is open.
         /// </summary>
-        public void HandleKeyClicked(object sender, KeyClickedEventArgs e)
+        private string openFile = null;
+
+        /// <summary>
+        /// The control that represents the layout being currently edited.
+        /// </summary>
+        private LayoutControl layoutControl = null;
+
+        #region Menu
+
+        private void FileSave_Click(object sender, EventArgs e)
         {
-            if (e.Modifier != null)
-                SummaryPanel.UpdateCommand(e.Modifier);
-            else
-                SummaryPanel.UpdateCommand(e.Command);
+            ;
         }
-        
+
+        private void FileSaveAs_Click(object sender, EventArgs e)
+        {
+            var saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                // retrieve layout and save it
+            }
+        }
+
+        private void FileOpen_Click(object sender, EventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var layout = new DomainFacade().LoadLayout(openFileDialog.FileName);
+                openFile = openFileDialog.FileName;
+                layoutControl = new LayoutControl();
+                layoutControl.LoadLayout(layout);
+                dockPanel.Children.Clear();
+                dockPanel.Children.Add(layoutControl);
+            }
+        }
+
+        private void FileClose_Click(object sender, EventArgs e)
+        {
+            // Confirm
+
+        }
+
+        #endregion
+
+
+
     }
 }

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
              xmlns:p="clr-namespace:MultikeysGUI.Properties"
-             mc:Ignorable="d" d:DesignWidth="800" Height="350">
+             mc:Ignorable="d" d:DesignWidth="837" Height="350">
     <Grid>
         <StackPanel >
 

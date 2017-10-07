@@ -106,6 +106,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name: .
+        /// </summary>
+        public static string KeyboardName {
+            get {
+                return ResourceManager.GetString("KeyboardName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assign command.
         /// </summary>
         public static string KeyOptionsAssignCommand {
@@ -178,20 +187,56 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        public static string MenuFile {
+            get {
+                return ResourceManager.GetString("MenuFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string MenuFileClose {
+            get {
+                return ResourceManager.GetString("MenuFileClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open....
+        /// </summary>
+        public static string MenuFileOpen {
+            get {
+                return ResourceManager.GetString("MenuFileOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string MenuFileSave {
+            get {
+                return ResourceManager.GetString("MenuFileSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save as....
+        /// </summary>
+        public static string MenuFileSaveAs {
+            get {
+                return ResourceManager.GetString("MenuFileSaveAs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Modifiers.
         /// </summary>
         public static string Modifiers {
             get {
                 return ResourceManager.GetString("Modifiers", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Name: .
-        /// </summary>
-        public static string Name {
-            get {
-                return ResourceManager.GetString("Name", resourceCulture);
             }
         }
         

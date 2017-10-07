@@ -1,4 +1,7 @@
-﻿using System;
+﻿using MultikeysGUI.Domain;
+using MultikeysGUI.Domain.Layout;
+using MultikeysGUI.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +27,37 @@ namespace MultikeysGUI.View.Controls
         {
             InitializeComponent();
         }
+
+        public void LoadLayout(MultikeysLayout layout)
+        {
+            IDomainFacade applicationFacade = new DomainFacade();
+
+            foreach (var keyboard in layout.Keyboards)
+            {                                                                       // TODO: Solve the physical layout
+                var kbControl = new KeyboardControl(keyboard, applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ISO, useBigReturn: false))
+                {
+                    Width = double.NaN,     // NaN means Auto
+                    Height = double.NaN,
+                    Margin = new Thickness(5, 5, 5, 20),
+                };
+                kbControl.KeyClicked += HandleKeyClicked;
+                KeyboardStack.Children.Add(kbControl);
+            }
+
+        }
+
+
+        /// <summary>
+        /// This event handler is notified of any key that is clicked on any keyboard on screen.
+        /// </summary>
+        public void HandleKeyClicked(object sender, KeyClickedEventArgs e)
+        {
+            if (e.Modifier != null)
+                SummaryPanel.UpdateCommand(e.Modifier);
+            else
+                SummaryPanel.UpdateCommand(e.Command);
+        }
+
 
 
     }

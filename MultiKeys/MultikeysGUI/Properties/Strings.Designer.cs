@@ -187,6 +187,96 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Name: .
+        /// </summary>
+        public static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string None {
+            get {
+                return ResourceManager.GetString("None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assign command.
+        /// </summary>
+        public static string PromptUnicodeConfirm {
+            get {
+                return ResourceManager.GetString("PromptUnicodeConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert one or more Unicode characters:.
+        /// </summary>
+        public static string PromptUnicodePromptInput {
+            get {
+                return ResourceManager.GetString("PromptUnicodePromptInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Block: .
+        /// </summary>
+        public static string PromptUnicodeSelectedCharacterBlock {
+            get {
+                return ResourceManager.GetString("PromptUnicodeSelectedCharacterBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Category: .
+        /// </summary>
+        public static string PromptUnicodeSelectedCharacterCategory {
+            get {
+                return ResourceManager.GetString("PromptUnicodeSelectedCharacterCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Codepoint: .
+        /// </summary>
+        public static string PromptUnicodeSelectedCharacterCodepoint {
+            get {
+                return ResourceManager.GetString("PromptUnicodeSelectedCharacterCodepoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name: .
+        /// </summary>
+        public static string PromptUnicodeSelectedCharacterName {
+            get {
+                return ResourceManager.GetString("PromptUnicodeSelectedCharacterName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trigger repeatedly when key is pressed down.
+        /// </summary>
+        public static string PromptUnicodeTriggerOnRepeat {
+            get {
+                return ResourceManager.GetString("PromptUnicodeTriggerOnRepeat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dead key.
         /// </summary>
         public static string ReadableNameDeadkey {
@@ -264,6 +354,15 @@ namespace MultikeysGUI.Properties {
         public static string WindowTitleNewCommandDialog {
             get {
                 return ResourceManager.GetString("WindowTitleNewCommandDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
     }

@@ -1,10 +1,12 @@
-﻿using System;
+﻿using MultikeysGUI.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Unicode;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -25,19 +27,34 @@ namespace MultikeysGUI.View.Dialogues
         {
             InitializeComponent();
 
+            // Set the data context for this window
+            RootGrid.DataContext = this;
+
+            // Initialize the command to null
+            Command = null;
+
+            /* Unicode */
+            // Setup the timer
             _unicodeDelay = new System.Timers.Timer
             {
                 Interval = 1000,        // One second
                 AutoReset = false,      // Call its event only once.
             };
-            _unicodeDelay.Elapsed += UnicodeTextInput_TextChanged_TimeUp;
+            _unicodeDelay.Elapsed += (object sender, System.Timers.ElapsedEventArgs e) => UnicodeUpdateList();
 
+            // setup the list of characters
             UnicodeCharactersSource = new ObservableCollection<UnicodeCharacterItem>();
             UnicodeCharactersList.ItemsSource = UnicodeCharactersSource;
-            UnicodeCharactersList.DataContext = this;
-            UnicodeTextInput_TextChanged_TimeUp(null, null);
+            // update the list right away
+            UnicodeUpdateList();
         }
 
+
+        /// <summary>
+        /// Contains the newly created command when this window closes correctly.
+        /// If this window closes incorrectly (DialogResult is false), then this property remains null.
+        /// </summary>
+        public IKeystrokeCommand Command { get; private set; }
 
 
 
@@ -89,7 +106,7 @@ namespace MultikeysGUI.View.Dialogues
         /// Called when the timer setup by UnicodeTextInput_TextChanged times out.
         /// Updates the list of characters.
         /// </summary>
-        private void UnicodeTextInput_TextChanged_TimeUp(object sender, System.Timers.ElapsedEventArgs e)
+        private void UnicodeUpdateList()
         {
             // This is called from a timer. Thus, a dispatcher is needed to access the window's controls.
             Dispatcher.Invoke(() =>
@@ -111,18 +128,35 @@ namespace MultikeysGUI.View.Dialogues
             });
         }
 
-        /// <summary>
-        /// Called when a character is selected in the list.
-        /// Shows details about the selected character.
-        /// </summary>
-        private void ListBoxItem_Selected(object sender, RoutedEventArgs e)
+        private void UnicodeCharactersList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            if (e.AddedItems.Count > 0)
+            {
+                var currentSelection = e.AddedItems[0] as UnicodeCharacterItem;
+                // Display the character
+                UnicodeSelectedCharacterDisplay.Content = currentSelection.Character;
+                // Display details
+                int codepoint = char.ConvertToUtf32(currentSelection.Character, 0);
+                var info = UnicodeInfo.GetCharInfo(char.ConvertToUtf32(currentSelection.Character, 0));
+                PromptUnicodeSelectedCharacterName.Content = info.Name;
+                PromptUnicodeSelectedCharacterCodepoint.Content = currentSelection.Codepoint;
+                PromptUnicodeSelectedCharacterBlock.Content = info.Block;
+                PromptUnicodeSelectedCharacterCategory.Content = info.Category;
+            }
         }
 
+        /// <summary>
+        /// Creates a new command.
+        /// </summary>
+        private void PromptUnicodeConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            Command =
+                new UnicodeCommand(PromptUnicodeTriggerOnRepeat.IsChecked ?? false, UnicodeTextInput.Text);
+            DialogResult = true;    // This closes the window
+        }
 
         #endregion
 
-        
+
     }
 }

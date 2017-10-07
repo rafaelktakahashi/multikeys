@@ -186,4 +186,41 @@
   <data name="WindowTitleNewCommandDialog" xml:space="preserve">
     <value>New command</value>
   </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name: </value>
+    <comment>For displaying the name of a keyboard</comment>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+    <comment>Generic "no"</comment>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+    <comment>For displaying the name of a nameless keyboard</comment>
+  </data>
+  <data name="PromptUnicodeConfirm" xml:space="preserve">
+    <value>Assign command</value>
+  </data>
+  <data name="PromptUnicodePromptInput" xml:space="preserve">
+    <value>Insert one or more Unicode characters:</value>
+  </data>
+  <data name="PromptUnicodeSelectedCharacterBlock" xml:space="preserve">
+    <value>Block: </value>
+  </data>
+  <data name="PromptUnicodeSelectedCharacterCategory" xml:space="preserve">
+    <value>Category: </value>
+  </data>
+  <data name="PromptUnicodeSelectedCharacterCodepoint" xml:space="preserve">
+    <value>Codepoint: </value>
+  </data>
+  <data name="PromptUnicodeSelectedCharacterName" xml:space="preserve">
+    <value>Name: </value>
+  </data>
+  <data name="PromptUnicodeTriggerOnRepeat" xml:space="preserve">
+    <value>Trigger repeatedly when key is pressed down</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+    <comment>Generic "yes"</comment>
+  </data>
 </root>

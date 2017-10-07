@@ -10,43 +10,33 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
 
-    <Window.Resources>
-        <!-- To be placed in the list of unicode characters -->
-        <ListBoxItem x:Key="UnicodeCharactersListItem"
-                     Selected="ListBoxItem_Selected"
-            BorderBrush="Black">
-            <StackPanel Orientation="Horizontal">
-                <!-- Show the character here -->
-                <TextBlock x:Name="UnicodeCharactersListItemCharacter" FontFamily="Arial Unicode MS" FontSize="18" FontWeight="SemiBold" MinWidth="40"/>
-                <!-- Show the character's codepoint here -->
-                <TextBlock Text="UnicodeCharactersListItemCodepoint" VerticalAlignment="Bottom" FontSize="16" FontWeight="SemiBold" Foreground="Gray" />
-            </StackPanel>
-        </ListBoxItem>
-
-
-    </Window.Resources>
-
-    <Grid>
+    <!-- Data context for this window is set in code behind -->
+    <Grid x:Name="RootGrid">
         <TabControl>
 
             <TabItem Header="{x:Static p:Strings.ReadableNameUnicodeKey}">
                 <Grid>
-                    <TextBox x:Name="UnicodeTextInput"
+
+                    <GroupBox Header="{x:Static p:Strings.PromptUnicodePromptInput}" Margin="10,10,10,368">
+                        <TextBox x:Name="UnicodeTextInput"
                              HorizontalAlignment="Stretch"
                              VerticalAlignment="Top"
-                             Height="123"
+                             Height="114"
                              Margin="10,10,10,0"
                              TextWrapping="Wrap"
                              FontSize="16"
                              Text="羅生門"
                              TextChanged="UnicodeTextInput_TextChanged"/>
-                    <!-- ItemSource and DataContext for this ListBox are set in code-behind. -->
+                    </GroupBox>
+
+                    <!-- ItemSource for this ListBox are set in code-behind. -->
                     <ListBox x:Name="UnicodeCharactersList"
                              HorizontalAlignment="Left"
-                             Height="388"
-                             Margin="10,138,0,0"
+                             Height="342"
+                             Margin="10,184,0,0"
                              VerticalAlignment="Top"
-                             Width="172">
+                             Width="172"
+                             SelectionChanged="UnicodeCharactersList_SelectionChanged">
                         <!-- Determine how each item should be shown: -->
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -63,18 +53,56 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <StackPanel Margin="187,138,10,10">
+                    <StackPanel Margin="187,184,10,10">
                         <Label x:Name="UnicodeSelectedCharacterDisplay"
                                MinHeight="50"
-                               Content="羅"
+                               Content=""
                                HorizontalContentAlignment="Center"
                                VerticalContentAlignment="Center"
                                HorizontalAlignment="Stretch"
                                FontSize="50"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Label Content="{x:Static p:Strings.PromptUnicodeSelectedCharacterName}" Grid.Column="0" Grid.Row="0"/>
+                            <Label x:Name="PromptUnicodeSelectedCharacterName" Grid.Column="1" Grid.Row="0"/>
+
+                            <Label Content="{x:Static p:Strings.PromptUnicodeSelectedCharacterCodepoint}" Grid.Column="0" Grid.Row="1"/>
+                            <Label x:Name="PromptUnicodeSelectedCharacterCodepoint" Grid.Column="1" Grid.Row="1"/>
+
+                            <Label Content="{x:Static p:Strings.PromptUnicodeSelectedCharacterBlock}" Grid.Column="0" Grid.Row="2"/>
+                            <Label x:Name="PromptUnicodeSelectedCharacterBlock" Grid.Column="1" Grid.Row="2"/>
+
+                            <Label Content="{x:Static p:Strings.PromptUnicodeSelectedCharacterCategory}" Grid.Column="0" Grid.Row="3"/>
+                            <Label x:Name="PromptUnicodeSelectedCharacterCategory" Grid.Column="1" Grid.Row="3"/>
+
+                        </Grid>
                     </StackPanel>
-                    <StackPanel Orientation="Vertical">
-                        
-                    </StackPanel>
+                    
+                    <CheckBox x:Name="PromptUnicodeTriggerOnRepeat"
+                              Content="{x:Static p:Strings.PromptUnicodeTriggerOnRepeat}"
+                              HorizontalAlignment="Right" Margin="0,474,22,0"
+                              VerticalAlignment="Top" RenderTransformOrigin="1.056,0.6"/>
+
+                    <Button x:Name="PromptUnicodeConfirm"
+                             Content="{x:Static p:Strings.PromptUnicodeConfirm}"
+                             HorizontalAlignment="Right" Margin="0,494,22,0"
+                             VerticalAlignment="Top" Width="Auto"
+                             FontWeight="DemiBold"
+                             FontSize="16"
+                             Click="PromptUnicodeConfirm_Click" Background="#FFCCEECC"/>
+
+
+
                 </Grid>
             </TabItem>
 
@@ -101,7 +129,7 @@
 
                 </Grid>
             </TabItem>
-            
+
 
 
         </TabControl>

@@ -120,6 +120,9 @@ namespace MultikeysGUI.Model
     /// </summary>
     public class MultikeysLayout
     {
+        public MultikeysLayout()
+        { Keyboards = new List<Keyboard>(); }
+
         public IList<Keyboard> Keyboards { get; set; }
     }
 
@@ -128,6 +131,14 @@ namespace MultikeysGUI.Model
     /// </summary>
     public class Keyboard
     {
+        public Keyboard()
+        {
+            UniqueName = null;
+            Alias = null;
+            Modifiers = new List<Modifier>();
+            Layers = new List<Layer>();
+        }
+
         /// <summary>
         /// Name of device, as reported by the RawInput API.
         /// </summary>
@@ -154,6 +165,12 @@ namespace MultikeysGUI.Model
     /// </summary>
     public class Modifier : IComparable<Modifier>
     {
+        public Modifier()
+        {
+            Name = null;
+            Scancodes = new List<Scancode>();
+        }
+
         /// <summary>
         /// Name of this modifier; this is mandatory, and is used to uniquely identify modifiers.
         /// </summary>
@@ -179,6 +196,13 @@ namespace MultikeysGUI.Model
     /// </summary>
     public class Layer
     {
+        public Layer()
+        {
+            Alias = null;
+            ModifierCombination = new List<string>();
+            Commands = new Dictionary<Scancode, IKeystrokeCommand>();
+        }
+
         /// <summary>
         /// Readable name given to the layer; this string is chosen by the user, and has no effect on functionality.
         /// </summary>
@@ -212,7 +236,7 @@ namespace MultikeysGUI.Model
     public class UnicodeCommand : IKeystrokeCommand
     {
         // Default constructor
-        public UnicodeCommand() { }
+        public UnicodeCommand() : this(false, "") { }
         // Constructor from text
         public UnicodeCommand(bool triggerOnRepeat, string text)
         {

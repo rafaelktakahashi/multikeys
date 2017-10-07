@@ -88,6 +88,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Arguments.
         /// </summary>
         public static string ExecutableKeyArguments {
@@ -201,6 +210,15 @@ namespace MultikeysGUI.Properties {
         public static string MenuFileClose {
             get {
                 return ResourceManager.GetString("MenuFileClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string MenuFileNew {
+            get {
+                return ResourceManager.GetString("MenuFileNew", resourceCulture);
             }
         }
         
@@ -381,6 +399,24 @@ namespace MultikeysGUI.Properties {
         public static string VirtualKeyCode {
             get {
                 return ResourceManager.GetString("VirtualKeyCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        public static string Warning {
+            get {
+                return ResourceManager.GetString("Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No layout is currently open..
+        /// </summary>
+        public static string WarningNoLayout {
+            get {
+                return ResourceManager.GetString("WarningNoLayout", resourceCulture);
             }
         }
         

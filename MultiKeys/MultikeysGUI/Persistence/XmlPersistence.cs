@@ -172,6 +172,7 @@ namespace MultikeysGUI.Persistence
         {
             return new Layer
             {
+                Alias = el.Attribute("Alias")?.Value,       // optional
                 ModifierCombination = el.Elements("modifier").Select(it => it.Value).ToList(),
                 Commands = (
                             from element in el.Elements()
@@ -191,9 +192,9 @@ namespace MultikeysGUI.Persistence
                 {
                     Name = modifierGroup.First().Attribute("Name").Value,
                     Scancodes = (
-                                                from modComponent in modifierGroup
-                                                select new Scancode(modComponent.Value)
-                                                ).ToList()
+                                from modComponent in modifierGroup
+                                select new Scancode(modComponent.Value)
+                                ).ToList()
                 }
             ).ToList();
         }
@@ -337,7 +338,8 @@ namespace MultikeysGUI.Persistence
         private static XElement WriteLayer(Layer entity)
         {
             var element = new XElement("layer");
-            element.Add(new XAttribute("Alias", entity.Alias));
+            if (entity.Alias != null)   // optional
+            { element.Add(new XAttribute("Alias", entity.Alias)); }
             foreach (string modifierName in entity.ModifierCombination)
             {
                 element.Add(new XElement("modifier", modifierName));
@@ -354,10 +356,12 @@ namespace MultikeysGUI.Persistence
             var element = new XElement("modifiers");
             foreach (Modifier modifier in entity)
             {
+                // Modifiers with more than one scancode will appear more than once
                 foreach (Scancode scancode in modifier.Scancodes)
                 {
                     var element_1 = new XElement("modifier", scancode.ToString());
                     element_1.Add(new XAttribute("Name", modifier.Name));
+                    element.Add(element_1);
                 }
             }
             return element;

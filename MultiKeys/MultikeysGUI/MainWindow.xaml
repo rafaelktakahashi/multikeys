@@ -16,6 +16,7 @@
         
         <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <MenuItem Header="{x:Static p:Strings.MenuFile}">
+                <MenuItem Header="{x:Static p:Strings.MenuFileNew}" Click="FileNew_Click"/>
                 <MenuItem Header="{x:Static p:Strings.MenuFileSave}" Click="FileSave_Click"/>
                 <MenuItem Header="{x:Static p:Strings.MenuFileSaveAs}" Click="FileSaveAs_Click"/>
                 <MenuItem Header="{x:Static p:Strings.MenuFileOpen}" Click="FileOpen_Click"/>

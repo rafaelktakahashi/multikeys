@@ -48,6 +48,26 @@ namespace MultikeysGUI.View.Controls
 
 
         /// <summary>
+        /// Builds a MultikeysLayout instance from this control.
+        /// </summary>
+        public MultikeysLayout GetLayout()
+        {
+            var layout = new MultikeysLayout();
+            // TODO: Add each keyboard
+            foreach (var control in KeyboardStack.Children)
+            {
+                if (control is KeyboardControl)
+                {
+                    // get each keyboard from the keyboard controls
+                    var keyboard = (control as KeyboardControl).GetKeyboard();
+                    layout.Keyboards.Add(keyboard);
+                }
+            }
+            return layout;
+        }
+
+
+        /// <summary>
         /// This event handler is notified of any key that is clicked on any keyboard on screen.
         /// </summary>
         public void HandleKeyClicked(object sender, KeyClickedEventArgs e)

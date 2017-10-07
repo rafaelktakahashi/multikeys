@@ -34,14 +34,21 @@ namespace MultikeysGUI
         /// <summary>
         /// The currently opened file; null if no file is open.
         /// </summary>
-        private string openFile = null;
+        private string workingFileName = null;
 
         /// <summary>
         /// The control that represents the layout being currently edited.
         /// </summary>
         private LayoutControl layoutControl = null;
 
+
+
         #region Menu
+
+        private void FileNew_Click(object sender, EventArgs e)
+        {
+            ;
+        }
 
         private void FileSave_Click(object sender, EventArgs e)
         {
@@ -50,20 +57,30 @@ namespace MultikeysGUI
 
         private void FileSaveAs_Click(object sender, EventArgs e)
         {
+            if (workingFileName == null)
+            {
+                MessageBox.Show(Properties.Strings.WarningNoLayout, Properties.Strings.Warning, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var saveFileDialog = new SaveFileDialog();
             if (saveFileDialog.ShowDialog() == true)
             {
                 // retrieve layout and save it
+                new DomainFacade().SaveLayout(layoutControl.GetLayout(), saveFileDialog.FileName);
+                workingFileName = saveFileDialog.FileName;
             }
         }
 
         private void FileOpen_Click(object sender, EventArgs e)
         {
+
+
             var openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
                 var layout = new DomainFacade().LoadLayout(openFileDialog.FileName);
-                openFile = openFileDialog.FileName;
+                workingFileName = openFileDialog.FileName;
                 layoutControl = new LayoutControl();
                 layoutControl.LoadLayout(layout);
                 dockPanel.Children.Clear();
@@ -73,7 +90,7 @@ namespace MultikeysGUI
 
         private void FileClose_Click(object sender, EventArgs e)
         {
-            // Confirm
+            // Confirm closing
 
         }
 

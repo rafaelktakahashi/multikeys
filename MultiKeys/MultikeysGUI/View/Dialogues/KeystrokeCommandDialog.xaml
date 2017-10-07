@@ -6,12 +6,104 @@
         xmlns:local="clr-namespace:MultikeysGUI.View.Dialogues"
         xmlns:p="clr-namespace:MultikeysGUI.Properties"
         mc:Ignorable="d"
-        Title="{x:Static p:Strings.WindowTitleNewCommandDialog}" Height="515" Width="824">
+        Title="{x:Static p:Strings.WindowTitleNewCommandDialog}" Height="593" Width="562"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+
+    <Window.Resources>
+        <!-- To be placed in the list of unicode characters -->
+        <ListBoxItem x:Key="UnicodeCharactersListItem"
+                     Selected="ListBoxItem_Selected"
+            BorderBrush="Black">
+            <StackPanel Orientation="Horizontal">
+                <!-- Show the character here -->
+                <TextBlock x:Name="UnicodeCharactersListItemCharacter" FontFamily="Arial Unicode MS" FontSize="18" FontWeight="SemiBold" MinWidth="40"/>
+                <!-- Show the character's codepoint here -->
+                <TextBlock Text="UnicodeCharactersListItemCodepoint" VerticalAlignment="Bottom" FontSize="16" FontWeight="SemiBold" Foreground="Gray" />
+            </StackPanel>
+        </ListBoxItem>
+
+
+    </Window.Resources>
+
     <Grid>
         <TabControl>
+
             <TabItem Header="{x:Static p:Strings.ReadableNameUnicodeKey}">
-                
+                <Grid>
+                    <TextBox x:Name="UnicodeTextInput"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Top"
+                             Height="123"
+                             Margin="10,10,10,0"
+                             TextWrapping="Wrap"
+                             FontSize="16"
+                             Text="羅生門"
+                             TextChanged="UnicodeTextInput_TextChanged"/>
+                    <!-- ItemSource and DataContext for this ListBox are set in code-behind. -->
+                    <ListBox x:Name="UnicodeCharactersList"
+                             HorizontalAlignment="Left"
+                             Height="388"
+                             Margin="10,138,0,0"
+                             VerticalAlignment="Top"
+                             Width="172">
+                        <!-- Determine how each item should be shown: -->
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontFamily="Arial Unicode MS" FontSize="18" FontWeight="SemiBold" MinWidth="40"
+                                                   Text="{Binding Path=Character}" Grid.Column="0"/>
+                                    <TextBlock VerticalAlignment="Bottom" FontSize="16" FontWeight="SemiBold" Foreground="Gray"
+                                                   Text="{Binding Path=Codepoint}" Grid.Column="1"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Margin="187,138,10,10">
+                        <Label x:Name="UnicodeSelectedCharacterDisplay"
+                               MinHeight="50"
+                               Content="羅"
+                               HorizontalContentAlignment="Center"
+                               VerticalContentAlignment="Center"
+                               HorizontalAlignment="Stretch"
+                               FontSize="50"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical">
+                        
+                    </StackPanel>
+                </Grid>
             </TabItem>
+
+            <TabItem Header="{x:Static p:Strings.ReadableNameModifier}">
+                <Grid>
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="{x:Static p:Strings.ReadableNameExecutablekey}">
+                <Grid>
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="{x:Static p:Strings.ReadableNameDeadkey}">
+                <Grid>
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="{x:Static p:Strings.ReadableNameMacroKey}">
+                <Grid>
+
+                </Grid>
+            </TabItem>
+            
+
+
         </TabControl>
     </Grid>
 </Window>

@@ -46,7 +46,9 @@ namespace MultikeysGUI
                 kbControl.KeyClicked += HandleKeyClicked;
                 KeyboardStack.Children.Add(kbControl);
             }
-            
+
+            var dialog = new MultikeysGUI.View.Dialogues.KeystrokeCommandDialog();
+            dialog.ShowDialog();
             
 
             

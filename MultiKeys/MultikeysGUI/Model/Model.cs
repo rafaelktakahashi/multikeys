@@ -133,10 +133,12 @@ namespace MultikeysGUI.Model
     {
         public Keyboard()
         {
-            UniqueName = null;
+            // The keyboard constructor must create at least one layer.
+            UniqueName = string.Empty;
             Alias = null;
             Modifiers = new List<Modifier>();
             Layers = new List<Layer>();
+            Layers.Add(new Layer());
         }
 
         /// <summary>

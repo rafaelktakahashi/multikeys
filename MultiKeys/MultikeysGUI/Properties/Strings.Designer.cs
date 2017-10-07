@@ -421,6 +421,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unsaved changes will be lost. Proceed?.
+        /// </summary>
+        public static string WarningWillOverwriteWorkingLayout {
+            get {
+                return ResourceManager.GetString("WarningWillOverwriteWorkingLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit command.
         /// </summary>
         public static string WindowTitleEditCommandDialog {

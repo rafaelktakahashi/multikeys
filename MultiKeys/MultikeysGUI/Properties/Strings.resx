@@ -246,6 +246,9 @@
   <data name="WarningNoLayout" xml:space="preserve">
     <value>No layout is currently open.</value>
   </data>
+  <data name="WarningWillOverwriteWorkingLayout" xml:space="preserve">
+    <value>Unsaved changes will be lost. Proceed?</value>
+  </data>
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
     <comment>Generic "yes"</comment>

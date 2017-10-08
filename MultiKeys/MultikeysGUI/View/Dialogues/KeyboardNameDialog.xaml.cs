@@ -42,11 +42,20 @@ namespace MultikeysGUI.View.Dialogues
 
         private async Task ButtonListenForInput_Click_Async()
         {
-            LabelPressAnyKey.Visibility = Visibility.Visible;
+            Dispatcher.Invoke(() =>
+            {
+                LabelPressAnyKey.Visibility = Visibility.Visible;
+            });
+            
             string kbName = await new DomainFacade().DetectKeyboardUniqueName();
-            LabelKeyboardName.Content = kbName;
-            KeyboardName = kbName;
-            LabelPressAnyKey.Visibility = Visibility.Hidden;
+
+            Dispatcher.Invoke(() =>
+            {
+                LabelKeyboardName.Content = kbName;
+                KeyboardName = kbName;
+                LabelPressAnyKey.Visibility = Visibility.Hidden;
+            });
+            
         }
 
         private void ButtonUseAnyKeyboard_Click(object sender, RoutedEventArgs e)

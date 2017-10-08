@@ -33,7 +33,7 @@ namespace MultikeysGUI.Domain
 
         async public Task<string> DetectKeyboardUniqueName()
         {
-            throw new NotImplementedException();
+            return await RawInput.RawKeyboard.DetectKeyboardName();
         }
     }
 }

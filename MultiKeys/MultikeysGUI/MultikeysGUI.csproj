@@ -73,6 +73,7 @@
     <Compile Include="Domain\Layout\PhysicalLayoutFactory.cs" />
     <Compile Include="Domain\Layout\PhysicalLayouts.cs" />
     <Compile Include="Domain\Layout\PhysicalLayoutStandard.cs" />
+    <Compile Include="Domain\RawInput\RawKeyboard.cs" />
     <Compile Include="View\Controls\KeyboardControl.xaml.cs">
       <DependentUpon>KeyboardControl.xaml</DependentUpon>
     </Compile>
@@ -185,7 +186,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Domain\RawInput\" />
+    <Content Include="..\DetectKeyboardNameOutput\Release\DetectKeyboardName.exe">
+      <Link>Resources\DetectKeyboardName.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

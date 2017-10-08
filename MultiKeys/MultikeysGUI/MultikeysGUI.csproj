@@ -90,6 +90,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
+    <Compile Include="View\Dialogues\KeyboardNameDialog.xaml.cs">
+      <DependentUpon>KeyboardNameDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dialogues\KeystrokeCommandDialog.xaml.cs">
       <DependentUpon>KeystrokeCommandDialog.xaml</DependentUpon>
     </Compile>
@@ -126,6 +129,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Controls\ModifiersControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dialogues\KeyboardNameDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

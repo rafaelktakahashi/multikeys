@@ -36,7 +36,11 @@ namespace MultikeysGUI.Domain
         /// <returns>An object representing the scancode, size and position of each key in a physical layout</returns>
         IPhysicalLayout GetPhysicalLayout(PhysicalLayoutStandard standard, bool useBigReturn);
 
-
+        /// <summary>
+        /// Prompt the user to press any key on a keyboard, then returns the unique name of that keyboard.
+        /// </summary>
+        /// <returns></returns>
+        string DetectKeyboardUniqueName();
 
     }
 }

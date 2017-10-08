@@ -190,7 +190,7 @@
     <value>Error</value>
   </data>
   <data name="KeyboardName" xml:space="preserve">
-    <value>Name: </value>
+    <value>Unique id: </value>
     <comment>For displaying the name of a keyboard</comment>
   </data>
   <data name="MenuFile" xml:space="preserve">
@@ -252,5 +252,28 @@
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
     <comment>Generic "yes"</comment>
+  </data>
+  <data name="KeyboardAlias" xml:space="preserve">
+    <value>Name: </value>
+    <comment>User-given name for a device</comment>
+  </data>
+  <data name="KeyboardNameDialogFinish" xml:space="preserve">
+    <value>Finish</value>
+  </data>
+  <data name="KeyboardNameDialogListenForInput" xml:space="preserve">
+    <value>Listen for input</value>
+    <comment>Wait for the user to press a key</comment>
+  </data>
+  <data name="KeyboardNameDialogUseAnyKeyboard" xml:space="preserve">
+    <value>Use any keyboard</value>
+  </data>
+  <data name="KeyboardNameEdit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="WindowTitleKeyboardAliasDialog" xml:space="preserve">
+    <value>Edit keyboard's name</value>
+  </data>
+  <data name="WindowTitleKeyboardNameDialog" xml:space="preserve">
+    <value>Edit keyboard's unique id</value>
   </data>
 </root>

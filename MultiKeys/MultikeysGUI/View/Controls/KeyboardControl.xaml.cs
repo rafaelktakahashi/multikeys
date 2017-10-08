@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 
 using MultikeysGUI.Model;
 using MultikeysGUI.Domain.Layout;
+using MultikeysGUI.View.Dialogues;
 
 namespace MultikeysGUI.View.Controls
 {
@@ -86,6 +87,10 @@ namespace MultikeysGUI.View.Controls
             // Setup the layer to the default one (no modifiers)
             Layer.SetLayoutToRender(physLayout);
             Layer.RefreshView(kb.Layers[0].Commands, _modifiers);
+
+            // Show the keyboard's name
+            LabelKeyboardName.Content = kb.UniqueName;
+            // TODO: Show the keyboard's alias somewhere
         }
 
         /// <summary>
@@ -233,6 +238,20 @@ namespace MultikeysGUI.View.Controls
         private void ButtonUnregisterModifier_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        /// <summary>
+        /// Called when the user wants to change the keyboard's unique name.
+        /// Should detect a physical device's name, then set it on this keyboard.
+        /// </summary>
+        private void ButtonKeyboardNameEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var kbNameDialog = new KeyboardNameDialog(UniqueName);
+            if (kbNameDialog.ShowDialog() == true)
+            {
+                UniqueName = kbNameDialog.KeyboardName;
+                LabelKeyboardName.Content = UniqueName;
+            }
         }
     }
 }

@@ -117,9 +117,54 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Name: .
         /// </summary>
+        public static string KeyboardAlias {
+            get {
+                return ResourceManager.GetString("KeyboardAlias", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unique id: .
+        /// </summary>
         public static string KeyboardName {
             get {
                 return ResourceManager.GetString("KeyboardName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finish.
+        /// </summary>
+        public static string KeyboardNameDialogFinish {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogFinish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Listen for input.
+        /// </summary>
+        public static string KeyboardNameDialogListenForInput {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogListenForInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use any keyboard.
+        /// </summary>
+        public static string KeyboardNameDialogUseAnyKeyboard {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogUseAnyKeyboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string KeyboardNameEdit {
+            get {
+                return ResourceManager.GetString("KeyboardNameEdit", resourceCulture);
             }
         }
         
@@ -435,6 +480,24 @@ namespace MultikeysGUI.Properties {
         public static string WindowTitleEditCommandDialog {
             get {
                 return ResourceManager.GetString("WindowTitleEditCommandDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit keyboard&apos;s name.
+        /// </summary>
+        public static string WindowTitleKeyboardAliasDialog {
+            get {
+                return ResourceManager.GetString("WindowTitleKeyboardAliasDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit keyboard&apos;s unique id.
+        /// </summary>
+        public static string WindowTitleKeyboardNameDialog {
+            get {
+                return ResourceManager.GetString("WindowTitleKeyboardNameDialog", resourceCulture);
             }
         }
         

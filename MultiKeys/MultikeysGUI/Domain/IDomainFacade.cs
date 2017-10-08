@@ -38,9 +38,10 @@ namespace MultikeysGUI.Domain
 
         /// <summary>
         /// Prompt the user to press any key on a keyboard, then returns the unique name of that keyboard.
+        /// Implementations of this method are implied to be async.
         /// </summary>
         /// <returns></returns>
-        string DetectKeyboardUniqueName();
+        Task<string> DetectKeyboardUniqueName();
 
     }
 }

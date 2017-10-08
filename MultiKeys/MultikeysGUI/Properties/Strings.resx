@@ -257,12 +257,18 @@
     <value>Name: </value>
     <comment>User-given name for a device</comment>
   </data>
+  <data name="KeyboardNameDialogAnyKeyboard" xml:space="preserve">
+    <value>(Any keyboard)</value>
+  </data>
   <data name="KeyboardNameDialogFinish" xml:space="preserve">
     <value>Finish</value>
   </data>
   <data name="KeyboardNameDialogListenForInput" xml:space="preserve">
-    <value>Listen for input</value>
+    <value>Detect keyboard</value>
     <comment>Wait for the user to press a key</comment>
+  </data>
+  <data name="KeyboardNameDialogPressAnyKey" xml:space="preserve">
+    <value>Press a key on the keyboard you wish to detect.</value>
   </data>
   <data name="KeyboardNameDialogUseAnyKeyboard" xml:space="preserve">
     <value>Use any keyboard</value>

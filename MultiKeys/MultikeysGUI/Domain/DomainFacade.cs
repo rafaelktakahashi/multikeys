@@ -31,7 +31,7 @@ namespace MultikeysGUI.Domain
             return PhysicalLayoutFactory.FromStandard(standard, useBigReturn);
         }
 
-        public string DetectKeyboardUniqueName()
+        async public Task<string> DetectKeyboardUniqueName()
         {
             throw new NotImplementedException();
         }

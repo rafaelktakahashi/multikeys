@@ -133,6 +133,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (Any keyboard).
+        /// </summary>
+        public static string KeyboardNameDialogAnyKeyboard {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogAnyKeyboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Finish.
         /// </summary>
         public static string KeyboardNameDialogFinish {
@@ -142,11 +151,20 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Listen for input.
+        ///   Looks up a localized string similar to Detect keyboard.
         /// </summary>
         public static string KeyboardNameDialogListenForInput {
             get {
                 return ResourceManager.GetString("KeyboardNameDialogListenForInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press a key on the keyboard you wish to detect..
+        /// </summary>
+        public static string KeyboardNameDialogPressAnyKey {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogPressAnyKey", resourceCulture);
             }
         }
         

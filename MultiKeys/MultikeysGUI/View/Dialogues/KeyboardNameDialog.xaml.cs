@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MultikeysGUI.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +24,7 @@ namespace MultikeysGUI.View.Dialogues
         {
             InitializeComponent();
 
-            LabelKeyboardName.Content = currentName;
+            LabelKeyboardName.Content = currentName == "" ? Properties.Strings.KeyboardNameDialogAnyKeyboard : currentName;
             KeyboardName = currentName;
         }
 
@@ -36,14 +37,21 @@ namespace MultikeysGUI.View.Dialogues
 
         private void ButtonListenForInput_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Place real implementation here
-            LabelKeyboardName.Content = @"\\?\HID#VID_1A2C&PID_0B2A&MI_00#8&16c55830&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
-            KeyboardName = @"\\?\HID#VID_1A2C&PID_0B2A&MI_00#8&16c55830&0&0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}";
+            Task.Run(ButtonListenForInput_Click_Async);
+        }
+
+        private async Task ButtonListenForInput_Click_Async()
+        {
+            LabelPressAnyKey.Visibility = Visibility.Visible;
+            string kbName = await new DomainFacade().DetectKeyboardUniqueName();
+            LabelKeyboardName.Content = kbName;
+            KeyboardName = kbName;
+            LabelPressAnyKey.Visibility = Visibility.Hidden;
         }
 
         private void ButtonUseAnyKeyboard_Click(object sender, RoutedEventArgs e)
         {
-            LabelKeyboardName.Content = string.Empty;
+            LabelKeyboardName.Content = Properties.Strings.KeyboardNameDialogAnyKeyboard;
             KeyboardName = string.Empty;
         }
 

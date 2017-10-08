@@ -9,6 +9,7 @@
 #include "KeystrokeCommands.h"
 
 #include <stdexcept>
+#include <algorithm>	// for string replacement
 
 // Xerces
 #include <xercesc/dom/DOM.hpp>
@@ -411,6 +412,8 @@ bool ParseLayer(const PXmlElement lvlElement, OUT Layer** const pLayer)
 		// commandPointer should contain a command now
 		// no matter what kind of node was read (unicode, macro, etc), it must contain a Scancode attribute
 		std::wstring scancode = xmlch_to_wstring(((PXmlElement)child)->getAttribute(u"Scancode"));
+		// the bytes of a scancode may be optionally separated by a colon, in which case we remove it
+		scancode.erase(std::remove(scancode.begin(), scancode.end(), L':'), scancode.end());
 		try
 		{
 			unsigned short iScancode = std::stoi(scancode.c_str(), 0, 16);

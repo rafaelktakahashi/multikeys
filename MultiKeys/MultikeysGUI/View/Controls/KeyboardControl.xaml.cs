@@ -217,7 +217,15 @@ namespace MultikeysGUI.View.Controls
 
         private void ButtonAssignCommand_Click(object sender, RoutedEventArgs e)
         {
-            
+            // If no key is selected:
+
+
+            // Show a dialog, then check the result of its ShowDialog.
+            var dialog = new KeystrokeCommandDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                var newCommand = dialog.Command;
+            }
         }
 
         private void ButtonEditCommand_Click(object sender, RoutedEventArgs e)

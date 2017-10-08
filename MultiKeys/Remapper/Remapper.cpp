@@ -25,7 +25,13 @@ namespace Multikeys
 		{
 			
 			// If keyboard name matches:
-			if (wcscmp(deviceName, (*it)->deviceName.c_str()) == 0)
+			/*
+			* Update: Since an empty string is used to represent "remap any non-remapped keyboard",
+			* we check for that too. It's important that this keyboard with an empty string as name
+			* be the last in the list.
+			*/
+			if (wcscmp(deviceName, (*it)->deviceName.c_str()) == 0
+				|| wcscmp(L"", (*it)->deviceName.c_str()) == 0)
 			{
 				this->workScancode.flgE0 = keypressed->Flags & RI_KEY_E0;
 				this->workScancode.flgE1 = keypressed->Flags & RI_KEY_E1;

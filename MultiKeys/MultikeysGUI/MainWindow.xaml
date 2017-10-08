@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
         xmlns:p="clr-namespace:MultikeysGUI.Properties"
         mc:Ignorable="d"
-        Title="MainWindow" Height="575" Width="1438">
+        Title="{x:Static p:Strings.WindowTitleMainWindow}" Height="702" Width="1438">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -24,7 +24,7 @@
                 <MenuItem x:Name="MenuFileClose" Header="{x:Static p:Strings.MenuFileClose}" Click="FileClose_Click"/>
             </MenuItem>
         </Menu>
-        <DockPanel x:Name="dockPanel" Grid.Row="1">
+        <DockPanel x:Name="DockPanelLayout" Grid.Row="1">
             
         </DockPanel>
     </Grid>

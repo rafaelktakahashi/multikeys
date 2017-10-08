@@ -282,4 +282,7 @@
   <data name="WindowTitleKeyboardNameDialog" xml:space="preserve">
     <value>Edit keyboard's unique id</value>
   </data>
+  <data name="WindowTitleMainWindow" xml:space="preserve">
+    <value>Multikeys - Main Window</value>
+  </data>
 </root>

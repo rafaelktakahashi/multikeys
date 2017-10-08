@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Multikeys_Logo_32.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -190,6 +193,12 @@
       <Link>Resources\DetectKeyboardName.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\Multikeys_Logo_32.ico" />
+    <Resource Include="Resources\Multikeys_Logo_32.png" />
+    <Resource Include="Multikeys_Logo_32.ico" />
+    <Resource Include="Multikeys_Logo.ico" />
+    <Resource Include="Resources\Multikeys_Logo.png" />
+    <Resource Include="Resources\Multikeys_Logo.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -520,6 +520,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Multikeys - Main Window.
+        /// </summary>
+        public static string WindowTitleMainWindow {
+            get {
+                return ResourceManager.GetString("WindowTitleMainWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New command.
         /// </summary>
         public static string WindowTitleNewCommandDialog {

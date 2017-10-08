@@ -71,8 +71,8 @@ namespace MultikeysGUI
             // Place a new layout control in the dock panel
             layoutControl = new LayoutControl();
             layoutControl.LoadLayout(newLayout);
-            dockPanel.Children.Clear();
-            dockPanel.Children.Add(layoutControl);
+            DockPanelLayout.Children.Clear();
+            DockPanelLayout.Children.Add(layoutControl);
 
             EnableDisableMenuButtons();
         }
@@ -147,8 +147,8 @@ namespace MultikeysGUI
                 // and replace the layout control
                 layoutControl = new LayoutControl();
                 layoutControl.LoadLayout(layout);
-                dockPanel.Children.Clear();
-                dockPanel.Children.Add(layoutControl);
+                DockPanelLayout.Children.Clear();
+                DockPanelLayout.Children.Add(layoutControl);
             }
 
             EnableDisableMenuButtons();
@@ -173,7 +173,7 @@ namespace MultikeysGUI
 
             // Just remove the current layout
             layoutControl = null;
-            dockPanel.Children.Clear();
+            DockPanelLayout.Children.Clear();
 
             EnableDisableMenuButtons();
         }

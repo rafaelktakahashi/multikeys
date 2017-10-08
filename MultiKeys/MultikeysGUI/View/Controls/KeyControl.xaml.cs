@@ -202,9 +202,15 @@ namespace MultikeysGUI.View.Controls
             {
                 MiddleLabel.Foreground = Brushes.Black;
 
-                if (Command is UnicodeCommand)
+                if (Command is DeadKeyCommand)  // dead keys show up as red characters
                 {
                     MiddleLabel.Text = (Command as UnicodeCommand).ContentAsText;
+                    MiddleLabel.Foreground = Brushes.Red;
+                }
+                else if (Command is UnicodeCommand)
+                {
+                    MiddleLabel.Text = (Command as UnicodeCommand).ContentAsText;
+                    MiddleLabel.Foreground = Brushes.Black;
                 }
                 else MiddleLabel.Text = "...";
 

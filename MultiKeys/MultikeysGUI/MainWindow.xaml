@@ -6,14 +6,14 @@
         xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
         xmlns:p="clr-namespace:MultikeysGUI.Properties"
         mc:Ignorable="d"
-        Title="MainWindow" Height="575" Width="1438">
+        Title="{x:Static p:Strings.WindowTitleMainWindow}" Height="680" Width="1438">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <MenuItem Header="{x:Static p:Strings.MenuFile}">
                 <MenuItem x:Name="MenuFileNew" Header="{x:Static p:Strings.MenuFileNew}" Click="FileNew_Click"/>
@@ -24,8 +24,37 @@
                 <MenuItem x:Name="MenuFileClose" Header="{x:Static p:Strings.MenuFileClose}" Click="FileClose_Click"/>
             </MenuItem>
         </Menu>
-        <DockPanel x:Name="dockPanel" Grid.Row="1">
+        <DockPanel x:Name="DockPanelLayout" Grid.Row="1"/>
+        <Grid Grid.Row="2">
+            <Rectangle Height="70">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                        <GradientStop Color="#FFFFD386"/>
+                        <GradientStop Color="#FFFFF0D6" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
             
-        </DockPanel>
+            <Image x:Name="BackgroundRunnerIconStart"
+                   HorizontalAlignment="Left" Height="50" Margin="10,10,0,0"
+                   VerticalAlignment="Top" Width="50"
+                   Loaded="BackgroundRunnerIconStart_Loaded"
+                   MouseUp="BackgroundRunnerIconStart_MouseUp"/>
+            
+            <Image x:Name="BackgroundRunnerIconStop"
+                   HorizontalAlignment="Left" Height="50" Margin="10,10,0,0"
+                   VerticalAlignment="Top" Width="50"
+                   Loaded="BackgroundRunnerIconStop_Loaded"
+                   MouseUp="BackgroundRunnerIconStop_MouseUp"
+                   Visibility="Hidden"/>
+            
+            <Label x:Name="LabelCurrentCoreState" Content="{x:Static p:Strings.CoreStateStopped}"
+                   HorizontalAlignment="Left" Margin="65,10,0,0" VerticalAlignment="Top"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   />
+
+
+        </Grid>
     </Grid>
 </Window>

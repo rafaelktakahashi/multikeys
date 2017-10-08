@@ -25,7 +25,6 @@
                              Margin="10,10,10,0"
                              TextWrapping="Wrap"
                              FontSize="16"
-                             Text="羅生門"
                              TextChanged="UnicodeTextInput_TextChanged"/>
                     </GroupBox>
 

@@ -30,5 +30,10 @@ namespace MultikeysGUI.Domain
         {
             return PhysicalLayoutFactory.FromStandard(standard, useBigReturn);
         }
+
+        async public Task<string> DetectKeyboardUniqueName()
+        {
+            return await RawInput.RawKeyboard.DetectKeyboardName();
+        }
     }
 }

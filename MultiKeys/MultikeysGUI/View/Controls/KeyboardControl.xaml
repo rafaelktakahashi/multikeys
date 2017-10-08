@@ -9,6 +9,18 @@
     <Grid>
         <StackPanel >
 
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{x:Static p:Strings.KeyboardName}"
+                       FontWeight="Bold" FontSize="16"/>
+                <Label x:Name="LabelKeyboardName"
+                       FontWeight="SemiBold" FontSize="16" Foreground="Blue"/>
+                <Button Name="ButtonKeyboardNameEdit" Content="{x:Static p:Strings.KeyboardNameEdit}"
+                        Width="Auto" MinWidth="60" Height="20"
+                        Click="ButtonKeyboardNameEdit_Click"/>
+            </StackPanel>
+            
+            <!-- TODO: Show the keyboard's alias here -->
+
             <local:ModifiersControl x:Name="ModifiersControl" Margin="5" Width="Auto" ModifierSelectionChanged="ModifierSelectionChanged" HorizontalAlignment="Left" />
 
             <local:LayerControl x:Name="Layer" Margin="0" Width="Auto" Height="Auto" KeyClicked="LayerKeyClicked" HorizontalAlignment="Left" />

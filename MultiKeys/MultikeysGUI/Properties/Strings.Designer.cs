@@ -61,6 +61,33 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current state: Paused.
+        /// </summary>
+        public static string CoreStatePaused {
+            get {
+                return ResourceManager.GetString("CoreStatePaused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current state: Running.
+        /// </summary>
+        public static string CoreStateRunning {
+            get {
+                return ResourceManager.GetString("CoreStateRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current state: Stopped.
+        /// </summary>
+        public static string CoreStateStopped {
+            get {
+                return ResourceManager.GetString("CoreStateStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to From.
         /// </summary>
         public static string DeadKeyReplacementFrom {
@@ -117,9 +144,72 @@ namespace MultikeysGUI.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Name: .
         /// </summary>
+        public static string KeyboardAlias {
+            get {
+                return ResourceManager.GetString("KeyboardAlias", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unique id: .
+        /// </summary>
         public static string KeyboardName {
             get {
                 return ResourceManager.GetString("KeyboardName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Any keyboard).
+        /// </summary>
+        public static string KeyboardNameDialogAnyKeyboard {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogAnyKeyboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finish.
+        /// </summary>
+        public static string KeyboardNameDialogFinish {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogFinish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detect keyboard.
+        /// </summary>
+        public static string KeyboardNameDialogListenForInput {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogListenForInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press a key on the keyboard you wish to detect..
+        /// </summary>
+        public static string KeyboardNameDialogPressAnyKey {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogPressAnyKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use any keyboard.
+        /// </summary>
+        public static string KeyboardNameDialogUseAnyKeyboard {
+            get {
+                return ResourceManager.GetString("KeyboardNameDialogUseAnyKeyboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string KeyboardNameEdit {
+            get {
+                return ResourceManager.GetString("KeyboardNameEdit", resourceCulture);
             }
         }
         
@@ -421,6 +511,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You must save the layout in order to use it. Save it now?.
+        /// </summary>
+        public static string WarningSaveLayoutToStart {
+            get {
+                return ResourceManager.GetString("WarningSaveLayoutToStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsaved changes will be lost. Proceed?.
         /// </summary>
         public static string WarningWillOverwriteWorkingLayout {
@@ -435,6 +534,33 @@ namespace MultikeysGUI.Properties {
         public static string WindowTitleEditCommandDialog {
             get {
                 return ResourceManager.GetString("WindowTitleEditCommandDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit keyboard&apos;s name.
+        /// </summary>
+        public static string WindowTitleKeyboardAliasDialog {
+            get {
+                return ResourceManager.GetString("WindowTitleKeyboardAliasDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit keyboard&apos;s unique id.
+        /// </summary>
+        public static string WindowTitleKeyboardNameDialog {
+            get {
+                return ResourceManager.GetString("WindowTitleKeyboardNameDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multikeys - Main Window.
+        /// </summary>
+        public static string WindowTitleMainWindow {
+            get {
+                return ResourceManager.GetString("WindowTitleMainWindow", resourceCulture);
             }
         }
         

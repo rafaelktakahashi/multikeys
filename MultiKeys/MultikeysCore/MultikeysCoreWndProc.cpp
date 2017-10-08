@@ -764,22 +764,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 	case WM_PAINT: break;		// we break because the window is no longer shown. May remove this code completely.
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hWnd, &ps);
-#if DEBUG
-		TextOut(hdc, 10, 10, debugText, DEBUG_TEXT_SIZE);
-		TextOut(hdc, 10, 40, debugTextBeingBlocked, DEBUG_TEXT_SIZE);
-		TextOut(hdc, 10, 80, debugTextKeyboardName, 200);
-		EndPaint(hWnd, &ps);
-#endif
-	}
-	break;
+//	{
+//		PAINTSTRUCT ps;
+//		HDC hdc = BeginPaint(hWnd, &ps);
+//#if DEBUG
+//		TextOut(hdc, 10, 10, debugText, DEBUG_TEXT_SIZE);
+//		TextOut(hdc, 10, 40, debugTextBeingBlocked, DEBUG_TEXT_SIZE);
+//		TextOut(hdc, 10, 80, debugTextKeyboardName, 200);
+//		EndPaint(hWnd, &ps);
+//#endif
+//	}
+//	break;
 	case WM_DESTROY:
 		UninstallHook();		// Done using it.
 		PostQuitMessage(0);
-		break;
-	default:		// Give it to someone else.
+		return 0;
+	case WM_CLOSE:
+		DestroyWindow(mainHwnd);
+		return 0;
+	default:		// Use the default action
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;

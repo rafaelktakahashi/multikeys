@@ -1,10 +1,12 @@
 ﻿using Microsoft.Win32;
 using MultikeysGUI.Domain;
+using MultikeysGUI.Domain.BackgroundRunner;
 using MultikeysGUI.Domain.Layout;
 using MultikeysGUI.Model;
 using MultikeysGUI.View.Controls;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +33,9 @@ namespace MultikeysGUI
             InitializeComponent();
 
             EnableDisableMenuButtons();
+
+            // Setup the core runner and the icons
+            multikeysCoreRunner = new MultikeysCoreRunner();
         }
 
         /// <summary>
@@ -71,8 +76,8 @@ namespace MultikeysGUI
             // Place a new layout control in the dock panel
             layoutControl = new LayoutControl();
             layoutControl.LoadLayout(newLayout);
-            dockPanel.Children.Clear();
-            dockPanel.Children.Add(layoutControl);
+            DockPanelLayout.Children.Clear();
+            DockPanelLayout.Children.Add(layoutControl);
 
             EnableDisableMenuButtons();
         }
@@ -147,8 +152,8 @@ namespace MultikeysGUI
                 // and replace the layout control
                 layoutControl = new LayoutControl();
                 layoutControl.LoadLayout(layout);
-                dockPanel.Children.Clear();
-                dockPanel.Children.Add(layoutControl);
+                DockPanelLayout.Children.Clear();
+                DockPanelLayout.Children.Add(layoutControl);
             }
 
             EnableDisableMenuButtons();
@@ -173,7 +178,7 @@ namespace MultikeysGUI
 
             // Just remove the current layout
             layoutControl = null;
-            dockPanel.Children.Clear();
+            DockPanelLayout.Children.Clear();
 
             EnableDisableMenuButtons();
         }
@@ -207,6 +212,62 @@ namespace MultikeysGUI
 
         #endregion
 
+
+
+        #region BackgroundRunner
+
+        private MultikeysCoreRunner multikeysCoreRunner;
+
+        private void BackgroundRunnerIconStart_Loaded(object sender, RoutedEventArgs e)
+        {
+            var uriSource = new Uri(@"Resources/StateRunning.png", UriKind.Relative);
+
+            (sender as Image).Source = new BitmapImage(uriSource);
+        }
+
+        private void BackgroundRunnerIconStop_Loaded(object sender, RoutedEventArgs e)
+        {
+            var uriSource = new Uri(@"Resources/StateStopped.png", UriKind.Relative);
+
+            (sender as Image).Source = new BitmapImage(uriSource);
+        }
+
+
+        private void BackgroundRunnerIconStart_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            // If the file name does not yet exist (that is, not yet saved), then warn the user
+            // and save it.
+            if (!File.Exists(workingFileName))
+            {
+                var result = MessageBox.Show(
+                    Properties.Strings.WarningSaveLayoutToStart,
+                    Properties.Strings.Warning,
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    FileSaveAs_Click(null, null);
+                }
+                else return;
+            }
+            multikeysCoreRunner.Start(workingFileName);
+            BackgroundRunnerIconStart.Visibility = Visibility.Hidden;
+            BackgroundRunnerIconStop.Visibility = Visibility.Visible;
+
+            LabelCurrentCoreState.Content = Properties.Strings.CoreStateRunning;
+        }
+
+        private void BackgroundRunnerIconStop_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            multikeysCoreRunner.Stop();
+            BackgroundRunnerIconStart.Visibility = Visibility.Visible;
+            BackgroundRunnerIconStop.Visibility = Visibility.Hidden;
+
+            LabelCurrentCoreState.Content = Properties.Strings.CoreStateStopped;
+        }
+
+
+        #endregion
 
 
     }

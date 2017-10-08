@@ -89,7 +89,7 @@ namespace MultikeysGUI.View.Controls
             Layer.RefreshView(kb.Layers[0].Commands, _modifiers);
 
             // Show the keyboard's name
-            LabelKeyboardName.Content = kb.UniqueName;
+            LabelKeyboardName.Content = kb.UniqueName == "" ? Properties.Strings.KeyboardNameDialogAnyKeyboard : kb.UniqueName;
             // TODO: Show the keyboard's alias somewhere
         }
 

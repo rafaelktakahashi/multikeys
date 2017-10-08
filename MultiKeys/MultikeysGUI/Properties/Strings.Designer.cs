@@ -484,6 +484,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You must save the layout in order to use it. Save it now?.
+        /// </summary>
+        public static string WarningSaveLayoutToStart {
+            get {
+                return ResourceManager.GetString("WarningSaveLayoutToStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsaved changes will be lost. Proceed?.
         /// </summary>
         public static string WarningWillOverwriteWorkingLayout {

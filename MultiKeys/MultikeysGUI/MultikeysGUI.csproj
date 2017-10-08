@@ -68,6 +68,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Domain\BackgroundRunner\MultikeysCoreRunner.cs" />
     <Compile Include="Domain\DomainFacade.cs" />
     <Compile Include="Domain\IDomainFacade.cs" />
     <Compile Include="Domain\Layout\PhysicalKey.cs" />
@@ -193,6 +194,27 @@
       <Link>Resources\DetectKeyboardName.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\MultikeysCoreOutput\Release\KeyboardHookDLL.dll">
+      <Link>Resources\KeyboardHookDLL.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MultikeysCoreOutput\Release\MultikeysCore.exe">
+      <Link>Resources\MultikeysCore.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\MultikeysCoreOutput\Release\xerces-c_3_2.dll">
+      <Link>Resources\xerces-c_3_2.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Resources\StatePaused.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\StateRunning.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\StateStopped.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Multikeys_Logo_32.ico" />
     <Resource Include="Resources\Multikeys_Logo_32.png" />
     <Resource Include="Multikeys_Logo_32.ico" />

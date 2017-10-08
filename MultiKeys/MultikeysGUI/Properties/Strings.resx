@@ -285,4 +285,7 @@
   <data name="WindowTitleMainWindow" xml:space="preserve">
     <value>Multikeys - Main Window</value>
   </data>
+  <data name="WarningSaveLayoutToStart" xml:space="preserve">
+    <value>You must save the layout in order to use it. Save it now?</value>
+  </data>
 </root>

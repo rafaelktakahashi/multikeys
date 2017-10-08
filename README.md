@@ -14,10 +14,10 @@ The RawInput API, on the other hand, does provide low-level information that inc
 This application aims at providing such a solution: to allow the user to create and use multiple keyboard layouts at once in the Windows Operating System.
 
 # Getting Started
-This app is developed in Visual Studio 2017 targeting Windows 7 or higher. The core project in Visual C++ interacts with the Windows API to intercept and substitute keystrokes according to a configuration file in XML. The GUI is written in C# WPF, and is used to create the configuration file that contains the layouts for the different registered keyboards; it writes the XML configuration files and controls the lifetime of the core application.  
+This app is developed in Visual Studio 2017 targeting Windows 7 or higher. The core project in Visual C++ interacts with the Windows API to intercept and substitute keystrokes according to a configuration file in XML. The Layout Editor is written in C# WPF, and is used to create the configuration file that contains the layouts for the different registered keyboards; it writes the XML configuration files and controls the lifetime of the core application.  
 
-# Build and Test
-Currently, only the core application is buildable. It requires a proper xml file.
+# Build and Run
+Buiding the solution should be simple. One important detail, however, is that the Layout Editor points to the Release folders of the C++ projects; as such, it's necessary to build at least the C++ projects in Release mode before building and running the Layout Editor.
 
 
 [AutoHotKey]: https://autohotkey.com/

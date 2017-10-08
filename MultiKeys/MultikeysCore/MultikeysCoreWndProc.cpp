@@ -779,6 +779,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UninstallHook();		// Done using it.
 		PostQuitMessage(0);
 		break;
+	case WM_CLOSE:
+		DestroyWindow(hWnd);
+		break;
 	default:		// Give it to someone else.
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}

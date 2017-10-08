@@ -61,6 +61,33 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current state: Paused.
+        /// </summary>
+        public static string CoreStatePaused {
+            get {
+                return ResourceManager.GetString("CoreStatePaused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current state: Running.
+        /// </summary>
+        public static string CoreStateRunning {
+            get {
+                return ResourceManager.GetString("CoreStateRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current state: Stopped.
+        /// </summary>
+        public static string CoreStateStopped {
+            get {
+                return ResourceManager.GetString("CoreStateStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to From.
         /// </summary>
         public static string DeadKeyReplacementFrom {

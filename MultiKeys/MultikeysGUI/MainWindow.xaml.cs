@@ -253,6 +253,8 @@ namespace MultikeysGUI
             multikeysCoreRunner.Start(workingFileName);
             BackgroundRunnerIconStart.Visibility = Visibility.Hidden;
             BackgroundRunnerIconStop.Visibility = Visibility.Visible;
+
+            LabelCurrentCoreState.Content = Properties.Strings.CoreStateRunning;
         }
 
         private void BackgroundRunnerIconStop_MouseUp(object sender, MouseButtonEventArgs e)
@@ -260,6 +262,8 @@ namespace MultikeysGUI
             multikeysCoreRunner.Stop();
             BackgroundRunnerIconStart.Visibility = Visibility.Visible;
             BackgroundRunnerIconStop.Visibility = Visibility.Hidden;
+
+            LabelCurrentCoreState.Content = Properties.Strings.CoreStateStopped;
         }
 
 

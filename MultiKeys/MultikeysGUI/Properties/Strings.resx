@@ -288,4 +288,13 @@
   <data name="WarningSaveLayoutToStart" xml:space="preserve">
     <value>You must save the layout in order to use it. Save it now?</value>
   </data>
+  <data name="CoreStatePaused" xml:space="preserve">
+    <value>Current state: Paused</value>
+  </data>
+  <data name="CoreStateRunning" xml:space="preserve">
+    <value>Current state: Running</value>
+  </data>
+  <data name="CoreStateStopped" xml:space="preserve">
+    <value>Current state: Stopped</value>
+  </data>
 </root>

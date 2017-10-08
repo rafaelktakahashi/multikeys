@@ -90,7 +90,9 @@ namespace MultikeysGUI.Domain.BackgroundRunner
         public void Stop()
         {
             // The core process is a Win32 window application, and it accepts a close message:
-            mkCoreProcess.CloseMainWindow();
+            // mkCoreProcess.CloseMainWindow();
+
+            mkCoreProcess.Kill();
         }
     }
 }

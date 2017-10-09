@@ -22,6 +22,12 @@ bld/
 [Oo]bj/
 [Ll]og/
 
+# Do not ignore the xerces-c library:
+!MultiKeys/Remapper/Dependencies/xercesc/Win32_Debug/bin
+!MultiKeys/Remapper/Dependencies/xercesc/Win32_Release/bin
+!MultiKeys/Remapper/Dependencies/xercesc/x64_Debug/bin
+!MultiKeys/Remapper/Dependencies/xercesc/x64_Release/bin
+
 # Visual Studio 2015 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot

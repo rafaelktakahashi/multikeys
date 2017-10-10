@@ -11,15 +11,16 @@
 
         <Grid x:Name="KeyboardsView">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <ScrollViewer Width="Auto" MinWidth="1000">
+            <ScrollViewer Width="Auto" MinWidth="680"
+                          HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <StackPanel Width="Auto" x:Name="KeyboardStack" Orientation="Vertical" Margin="5" Grid.Column="0"/>
             </ScrollViewer>
 
-            <local:CommandPanel x:Name="SummaryPanel" Grid.Column="1" Margin="10" Width="Auto" Height="Auto"/>
+            <local:CommandPanel x:Name="SummaryPanel" Grid.Column="1" Margin="10" Width="Auto" MinWidth="300" Height="Auto"/>
 
         </Grid>
 

@@ -216,6 +216,10 @@ namespace MultikeysGUI
 
         #region BackgroundRunner
 
+        /// <summary>
+        /// The object that actually controls the background process. If this application quits,
+        /// the background process is automatically killed.
+        /// </summary>
         private MultikeysCoreRunner multikeysCoreRunner;
 
         private void BackgroundRunnerIconStart_Loaded(object sender, RoutedEventArgs e)
@@ -235,7 +239,17 @@ namespace MultikeysGUI
 
         private void BackgroundRunnerIconStart_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            // If the file name does not yet exist (that is, not yet saved), then warn the user
+            // If no layout is being edited, show a warning and return.
+            if (workingFileName == null)
+            {
+                MessageBox.Show(Properties.Strings.WarningNoLayout,
+                    Properties.Strings.Warning,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            // If the file name does not yet exist in disk (that is, not yet saved), then warn the user
             // and save it.
             if (!File.Exists(workingFileName))
             {

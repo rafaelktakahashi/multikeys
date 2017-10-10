@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MultikeysGUI.View.Controls"
         xmlns:p="clr-namespace:MultikeysGUI.Properties"
         mc:Ignorable="d"
-        Title="{x:Static p:Strings.WindowTitleMainWindow}" Height="680" Width="1438">
+        Title="{x:Static p:Strings.WindowTitleMainWindow}" Height="680" Width="1420">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

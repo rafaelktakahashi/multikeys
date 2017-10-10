@@ -87,6 +87,10 @@ namespace MultikeysGUI.View.Controls
             // Setup the layer to the default one (no modifiers)
             Layer.SetLayoutToRender(physLayout);
             Layer.RefreshView(kb.Layers[0].Commands, _modifiers);
+            _activeLayer = kb.Layers[0];            // TODO: Using Layers[0] doesn't cut it.
+
+            // Setup the selected key to none
+            SelectedKey = null;
 
             // Show the keyboard's name
             LabelKeyboardName.Content = kb.UniqueName == "" ? Properties.Strings.KeyboardNameDialogAnyKeyboard : kb.UniqueName;
@@ -96,7 +100,7 @@ namespace MultikeysGUI.View.Controls
         /// <summary>
         /// This method extracts a Keyboard object from this control.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An instance of Keyboard that contains this control's information</returns>
         public Keyboard GetKeyboard()
         {
             return new Keyboard()
@@ -126,6 +130,11 @@ namespace MultikeysGUI.View.Controls
         /// </summary>
         private Layer _activeLayer;
 
+        /// <summary>
+        /// Currently selected key, initialized as null.
+        /// </summary>
+        public KeyControl SelectedKey { get; private set; }
+
         #endregion
 
 
@@ -154,6 +163,10 @@ namespace MultikeysGUI.View.Controls
             }
 
             // Enable or diable buttons according to the newly selected item.
+            // TODO
+
+            // Update this control's selected key and command
+            SelectedKey = keyControl;
 
             // Bubble up the event, as to transmit information
             KeyClicked?.Invoke(this, new KeyClickedEventArgs
@@ -218,13 +231,22 @@ namespace MultikeysGUI.View.Controls
         private void ButtonAssignCommand_Click(object sender, RoutedEventArgs e)
         {
             // If no key is selected:
-
+            if (SelectedKey == null)
+                return;     // TODO: Warn the user properly
 
             // Show a dialog, then check the result of its ShowDialog.
             var dialog = new KeystrokeCommandDialog();
             if (dialog.ShowDialog() == true)
             {
+                // TODO: Add special case for when the selected key is registered as modifier
+                // (it should be unregistered as modifier)
+
+                // Retrieve the new command from the dialog:
                 var newCommand = dialog.Command;
+                // Give it to the key:
+                SelectedKey.SetCommand(newCommand);
+                // Also update the current layer:
+                UpdateCurrentLayerWithNewCommand(SelectedKey.Scancode, newCommand);
             }
         }
 
@@ -246,6 +268,20 @@ namespace MultikeysGUI.View.Controls
         private void ButtonUnregisterModifier_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+
+        private void UpdateCurrentLayerWithNewCommand(Scancode sc, IKeystrokeCommand command)
+        {
+            // TODO: Add special case for an empty layer, which is represented by a dummy dictionary
+            if (_activeLayer.Commands.ContainsKey(sc))
+            {
+                _activeLayer.Commands[sc] = command;
+            }
+            else
+            {
+                _activeLayer.Commands.Add(sc, command);
+            }
         }
 
         /// <summary>

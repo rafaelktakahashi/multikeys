@@ -93,7 +93,7 @@ namespace MultikeysGUI.View.Controls
             SelectedKey = null;
 
             // Show the keyboard's name
-            LabelKeyboardName.Content = kb.UniqueName == "" ? Properties.Strings.KeyboardNameDialogAnyKeyboard : kb.UniqueName;
+            LabelKeyboardName.Text = kb.UniqueName == "" ? Properties.Strings.KeyboardNameDialogAnyKeyboard : kb.UniqueName;
             // TODO: Show the keyboard's alias somewhere
         }
 
@@ -234,13 +234,17 @@ namespace MultikeysGUI.View.Controls
             if (SelectedKey == null)
                 return;     // TODO: Warn the user properly
 
+            // If the selected key is already registered as modifier, then the operation
+            // cannot continue (the button should have been disabled anyway)
+            if (_modifiers.Any(mod => mod.Scancodes.Contains(SelectedKey.Scancode)))
+            {
+                return;
+            }
+
             // Show a dialog, then check the result of its ShowDialog.
             var dialog = new KeystrokeCommandDialog();
             if (dialog.ShowDialog() == true)
             {
-                // TODO: Add special case for when the selected key is registered as modifier
-                // (it should be unregistered as modifier)
-
                 // Retrieve the new command from the dialog:
                 var newCommand = dialog.Command;
                 // Give it to the key:
@@ -294,7 +298,7 @@ namespace MultikeysGUI.View.Controls
             if (kbNameDialog.ShowDialog() == true)
             {
                 UniqueName = kbNameDialog.KeyboardName;
-                LabelKeyboardName.Content = UniqueName;
+                LabelKeyboardName.Text = UniqueName;
             }
         }
     }

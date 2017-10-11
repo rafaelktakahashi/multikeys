@@ -12,10 +12,10 @@
             <StackPanel Orientation="Horizontal">
                 <Label Content="{x:Static p:Strings.KeyboardName}"
                        FontWeight="Bold" FontSize="16"/>
-                <Label x:Name="LabelKeyboardName"
+                <TextBlock x:Name="LabelKeyboardName" VerticalAlignment="Center"
                        FontWeight="SemiBold" FontSize="16" Foreground="Blue"/>
                 <Button Name="ButtonKeyboardNameEdit" Content="{x:Static p:Strings.KeyboardNameEdit}"
-                        Width="Auto" MinWidth="60" Height="20"
+                        Width="Auto" MinWidth="60" Height="20" Margin="15,0,0,0"
                         Click="ButtonKeyboardNameEdit_Click"/>
             </StackPanel>
             

@@ -297,4 +297,11 @@
   <data name="CoreStateStopped" xml:space="preserve">
     <value>Current state: Stopped</value>
   </data>
+  <data name="Confirmation" xml:space="preserve">
+    <value>Confirmation</value>
+    <comment>Generic "confirmation"</comment>
+  </data>
+  <data name="WarningDeleteCommand" xml:space="preserve">
+    <value>Remove this command?</value>
+  </data>
 </root>

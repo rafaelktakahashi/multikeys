@@ -61,6 +61,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Confirmation.
+        /// </summary>
+        public static string Confirmation {
+            get {
+                return ResourceManager.GetString("Confirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Current state: Paused.
         /// </summary>
         public static string CoreStatePaused {
@@ -498,6 +507,15 @@ namespace MultikeysGUI.Properties {
         public static string Warning {
             get {
                 return ResourceManager.GetString("Warning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove this command?.
+        /// </summary>
+        public static string WarningDeleteCommand {
+            get {
+                return ResourceManager.GetString("WarningDeleteCommand", resourceCulture);
             }
         }
         

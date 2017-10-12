@@ -297,7 +297,7 @@ namespace MultikeysGUI.View.Controls
         {
             // If no key is selected:
             if (SelectedKey == null)
-                return;     // TODO: Warn the user properly
+                return;
 
             // If the selected key is already registered as modifier, then the operation
             // cannot continue (the button should have been disabled anyway)
@@ -321,12 +321,49 @@ namespace MultikeysGUI.View.Controls
 
         private void ButtonEditCommand_Click(object sender, RoutedEventArgs e)
         {
+            if (SelectedKey == null)
+                return;
 
+            if (IsRegistererdAsModifier(SelectedKey.Scancode))
+                return;
+
+            if (SelectedKey.Command == null)
+                return;
+
+            // Show a dialog, set it to edit mode.
+            var dialog = new KeystrokeCommandDialog();
+            dialog.UseExistingCommand(SelectedKey.Command);
+            if (dialog.ShowDialog() == true)
+            {
+                var newCommand = dialog.Command;
+                SelectedKey.SetCommand(newCommand);
+                UpdateCurrentLayerWithNewCommand(SelectedKey.Scancode, newCommand);
+            }
         }
 
         private void ButtonRemoveCommand_Click(object sender, RoutedEventArgs e)
         {
+            if (SelectedKey == null)
+                return;
 
+            if (IsRegistererdAsModifier(SelectedKey.Scancode))
+                return;
+
+            if (SelectedKey.Command == null)
+                return;
+
+            // Ask for confirmation, then remove the command
+            MessageBoxResult result = MessageBox.Show(
+                Properties.Strings.WarningDeleteCommand,
+                Properties.Strings.Confirmation,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                SelectedKey.SetCommand(null);
+                _activeLayer.Commands.Remove(SelectedKey.Scancode);
+            }
         }
 
         private void ButtonRegisterModifier_Click(object sender, RoutedEventArgs e)

@@ -57,6 +57,30 @@ namespace MultikeysGUI.View.Dialogues
         public IKeystrokeCommand Command { get; private set; }
 
 
+        /// <summary>
+        /// Call this method if this dialog is meant to edit an existing command.
+        /// Note that the Command property in this dialog will remain uninitialized.
+        /// </summary>
+        /// <param name="command"></param>
+        public void UseExistingCommand(IKeystrokeCommand command)
+        {
+            // Update the text
+            this.Title = Properties.Strings.WindowTitleEditCommandDialog;
+
+            // Call the correct private method depending on the command's type
+            if (command is DeadKeyCommand)
+            {
+                CommandTabControl.SelectedIndex = 3;
+            }
+            else if (command is UnicodeCommand)
+            {
+                UseExistingUnicodeCommand(command as UnicodeCommand);
+                CommandTabControl.SelectedIndex = 0;
+            }
+            else return;
+        }
+
+
 
         #region Unicode
         
@@ -91,6 +115,16 @@ namespace MultikeysGUI.View.Dialogues
         public ObservableCollection<UnicodeCharacterItem> UnicodeCharactersSource { get; set; }
 
         /// <summary>
+        /// Call this method internally to set an existing command to be edited.
+        /// </summary>
+        /// <param name="command"></param>
+        private void UseExistingUnicodeCommand(UnicodeCommand command)
+        {
+            UnicodeTextInput.Text = command.ContentAsText;
+            UnicodeUpdateList();
+        }
+
+        /// <summary>
         /// Called when the text in the input textbox changes.
         /// Updates the list of characters, but with a delay.
         /// </summary>
@@ -118,7 +152,7 @@ namespace MultikeysGUI.View.Dialogues
                 {
                     int codepoint = char.ConvertToUtf32(UnicodeTextInput.Text, i);
 
-                    if (codepoint > 0x1ffff)
+                    if (codepoint > 0xffff)
                         i++;
 
                     UnicodeCharactersSource.Add(

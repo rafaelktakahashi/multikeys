@@ -12,7 +12,7 @@
 
     <!-- Data context for this window is set in code behind -->
     <Grid x:Name="RootGrid">
-        <TabControl>
+        <TabControl x:Name="CommandTabControl">
 
             <TabItem Header="{x:Static p:Strings.ReadableNameUnicodeKey}">
                 <Grid>

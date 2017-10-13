@@ -260,6 +260,7 @@ namespace MultikeysGUI.View.Controls
                 ButtonEditCommand.IsEnabled = false;
                 ButtonRemoveCommand.IsEnabled = false;
                 ButtonRegisterModifier.IsEnabled = false;
+                ButtonChangeModifierName.IsEnabled = false;
                 ButtonUnregisterModifier.IsEnabled = false;
 
                 return;
@@ -295,6 +296,12 @@ namespace MultikeysGUI.View.Controls
             else if (SelectedKey.Command != null)
                 ButtonRegisterModifier.IsEnabled = false;
             else ButtonRegisterModifier.IsEnabled = true;
+
+            // change modifier name
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
+                ButtonChangeModifierName.IsEnabled = true;
+            else
+                ButtonChangeModifierName.IsEnabled = false;
 
             // unregister modifier
             if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
@@ -416,6 +423,36 @@ namespace MultikeysGUI.View.Controls
 
                 var newModifier = ModifiersControl.RegisterModifier(scancode, newModifierName);
                 SelectedKey.SetModifier(newModifier);
+            }
+        }
+
+        private void ButtonChangeModifierName_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedKey == null)
+                return;
+
+            if (!ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
+                return;
+
+            string oldName = SelectedKey.Modifier.Name;
+
+            // Retrieve the new name from the user
+            var dialog = new ChangeModifierNameDialog(oldName, ModifiersControl.Modifiers);
+            if (dialog.ShowDialog() == true)
+            {
+                string newName = dialog.ModifierName;
+
+                // 1. Inform the modifier control that a name is to be changed.
+                ModifiersControl.ChangeModifierName(oldName, newName);
+                // 2. Update each key registered as that modifier, so that it's updated
+                Layer.RefreshView(SelectedKey.Modifier, SelectedKey.IsModifierSelected);
+                // 3. Go through each layer that references the old name and update it
+                foreach (var layer in _layers)
+                {
+                    int index = layer.ModifierCombination.IndexOf(oldName);
+                    if (index != -1)
+                        layer.ModifierCombination[index] = newName;
+                }
             }
         }
 

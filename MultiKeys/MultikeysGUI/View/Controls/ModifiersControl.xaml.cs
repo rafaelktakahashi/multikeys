@@ -167,6 +167,33 @@ namespace MultikeysGUI.View.Controls
         }
 
 
+        
+        /// <summary>
+        /// Change the name of a modifier. If no modifier of the specified name is found,
+        /// no action is taken.
+        /// </summary>
+        public void ChangeModifierName(string oldName, string newName)
+        {
+            foreach (var modifier in Modifiers)
+            {
+                if (modifier.Name == oldName)
+                {
+                    modifier.Name = newName;
+                    break;
+                }
+            }
+            foreach (var button in ModifierButtonList)
+            {
+                if (button.Name == oldName)
+                {
+                    button.Name = newName;
+                    button.Content = newName;
+                    break;
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// Updates the modifier by code. This does not fire an event.

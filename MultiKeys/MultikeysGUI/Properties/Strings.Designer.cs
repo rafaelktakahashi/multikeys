@@ -232,6 +232,15 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change modifier name.
+        /// </summary>
+        public static string KeyOptionsChangeModifierName {
+            get {
+                return ResourceManager.GetString("KeyOptionsChangeModifierName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit command.
         /// </summary>
         public static string KeyOptionsEditCommand {
@@ -372,6 +381,42 @@ namespace MultikeysGUI.Properties {
         public static string None {
             get {
                 return ResourceManager.GetString("None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name already exists..
+        /// </summary>
+        public static string PromptChangeModifierNameAlreadyExists {
+            get {
+                return ResourceManager.GetString("PromptChangeModifierNameAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm.
+        /// </summary>
+        public static string PromptChangeModifierNameConfirm {
+            get {
+                return ResourceManager.GetString("PromptChangeModifierNameConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please, input a valid name..
+        /// </summary>
+        public static string PromptChangeModifierNameInvalidText {
+            get {
+                return ResourceManager.GetString("PromptChangeModifierNameInvalidText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose a new name for the modifier:.
+        /// </summary>
+        public static string PromptChangeModifierNameText {
+            get {
+                return ResourceManager.GetString("PromptChangeModifierNameText", resourceCulture);
             }
         }
         
@@ -588,6 +633,15 @@ namespace MultikeysGUI.Properties {
         public static string WarningWillOverwriteWorkingLayout {
             get {
                 return ResourceManager.GetString("WarningWillOverwriteWorkingLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change modifier name.
+        /// </summary>
+        public static string WindowTitleChangeModifierName {
+            get {
+                return ResourceManager.GetString("WindowTitleChangeModifierName", resourceCulture);
             }
         }
         

@@ -39,6 +39,9 @@
                 <Button x:Name="ButtonRegisterModifier" Margin="5" Height="23" Width="Auto" MinWidth="80"
                         Content="{x:Static p:Strings.KeyOptionsRegisterModifier}" Click="ButtonRegisterModifier_Click" FontSize="14" />
 
+                <Button x:Name="ButtonChangeModifierName" Margin="5" Height="23" Width="Auto" MinWidth="80"
+                        Content="{x:Static p:Strings.KeyOptionsChangeModifierName}" Click="ButtonChangeModifierName_Click" FontSize="14" />
+
                 <Button x:Name="ButtonUnregisterModifier" Margin="5" Height="23" Width="Auto" MinWidth="80"
                         Content="{x:Static p:Strings.KeyOptionsUnregisterModifier}" Click="ButtonUnregisterModifier_Click" FontSize="14" />
 

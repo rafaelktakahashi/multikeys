@@ -322,4 +322,22 @@
   <data name="WarningModifierOverridesCommands" xml:space="preserve">
     <value>Warning: This key is remapped in other layers. Setting this key as modifier will take precedence over those remaps. Proceed?</value>
   </data>
+  <data name="KeyOptionsChangeModifierName" xml:space="preserve">
+    <value>Change modifier name</value>
+  </data>
+  <data name="PromptChangeModifierNameConfirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="PromptChangeModifierNameText" xml:space="preserve">
+    <value>Choose a new name for the modifier:</value>
+  </data>
+  <data name="WindowTitleChangeModifierName" xml:space="preserve">
+    <value>Change modifier name</value>
+  </data>
+  <data name="PromptChangeModifierNameAlreadyExists" xml:space="preserve">
+    <value>Name already exists.</value>
+  </data>
+  <data name="PromptChangeModifierNameInvalidText" xml:space="preserve">
+    <value>Please, input a valid name.</value>
+  </data>
 </root>

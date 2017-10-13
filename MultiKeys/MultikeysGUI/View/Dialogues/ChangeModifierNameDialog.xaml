@@ -1,0 +1,44 @@
+﻿<Window x:Class="MultikeysGUI.View.Dialogues.ChangeModifierNameDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MultikeysGUI.View.Dialogues"
+        xmlns:p="clr-namespace:MultikeysGUI.Properties"
+        mc:Ignorable="d"
+        Title="{x:Static p:Strings.WindowTitleChangeModifierName}" Height="161.333" Width="433.333"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <Grid>
+        <GroupBox Header="{x:Static p:Strings.PromptChangeModifierNameText}" HorizontalAlignment="Stretch" Height="65" Margin="10,10,10,0" VerticalAlignment="Top" >
+            <TextBox x:Name="InputNewModifierName"
+                Height="23"
+                TextWrapping="Wrap"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Width="244"
+                     TextChanged="InputNewModifierName_TextChanged"/>
+        </GroupBox>
+
+        <Label x:Name="LabelNameAlreadyExists"
+            Content="{x:Static p:Strings.PromptChangeModifierNameAlreadyExists}"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Center"
+            FontSize="10"
+            Foreground="Red"
+            Margin="10,69,10,0"
+            VerticalAlignment="Top"
+            VerticalContentAlignment="Top"
+            Visibility="Hidden" Height="29"/>
+
+        <Button x:Name="ButtonConfirm"
+            Content="{x:Static p:Strings.PromptChangeModifierNameConfirm}"
+            HorizontalAlignment="Center" Margin="10"
+            VerticalAlignment="Bottom"
+            Width="Auto"
+            MinWidth="80"
+            Click="ButtonConfirm_Click"/>
+
+
+    </Grid>
+</Window>

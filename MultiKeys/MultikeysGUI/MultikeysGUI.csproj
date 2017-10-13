@@ -101,6 +101,9 @@
     <Compile Include="View\Dialogues\KeystrokeCommandDialog.xaml.cs">
       <DependentUpon>KeystrokeCommandDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Dialogues\ModifierDialog.xaml.cs">
+      <DependentUpon>ModifierDialog.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -142,6 +145,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dialogues\KeystrokeCommandDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dialogues\ModifierDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

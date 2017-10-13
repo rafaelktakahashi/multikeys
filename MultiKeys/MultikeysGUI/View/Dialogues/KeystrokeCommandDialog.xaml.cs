@@ -55,13 +55,13 @@ namespace MultikeysGUI.View.Dialogues
         /// If this window closes incorrectly (DialogResult is false), then this property remains null.
         /// </summary>
         public IKeystrokeCommand Command { get; private set; }
+        
 
 
         /// <summary>
         /// Call this method if this dialog is meant to edit an existing command.
         /// Note that the Command property in this dialog will remain uninitialized.
         /// </summary>
-        /// <param name="command"></param>
         public void UseExistingCommand(IKeystrokeCommand command)
         {
             // Update the text
@@ -70,7 +70,7 @@ namespace MultikeysGUI.View.Dialogues
             // Call the correct private method depending on the command's type
             if (command is DeadKeyCommand)
             {
-                CommandTabControl.SelectedIndex = 3;
+                CommandTabControl.SelectedIndex = 2;
             }
             else if (command is UnicodeCommand)
             {
@@ -79,7 +79,6 @@ namespace MultikeysGUI.View.Dialogues
             }
             else return;
         }
-
 
 
         #region Unicode

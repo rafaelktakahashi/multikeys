@@ -69,7 +69,6 @@ namespace MultikeysGUI.View.Controls
                 // being initialized from an existing keyboard
                 UniqueName = kb.UniqueName;
                 Alias = kb.Alias;
-                _modifiers = kb.Modifiers;
                 _layers = kb.Layers;
             }
             else
@@ -77,16 +76,15 @@ namespace MultikeysGUI.View.Controls
                 // being initialized as a brand new keyboard
                 UniqueName = string.Empty;
                 Alias = null;
-                _modifiers = new List<Modifier>();
                 _layers = new List<Layer>();
             }
 
             // Setup modifiers control
-            ModifiersControl.InitializeModifiers(_modifiers);
+            ModifiersControl.InitializeModifiers(kb.Modifiers);
 
             // Setup the layer to the default one (no modifiers)
             Layer.SetLayoutToRender(physLayout);
-            Layer.RefreshView(kb.Layers[0].Commands, _modifiers);
+            Layer.RefreshView(kb.Layers[0].Commands, ModifiersControl.Modifiers);
             _activeLayer = kb.Layers[0];            // TODO: Using Layers[0] doesn't cut it.
 
             // Setup the selected key to none
@@ -109,7 +107,7 @@ namespace MultikeysGUI.View.Controls
             {
                 UniqueName = UniqueName,
                 Alias = Alias,
-                Modifiers = _modifiers,         // May need redoing
+                Modifiers = ModifiersControl.Modifiers,
                 Layers = _layers
             };
         }
@@ -118,8 +116,8 @@ namespace MultikeysGUI.View.Controls
 
         public string UniqueName { get; set; }
         public string Alias { get; set; }
-
-        private IList<Modifier> _modifiers;
+        
+        // modifiers are a responsibility of the ModifierControl
         private IList<Layer> _layers;
 
         // A readonly empty dictionary with 0 capacity that represents an empty layer.
@@ -193,6 +191,7 @@ namespace MultikeysGUI.View.Controls
             }
         }
         private ModifierComparerByName modifierComparerByName = new ModifierComparerByName();
+
         /// <summary>
         /// Handler for the ModifierSelectionChanged event fired by the modifier control.
         /// </summary>
@@ -200,13 +199,14 @@ namespace MultikeysGUI.View.Controls
         {
             // Get both the currently selected modifers and the currently unselected modifiers
             var selectedModifiers = ModifiersControl.SelectedModifiers;
-            var unselectedModifiers = _modifiers.Except(selectedModifiers, modifierComparerByName);
+            var unselectedModifiers = ModifiersControl.Modifiers.Except(selectedModifiers, modifierComparerByName);
 
             var selectedModNames =
                 from x in selectedModifiers select x.Name;
             var unselectedModNames =
                 from x in unselectedModifiers select x.Name;
 
+            bool layerFound = false;
             // Look for a layer that matches
             foreach (Layer layer in _layers)
             {
@@ -219,26 +219,36 @@ namespace MultikeysGUI.View.Controls
                     // found the correct layer
                     _activeLayer = layer;
                     // render it
-                    Layer.RefreshView(layer.Commands, _modifiers);
+                    Layer.RefreshView(layer.Commands, ModifiersControl.Modifiers);
                     // done
-                    return;
+                    layerFound = true;
+                    break;
                 }
             }
 
-            // No layer was found
-            // render no command
-            Layer.RefreshView(EmptyLayerCommands, _modifiers);
-            // Active layer becomes null, to signify an empty layer
-            _activeLayer = null;
+            if (!layerFound)
+            {
+                // No layer was found
+                // render no command
+                Layer.RefreshView(EmptyLayerCommands, ModifiersControl.Modifiers);
+                // Active layer becomes null, to signify an empty layer
+                _activeLayer = null;
+            }
 
             // Note that emtpy layers are nulls to save space; the number of potential layers is the factorial
             // of the number of modifiers, so that could skyrocket fast.
-        }
 
-        private bool IsRegistererdAsModifier(Scancode sc)
-        {
-            return _modifiers.Any(mod => mod.Scancodes.Contains(sc));
+            // Change the visuals of the keys on screen to reflect the new selection
+            foreach (var mod in selectedModifiers)
+                Layer.RefreshView(mod, true);
+            foreach (var mod in unselectedModifiers)
+                Layer.RefreshView(mod, false);
+            // Explanation: The user can change layers both by pressing the buttons in the modifiers control, and
+            // by pressing the keys on the layer control. In each case, the other control should be updated to match
+            // the current state; this method takes care of the first case (modifiers control that updates layer control)
         }
+        
+        
 
 
         private void UpdateButtonStates()
@@ -256,13 +266,15 @@ namespace MultikeysGUI.View.Controls
             }
 
             // new command
-            if (IsRegistererdAsModifier(SelectedKey.Scancode))
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
+                ButtonAssignCommand.IsEnabled = false;
+            else if (SelectedKey.Command != null)
                 ButtonAssignCommand.IsEnabled = false;
             else
                 ButtonAssignCommand.IsEnabled = true;
 
             // edit command
-            if (IsRegistererdAsModifier(SelectedKey.Scancode))
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
                 ButtonEditCommand.IsEnabled = false;
             else if (SelectedKey.Command == null)
                 ButtonEditCommand.IsEnabled = false;
@@ -270,7 +282,7 @@ namespace MultikeysGUI.View.Controls
                 ButtonEditCommand.IsEnabled = true;
 
             // remove command
-            if (IsRegistererdAsModifier(SelectedKey.Scancode))
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
                 ButtonRemoveCommand.IsEnabled = false;
             else if (SelectedKey.Command == null)
                 ButtonRemoveCommand.IsEnabled = false;
@@ -278,14 +290,14 @@ namespace MultikeysGUI.View.Controls
                 ButtonRemoveCommand.IsEnabled = true;
 
             // register modifier
-            if (IsRegistererdAsModifier(SelectedKey.Scancode))
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
                 ButtonRegisterModifier.IsEnabled = false;
             else if (SelectedKey.Command != null)
                 ButtonRegisterModifier.IsEnabled = false;
             else ButtonRegisterModifier.IsEnabled = true;
 
             // unregister modifier
-            if (IsRegistererdAsModifier(SelectedKey.Scancode))
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
                 ButtonUnregisterModifier.IsEnabled = true;
             else
                 ButtonUnregisterModifier.IsEnabled = false;
@@ -301,10 +313,12 @@ namespace MultikeysGUI.View.Controls
 
             // If the selected key is already registered as modifier, then the operation
             // cannot continue (the button should have been disabled anyway)
-            if (IsRegistererdAsModifier(SelectedKey.Scancode))
-            {
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
                 return;
-            }
+
+            // If the key already has a command in it, the operation cannot continue
+            if (SelectedKey.Command != null)
+                return;
 
             // Show a dialog, then check the result of its ShowDialog.
             var dialog = new KeystrokeCommandDialog();
@@ -324,7 +338,7 @@ namespace MultikeysGUI.View.Controls
             if (SelectedKey == null)
                 return;
 
-            if (IsRegistererdAsModifier(SelectedKey.Scancode))
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
                 return;
 
             if (SelectedKey.Command == null)
@@ -346,20 +360,20 @@ namespace MultikeysGUI.View.Controls
             if (SelectedKey == null)
                 return;
 
-            if (IsRegistererdAsModifier(SelectedKey.Scancode))
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
                 return;
 
             if (SelectedKey.Command == null)
                 return;
 
             // Ask for confirmation, then remove the command
-            MessageBoxResult result = MessageBox.Show(
-                Properties.Strings.WarningDeleteCommand,
+            MessageBoxResult answer = MessageBox.Show(
+                Properties.Strings.WarningRemoveCommand,
                 Properties.Strings.Confirmation,
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
-            if (result == MessageBoxResult.Yes)
+            if (answer == MessageBoxResult.Yes)
             {
                 SelectedKey.SetCommand(null);
                 _activeLayer.Commands.Remove(SelectedKey.Scancode);
@@ -368,22 +382,79 @@ namespace MultikeysGUI.View.Controls
 
         private void ButtonRegisterModifier_Click(object sender, RoutedEventArgs e)
         {
+            if (SelectedKey == null)
+                return;
 
+            if (ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
+                return;
+
+            // Loop through all exiting layers; if any of them include a command for this scancode,
+            // warn the user that registering this key will override those commands.
+            foreach (var layer in _layers)
+            {
+                if (layer.Commands.ContainsKey(SelectedKey.Scancode))
+                {
+                    MessageBoxResult answer =
+                        MessageBox.Show(
+                            Properties.Strings.WarningModifierOverridesCommands,
+                            Properties.Strings.Warning,
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Warning);
+
+                    if (answer == MessageBoxResult.Yes)
+                        break;  // move on to rest of method
+                    else
+                        return; // interrupt operation
+                }
+            }
+
+            var dialog = new ModifierDialog(ModifiersControl.Modifiers);
+            if (dialog.ShowDialog() == true)
+            {
+                var newModifierName = dialog.ModifierName;
+                var scancode = SelectedKey.Scancode;
+
+                var newModifier = ModifiersControl.RegisterModifier(scancode, newModifierName);
+                SelectedKey.SetModifier(newModifier);
+            }
         }
 
         private void ButtonUnregisterModifier_Click(object sender, RoutedEventArgs e)
         {
+            if (SelectedKey == null)
+                return;
 
+            if (!ModifiersControl.IsRegisteredAsModifier(SelectedKey.Scancode))
+                return;
+
+            // Ask for confirmation, then unregister the key
+            MessageBoxResult answer = MessageBox.Show(
+                Properties.Strings.WarningRemoveModifier,
+                Properties.Strings.Confirmation,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (answer == MessageBoxResult.Yes)
+            {
+                SelectedKey.SetModifier(null);
+                ModifiersControl.RemoveModifier(SelectedKey.Scancode);
+            }
         }
 
 
+        /// <summary>
+        /// Sets the new command on the currently active layer.
+        /// If the currently active is empty, it is created.
+        /// </summary>
+        /// <param name="sc"></param>
+        /// <param name="command"></param>
         private void UpdateCurrentLayerWithNewCommand(Scancode sc, IKeystrokeCommand command)
         {
             // Special handling for nonexistent layer:
             if (_activeLayer == null)
             {
                 // create this layer
-                _activeLayer = new Model.Layer()
+                _activeLayer = new Layer()
                 {
                     ModifierCombination = ModifiersControl.SelectedModifiers.Select(it => it.Name).ToList()
                 };

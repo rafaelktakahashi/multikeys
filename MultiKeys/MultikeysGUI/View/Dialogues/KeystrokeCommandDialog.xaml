@@ -105,12 +105,6 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="{x:Static p:Strings.ReadableNameModifier}">
-                <Grid>
-
-                </Grid>
-            </TabItem>
-
             <TabItem Header="{x:Static p:Strings.ReadableNameExecutablekey}">
                 <Grid>
 

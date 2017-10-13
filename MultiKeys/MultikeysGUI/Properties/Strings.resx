@@ -301,7 +301,25 @@
     <value>Confirmation</value>
     <comment>Generic "confirmation"</comment>
   </data>
-  <data name="WarningDeleteCommand" xml:space="preserve">
+  <data name="WarningRemoveCommand" xml:space="preserve">
     <value>Remove this command?</value>
+  </data>
+  <data name="PromptModifierAddToExistingModifier" xml:space="preserve">
+    <value>Add to existing modifier:</value>
+  </data>
+  <data name="PromptModifierNewModfier" xml:space="preserve">
+    <value>New modifier:</value>
+  </data>
+  <data name="PromptModifierConfirm" xml:space="preserve">
+    <value>Register modifier</value>
+  </data>
+  <data name="WindowTitleNewModifierDialog" xml:space="preserve">
+    <value>Register key as modifier</value>
+  </data>
+  <data name="WarningRemoveModifier" xml:space="preserve">
+    <value>Unregister this modifier?</value>
+  </data>
+  <data name="WarningModifierOverridesCommands" xml:space="preserve">
+    <value>Warning: This key is remapped in other layers. Setting this key as modifier will take precedence over those remaps. Proceed?</value>
   </data>
 </root>

@@ -376,6 +376,33 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add to existing modifier:.
+        /// </summary>
+        public static string PromptModifierAddToExistingModifier {
+            get {
+                return ResourceManager.GetString("PromptModifierAddToExistingModifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register modifier.
+        /// </summary>
+        public static string PromptModifierConfirm {
+            get {
+                return ResourceManager.GetString("PromptModifierConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New modifier:.
+        /// </summary>
+        public static string PromptModifierNewModfier {
+            get {
+                return ResourceManager.GetString("PromptModifierNewModfier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assign command.
         /// </summary>
         public static string PromptUnicodeConfirm {
@@ -511,11 +538,11 @@ namespace MultikeysGUI.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove this command?.
+        ///   Looks up a localized string similar to Warning: This key is remapped in other layers. Setting this key as modifier will take precedence over those remaps. Proceed?.
         /// </summary>
-        public static string WarningDeleteCommand {
+        public static string WarningModifierOverridesCommands {
             get {
-                return ResourceManager.GetString("WarningDeleteCommand", resourceCulture);
+                return ResourceManager.GetString("WarningModifierOverridesCommands", resourceCulture);
             }
         }
         
@@ -525,6 +552,24 @@ namespace MultikeysGUI.Properties {
         public static string WarningNoLayout {
             get {
                 return ResourceManager.GetString("WarningNoLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove this command?.
+        /// </summary>
+        public static string WarningRemoveCommand {
+            get {
+                return ResourceManager.GetString("WarningRemoveCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unregister this modifier?.
+        /// </summary>
+        public static string WarningRemoveModifier {
+            get {
+                return ResourceManager.GetString("WarningRemoveModifier", resourceCulture);
             }
         }
         
@@ -588,6 +633,15 @@ namespace MultikeysGUI.Properties {
         public static string WindowTitleNewCommandDialog {
             get {
                 return ResourceManager.GetString("WindowTitleNewCommandDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register key as modifier.
+        /// </summary>
+        public static string WindowTitleNewModifierDialog {
+            get {
+                return ResourceManager.GetString("WindowTitleNewModifierDialog", resourceCulture);
             }
         }
         

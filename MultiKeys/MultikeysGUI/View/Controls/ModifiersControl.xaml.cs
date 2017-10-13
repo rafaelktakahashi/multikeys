@@ -37,13 +37,13 @@ namespace MultikeysGUI.View.Controls
         /// <summary>
         /// Collection of all modifiers registered in this keyboard.
         /// </summary>
-        public IEnumerable<Modifier> Modifiers { get; private set; }
+        public IList<Modifier> Modifiers { get; private set; }
 
         /// <summary>
         /// Collection containing only the modifiers registered in this keyboard
         /// that are set as active in this control.
         /// </summary>
-        public IEnumerable<Modifier> SelectedModifiers { get; private set; }
+        public IList<Modifier> SelectedModifiers { get; private set; }
 
         /// <summary>
         /// List of references to the buttons that represent each modifier.
@@ -77,10 +77,9 @@ namespace MultikeysGUI.View.Controls
         /// <summary>
         /// Register a new modifier key; if a modifier with the specified name is already
         /// registered, then the scancode is added to it.
+        /// Either way, the new modifier (newly creted or newly modified) is returned.
         /// </summary>
-        /// <param name="sc"></param>
-        /// <param name="name"></param>
-        public void RegisterModifier(Scancode sc, string name)
+        public Modifier RegisterModifier(Scancode sc, string name)
         {
             // Try to retrieve a modifier with the same name
             var existingModifier =
@@ -92,13 +91,16 @@ namespace MultikeysGUI.View.Controls
             if (existingModifier != null)
             {
                 existingModifier.Scancodes.Add(sc);
+
+                // Fire an event and return the modifier
+                ModifierSelectionChanged?.Invoke(this, new EventArgs());
+                return existingModifier;
             }
             else
             {
                 // otherwise, add a new modifier with the specified scancode
-                (Modifiers as List<Modifier>).Add(
-                    new Modifier { Name = name, Scancodes = { sc } }
-                    );
+                var newModifier = new Modifier { Name = name, Scancodes = { sc } };
+                (Modifiers as List<Modifier>).Add(newModifier);
                 // and also add a new button for that modifier
                 ToggleButton newToggleButton = this.Resources["ModifierButton"] as ToggleButton;
                 newToggleButton.Name = name;
@@ -111,10 +113,19 @@ namespace MultikeysGUI.View.Controls
                 ModifierButtons.Children.Add(newToggleButton);
                 // and keep a reference to it
                 ModifierButtonList.Add(newToggleButton);
+
+                // Fire an event and return the modifier
+                ModifierSelectionChanged?.Invoke(this, new EventArgs());
+                return newModifier;
             }
 
-            // Fire an event
-            ModifierSelectionChanged?.Invoke(this, new EventArgs());
+
+        }
+
+
+        public bool IsRegisteredAsModifier(Scancode sc)
+        {
+            return Modifiers.Any(mod => mod.Scancodes.Contains(sc));
         }
 
         /// <summary>
@@ -129,8 +140,27 @@ namespace MultikeysGUI.View.Controls
                 {
                     it.Scancodes.Remove(sc);
                 });
-            (Modifiers as List<Modifier>)
-                .RemoveAll(it => it.Scancodes.Count == 0);
+
+            // Remove modifiers:
+            foreach (var modifier in Modifiers)
+            {
+                // If any modifier was left without a scancode, it should be removed
+                if (modifier.Scancodes.Count == 0)
+                {
+                    Modifiers.Remove(modifier);
+                    // Then, any button on screen that represented that modifier is also removed.
+                    foreach (var modButton in ModifierButtonList)
+                    {
+                        if (modButton.Name == modifier.Name)
+                        {
+                            ModifierButtonList.Remove(modButton);
+                            ModifierButtons.Children.Remove(modButton);
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
 
             // Fire an event
             ModifierSelectionChanged?.Invoke(this, new EventArgs());
@@ -172,12 +202,12 @@ namespace MultikeysGUI.View.Controls
         {
             // Filter the modifiers for those that are selected.
             // Selected modifiers are those whose associated button on screen is toggled.
-            SelectedModifiers =
+            SelectedModifiers = (
                 from mod in Modifiers
                 join btn in ModifierButtonList
                 on mod.Name equals btn.Name
                 where btn.IsChecked ?? false
-                select mod;
+                select mod).ToList();
 
             // Fire an event
             ModifierSelectionChanged?.Invoke(sender, new EventArgs());

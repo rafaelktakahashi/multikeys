@@ -155,7 +155,7 @@ namespace MultikeysGUI.View.Controls
         }
 
         /// <summary>
-        /// This probably doesn't do what I initially wanted.
+        /// Looks for each key in the modifier, and updates it.
         /// </summary>
         public void RefreshView(Modifier modifier, bool isPressed)
         {

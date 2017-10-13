@@ -1,0 +1,60 @@
+﻿<Window x:Class="MultikeysEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MultikeysEditor.View.Controls"
+        xmlns:p="clr-namespace:MultikeysEditor.Properties"
+        mc:Ignorable="d"
+        Title="{x:Static p:Strings.WindowTitleMainWindow}" Height="680" Width="1420">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Menu VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <MenuItem Header="{x:Static p:Strings.MenuFile}">
+                <MenuItem x:Name="MenuFileNew" Header="{x:Static p:Strings.MenuFileNew}" Click="FileNew_Click"/>
+                <MenuItem x:Name="MenuFileSave" Header="{x:Static p:Strings.MenuFileSave}" Click="FileSave_Click"/>
+                <MenuItem x:Name="MenuFileSaveAs" Header="{x:Static p:Strings.MenuFileSaveAs}" Click="FileSaveAs_Click"/>
+                <MenuItem x:Name="MenuFileOpen" Header="{x:Static p:Strings.MenuFileOpen}" Click="FileOpen_Click"/>
+                <Separator/>
+                <MenuItem x:Name="MenuFileClose" Header="{x:Static p:Strings.MenuFileClose}" Click="FileClose_Click"/>
+            </MenuItem>
+        </Menu>
+        <DockPanel x:Name="DockPanelLayout" Grid.Row="1"/>
+        <Grid Grid.Row="2">
+            <Rectangle Height="70">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                        <GradientStop Color="#FFFFD386"/>
+                        <GradientStop Color="#FFFFF0D6" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            
+            <Image x:Name="BackgroundRunnerIconStart"
+                   HorizontalAlignment="Left" Height="50" Margin="10,10,0,0"
+                   VerticalAlignment="Top" Width="50"
+                   Loaded="BackgroundRunnerIconStart_Loaded"
+                   MouseUp="BackgroundRunnerIconStart_MouseUp"/>
+            
+            <Image x:Name="BackgroundRunnerIconStop"
+                   HorizontalAlignment="Left" Height="50" Margin="10,10,0,0"
+                   VerticalAlignment="Top" Width="50"
+                   Loaded="BackgroundRunnerIconStop_Loaded"
+                   MouseUp="BackgroundRunnerIconStop_MouseUp"
+                   Visibility="Hidden"/>
+            
+            <Label x:Name="LabelCurrentCoreState" Content="{x:Static p:Strings.CoreStateStopped}"
+                   HorizontalAlignment="Left" Margin="65,10,0,0" VerticalAlignment="Top"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   />
+
+
+        </Grid>
+    </Grid>
+</Window>

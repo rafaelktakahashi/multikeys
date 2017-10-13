@@ -1,2 +1,21 @@
-These folders must not be named "Debug", "Release", or some other names because the .gitignore will ignore them.
-Instead, $(Platform)_$(Configuration) should be used to find them.
+Turn on word wrap.
+
+These libraries are compiled from the xerces-c source, version 3.2, using cmake. Although Xerces is available in other ways, it's built manually in order to specify the /MT option to avoid dependencies on the VC++ Redistributable.
+The source code for Xerces is not provided in this repository; only the output from its build.
+The following commands are used to build each of them:
+
+(at the xerces-c folder)
+mkdir <somedir>
+
+cd <somedir>
+
+cmake . -G "Visual Studio 15 2017" -DCMAKE_INSTALL_PREFIX=C:\<output directory> -DCMAKE_FLAGS_RELEASE=/MT
+
+cmake --build . --config Release --target install
+
+When building in x64, "Visual Studio 15 2017 Win64" is used instead.
+When building the debug libraries, --config Debug is used instead.
+I recommend keeping a separate folder for building the 32-bit and the 64-bit libraries.
+The release version of these libraries are compiled using the /MT option in order to not depend on any VC++ Redistributables.
+
+The folders contained in this directory must not be named "Debug", "Release", or some other names because the .gitignore will ignore them. Instead, $(Platform)_$(Configuration) should be used to find them. Also, the bin and lib folders inside them need to be specifically excluded in the gitignore.

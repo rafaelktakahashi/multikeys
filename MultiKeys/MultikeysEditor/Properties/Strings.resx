@@ -340,4 +340,16 @@
   <data name="PromptChangeModifierNameInvalidText" xml:space="preserve">
     <value>Please, input a valid name.</value>
   </data>
+  <data name="LogFailedToCreateLog" xml:space="preserve">
+    <value>There was an error during the program's execution. A log file could not be created. Error:</value>
+    <comment>To be followed by a space and the error message.</comment>
+  </data>
+  <data name="LogFailedToWriteToLog" xml:space="preserve">
+    <value>There was an error during the program's execution. Could not write to log file. Error:</value>
+    <comment>To be followed by a space and the error message.</comment>
+  </data>
+  <data name="LogSeeLog" xml:space="preserve">
+    <value>There was an error during the program's execution. For details, see the log file at</value>
+    <comment>To be followed by a space and the log file's name</comment>
+  </data>
 </root>

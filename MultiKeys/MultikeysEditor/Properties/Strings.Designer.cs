@@ -295,6 +295,33 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error during the program&apos;s execution. A log file could not be created. Error:.
+        /// </summary>
+        public static string LogFailedToCreateLog {
+            get {
+                return ResourceManager.GetString("LogFailedToCreateLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error during the program&apos;s execution. Could not write to log file. Error:.
+        /// </summary>
+        public static string LogFailedToWriteToLog {
+            get {
+                return ResourceManager.GetString("LogFailedToWriteToLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error during the program&apos;s execution. For details, see the log file at.
+        /// </summary>
+        public static string LogSeeLog {
+            get {
+                return ResourceManager.GetString("LogSeeLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sequence.
         /// </summary>
         public static string MacroSequence {

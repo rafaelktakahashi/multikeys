@@ -6,6 +6,7 @@ using MultikeysEditor.Model;
 using MultikeysEditor.View.Controls;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,12 +31,74 @@ namespace MultikeysEditor
     {
         public MainWindow()
         {
+            // Subscribe to any unhandled exception
+            System.AppDomain.CurrentDomain.UnhandledException += HandleAnyException;
+
             InitializeComponent();
 
+            // Update menu buttons right away
             EnableDisableMenuButtons();
 
-            // Setup the core runner and the icons
+            // Setup the core runner
             multikeysCoreRunner = new MultikeysCoreRunner();
+        }
+
+        private void HandleAnyException(object sender, UnhandledExceptionEventArgs e)
+        {
+            string logDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + "\\..\\log";
+
+            // Create the log folder if it does not exist
+            if (!Directory.Exists(logDirectory))
+                try
+                {
+                    Directory.CreateDirectory(logDirectory);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        Properties.Strings.LogFailedToCreateLog + $" {ex.Message}{Environment.NewLine}{(e.ExceptionObject as Exception).Message}",
+                        Properties.Strings.Error,
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                        );
+                    Close();
+                }
+
+            // Create a log file at the log folder
+            try
+            {
+                var now = DateTime.Now;
+                // Make the file name using today's date
+                string logPath = logDirectory + $"\\{now.ToString("yyyy_MM_dd")}.log";
+
+                // Append the log to the file; if the file does not exist, it is created.
+                string logText =
+                    $"Exception occured at {now.Hour:D2}:{now.Minute:D2}:{now.Second:D2}, " +
+                    $"{now.Day:D2} of {now.ToString("MMMM", CultureInfo.InvariantCulture)}, {now.Year:D4}" +
+                    Environment.NewLine +
+                    (e.ExceptionObject as Exception).Message + Environment.NewLine +
+                    (e.ExceptionObject as Exception).StackTrace +
+                    new string(Enumerable.Range(0, 5).SelectMany(x => Environment.NewLine).ToArray());    // <- five line breaks
+
+                File.AppendAllText(logPath, logText);
+
+                // Warn the user
+                MessageBox.Show(
+                    Properties.Strings.LogSeeLog,
+                    Properties.Strings.Warning,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    Properties.Strings.LogFailedToWriteToLog + $" {ex.Message}{Environment.NewLine}{(e.ExceptionObject as Exception).Message}",
+                    Properties.Strings.Error,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                Close();
+            }
         }
 
         /// <summary>

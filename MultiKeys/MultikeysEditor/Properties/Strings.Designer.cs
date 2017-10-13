@@ -160,6 +160,15 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete keyboard.
+        /// </summary>
+        public static string KeyboardControlDeleteKeyboard {
+            get {
+                return ResourceManager.GetString("KeyboardControlDeleteKeyboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unique id: .
         /// </summary>
         public static string KeyboardName {
@@ -291,6 +300,15 @@ namespace MultikeysEditor.Properties {
         public static string KeyRelease {
             get {
                 return ResourceManager.GetString("KeyRelease", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add new keyboard.
+        /// </summary>
+        public static string LayoutControlAddNewKeyboard {
+            get {
+                return ResourceManager.GetString("LayoutControlAddNewKeyboard", resourceCulture);
             }
         }
         

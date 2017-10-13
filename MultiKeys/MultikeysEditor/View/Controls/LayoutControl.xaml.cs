@@ -41,6 +41,7 @@ namespace MultikeysEditor.View.Controls
                     Margin = new Thickness(5, 5, 5, 20),
                 };
                 kbControl.KeyClicked += HandleKeyClicked;
+                kbControl.KeyboardDeletionRequest += KeyboardDeletion;
                 KeyboardStack.Children.Add(kbControl);
             }
 
@@ -79,6 +80,43 @@ namespace MultikeysEditor.View.Controls
         }
 
 
+        /// <summary>
+        /// Adds a new keyboard control, properly initialized. It is placed at the end of the list.
+        /// </summary>
+        private void ButtonAddNewKeyboard_Click(object sender, RoutedEventArgs e)
+        {                                                                               // solve the thing with the physical layouts
+            var kbControl = new KeyboardControl(new Model.Keyboard(), new DomainFacade().GetPhysicalLayout(PhysicalLayoutStandard.ISO, useBigReturn: false))
+            {                                   // the keyboard contructor initializes all of the object's contents.
+                Width = double.NaN,     // NaN means Auto
+                Height = double.NaN,
+                Margin = new Thickness(5, 5, 5, 20),
+            };
+            kbControl.KeyClicked += HandleKeyClicked;
+            kbControl.KeyboardDeletionRequest += KeyboardDeletion;
+            KeyboardStack.Children.Add(kbControl);
 
+            // Automatically scroll the user to the bottom of the layout, where the new keyboard was placed
+            KeyboardScrollViewer.ScrollToEnd();
+        }
+
+
+
+        /// <summary>
+        /// This handler is called when a keyboard requests to be deleted.
+        /// Deletes the keyboard that requested to be deleted.
+        /// Assumes that the sender is the keyboard that requested to be deleted.
+        /// </summary>
+        private void KeyboardDeletion(object sender, EventArgs e)
+        {
+            foreach (var control in KeyboardStack.Children)
+            {
+                if (control is KeyboardControl && control.Equals(sender))
+                {
+                    KeyboardStack.Children.Remove(sender as UIElement);
+                    // The KeyboardControls in KeyboardStack represent the keyboards in this control.
+                    return;
+                }
+            }
+        }
     }
 }

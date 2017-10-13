@@ -144,6 +144,12 @@ namespace MultikeysEditor.View.Controls
         /// </summary>
         public event KeyClickedDelegate KeyClicked;
 
+        /// <summary>
+        /// This event signifies that this object is requesting to be deleted.
+        /// It should be handled by whatever control is responsible for this object.
+        /// </summary>
+        public event EventHandler KeyboardDeletionRequest;
+
         // Event handlers
         public void LayerKeyClicked(object sender, EventArgs e)
         {
@@ -522,6 +528,17 @@ namespace MultikeysEditor.View.Controls
                 UniqueName = kbNameDialog.KeyboardName;
                 LabelKeyboardName.Text = UniqueName;
             }
+        }
+
+        
+        /// <summary>
+        /// Called when the user wants to delete this keyboard. Sends an event to this control's owner,
+        /// which is responsible for removing it.
+        /// </summary>
+        private void ButtonDeleteKeyboard_Click(object sender, RoutedEventArgs e)
+        {
+            // Send the event that signifies that this object is requesting deletion
+            KeyboardDeletionRequest?.Invoke(this, new EventArgs());
         }
     }
 }

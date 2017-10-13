@@ -352,4 +352,10 @@
     <value>There was an error during the program's execution. For details, see the log file at</value>
     <comment>To be followed by a space and the log file's name</comment>
   </data>
+  <data name="KeyboardControlDeleteKeyboard" xml:space="preserve">
+    <value>Delete keyboard</value>
+  </data>
+  <data name="LayoutControlAddNewKeyboard" xml:space="preserve">
+    <value>Add new keyboard</value>
+  </data>
 </root>

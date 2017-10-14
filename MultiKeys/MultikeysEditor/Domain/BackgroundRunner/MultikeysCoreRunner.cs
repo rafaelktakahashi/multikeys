@@ -92,7 +92,10 @@ namespace MultikeysEditor.Domain.BackgroundRunner
             // The core process is a Win32 window application, and it accepts a close message:
             // mkCoreProcess.CloseMainWindow();
 
-            mkCoreProcess.Kill();
+            if (!mkCoreProcess.HasExited)
+            {
+                mkCoreProcess.Kill();
+            }
         }
     }
 }

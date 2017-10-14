@@ -47,6 +47,8 @@ namespace MultikeysEditor.View.Dialogues
             UnicodeCharactersList.ItemsSource = UnicodeCharactersSource;
             // update the list right away
             UnicodeUpdateList();
+            // focus on the input
+            UnicodeTextInput.Focus();
         }
 
 

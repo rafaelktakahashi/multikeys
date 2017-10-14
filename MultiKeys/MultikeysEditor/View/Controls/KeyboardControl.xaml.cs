@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using MultikeysEditor.Model;
 using MultikeysEditor.Domain.Layout;
 using MultikeysEditor.View.Dialogues;
+using MultikeysEditor.Domain;
 
 namespace MultikeysEditor.View.Controls
 {
@@ -530,7 +531,22 @@ namespace MultikeysEditor.View.Controls
             }
         }
 
-        
+
+        /// <summary>
+        /// Called when the user wants to change the physical layout that is used to display this keyboard.
+        /// </summary>
+        private void ButtonChangePhysicalLayout_Click(object sender, RoutedEventArgs e)
+        {
+            var layoutDialog = new ChangePhysicalLayoutDialog();
+            if (layoutDialog.ShowDialog() == true)
+            {
+                var newStandard = layoutDialog.Standard;
+                var useBigReturn = layoutDialog.UseBigReturn;
+                Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(newStandard, useBigReturn));
+                Layer.RefreshView(_activeLayer.Commands, ModifiersControl.Modifiers);
+            }
+        }
+
         /// <summary>
         /// Called when the user wants to delete this keyboard. Sends an event to this control's owner,
         /// which is responsible for removing it.
@@ -540,5 +556,7 @@ namespace MultikeysEditor.View.Controls
             // Send the event that signifies that this object is requesting deletion
             KeyboardDeletionRequest?.Invoke(this, new EventArgs());
         }
+
+        
     }
 }

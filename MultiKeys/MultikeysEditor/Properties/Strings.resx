@@ -361,4 +361,19 @@
   <data name="MenuImportKeyboard" xml:space="preserve">
     <value>Import...</value>
   </data>
+  <data name="KeyboardControlChangePhysicalLayout" xml:space="preserve">
+    <value>Change layout</value>
+  </data>
+  <data name="WindowTitleChangePhysicalLayout" xml:space="preserve">
+    <value>Change keyboard layout</value>
+  </data>
+  <data name="PromptPhysicalLayoutChoose" xml:space="preserve">
+    <value>Choose the physical layout:</value>
+  </data>
+  <data name="PromptPhysicalLayoutConfirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="PromptPhysicalLayoutUseBigEnter" xml:space="preserve">
+    <value>Use big return key</value>
+  </data>
 </root>

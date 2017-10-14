@@ -98,6 +98,7 @@ namespace MultikeysEditor.View.Controls
         public void SetLayoutToRender(IPhysicalLayout layout, double unitLength = 45)
         {
             KeyControls.Clear();
+            KeysGrid.Children.Clear();
             foreach (var key in layout.Keys)
             {
                 // Make a key using the provided information.

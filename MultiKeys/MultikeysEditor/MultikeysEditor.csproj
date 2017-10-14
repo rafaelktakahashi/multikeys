@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -98,6 +98,9 @@
     <Compile Include="View\Dialogues\ChangeModifierNameDialog.xaml.cs">
       <DependentUpon>ChangeModifierNameDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Dialogues\ChangePhysicalLayoutDialog.xaml.cs">
+      <DependentUpon>ChangePhysicalLayoutDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dialogues\KeyboardNameDialog.xaml.cs">
       <DependentUpon>KeyboardNameDialog.xaml</DependentUpon>
     </Compile>
@@ -144,6 +147,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dialogues\ChangeModifierNameDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dialogues\ChangePhysicalLayoutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

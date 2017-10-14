@@ -160,6 +160,15 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change layout.
+        /// </summary>
+        public static string KeyboardControlChangePhysicalLayout {
+            get {
+                return ResourceManager.GetString("KeyboardControlChangePhysicalLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete keyboard.
         /// </summary>
         public static string KeyboardControlDeleteKeyboard {
@@ -502,6 +511,33 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose the physical layout:.
+        /// </summary>
+        public static string PromptPhysicalLayoutChoose {
+            get {
+                return ResourceManager.GetString("PromptPhysicalLayoutChoose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm.
+        /// </summary>
+        public static string PromptPhysicalLayoutConfirm {
+            get {
+                return ResourceManager.GetString("PromptPhysicalLayoutConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use big return key.
+        /// </summary>
+        public static string PromptPhysicalLayoutUseBigEnter {
+            get {
+                return ResourceManager.GetString("PromptPhysicalLayoutUseBigEnter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assign command.
         /// </summary>
         public static string PromptUnicodeConfirm {
@@ -696,6 +732,15 @@ namespace MultikeysEditor.Properties {
         public static string WindowTitleChangeModifierName {
             get {
                 return ResourceManager.GetString("WindowTitleChangeModifierName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change keyboard layout.
+        /// </summary>
+        public static string WindowTitleChangePhysicalLayout {
+            get {
+                return ResourceManager.GetString("WindowTitleChangePhysicalLayout", resourceCulture);
             }
         }
         

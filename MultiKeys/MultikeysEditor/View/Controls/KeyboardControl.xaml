@@ -25,14 +25,21 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <local:ModifiersControl x:Name="ModifiersControl" Margin="5" Width="Auto" ModifierSelectionChanged="ModifierSelectionChanged" HorizontalAlignment="Left" />
+                <Button x:Name="ButtonChangePhysicalLayout" Content="{x:Static p:Strings.KeyboardControlChangePhysicalLayout}"
+                        HorizontalAlignment="Right" Margin="0, 0, 10, 0"
+                        Width="Auto" MinWidth="80"
+                        Height="23"
+                        Grid.Column="1"
+                        Click="ButtonChangePhysicalLayout_Click"/>
                 <Button x:Name="ButtonDeleteKeyboard" Content="{x:Static p:Strings.KeyboardControlDeleteKeyboard}"
                         HorizontalAlignment="Right" Margin="0, 0, 10, 0"
                         Width="Auto" MinWidth="80"
                         Height="23"
                         Foreground="DarkRed"
-                        Grid.Column="1"
+                        Grid.Column="2"
                         Click="ButtonDeleteKeyboard_Click"/>
             </Grid>
             

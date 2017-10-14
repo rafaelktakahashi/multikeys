@@ -358,4 +358,7 @@
   <data name="LayoutControlAddNewKeyboard" xml:space="preserve">
     <value>Add new keyboard</value>
   </data>
+  <data name="MenuImportKeyboard" xml:space="preserve">
+    <value>Import...</value>
+  </data>
 </root>

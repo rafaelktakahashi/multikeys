@@ -403,6 +403,15 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import....
+        /// </summary>
+        public static string MenuImportKeyboard {
+            get {
+                return ResourceManager.GetString("MenuImportKeyboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Modifiers.
         /// </summary>
         public static string Modifiers {

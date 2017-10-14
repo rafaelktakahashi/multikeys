@@ -80,6 +80,33 @@ namespace MultikeysEditor.View.Controls
         }
 
 
+
+        /// <summary>
+        /// Adds the keyboards in the specified layout into this one, without overriding any existing keyboards.
+        /// </summary>
+        /// <param name="layout"></param>
+        public void AddKeyboards(MultikeysLayout layout)
+        {
+            IDomainFacade applicationFacade = new DomainFacade();
+
+            foreach (var keyboard in layout.Keyboards)
+            {                                                                       // TODO: Solve the physical layout
+                var kbControl = new KeyboardControl(keyboard, applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ISO, useBigReturn: false))
+                {
+                    Width = double.NaN,     // NaN means Auto
+                    Height = double.NaN,
+                    Margin = new Thickness(5, 5, 5, 20),
+                };
+                kbControl.KeyClicked += HandleKeyClicked;
+                kbControl.KeyboardDeletionRequest += KeyboardDeletion;
+                KeyboardStack.Children.Add(kbControl);
+            }
+
+            // Scroll to last keyboard, which was just added.
+            KeyboardScrollViewer.ScrollToEnd();
+        }
+
+
         /// <summary>
         /// Adds a new keyboard control, properly initialized. It is placed at the end of the list.
         /// </summary>

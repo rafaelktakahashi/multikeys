@@ -21,6 +21,8 @@
                 <MenuItem x:Name="MenuFileSaveAs" Header="{x:Static p:Strings.MenuFileSaveAs}" Click="FileSaveAs_Click"/>
                 <MenuItem x:Name="MenuFileOpen" Header="{x:Static p:Strings.MenuFileOpen}" Click="FileOpen_Click"/>
                 <Separator/>
+                <MenuItem x:Name="MenuImportKeyboard" Header="{x:Static p:Strings.MenuImportKeyboard}" Click="FileImportKeyboard_Click"/>
+                <Separator/>
                 <MenuItem x:Name="MenuFileClose" Header="{x:Static p:Strings.MenuFileClose}" Click="FileClose_Click"/>
             </MenuItem>
         </Menu>

@@ -222,6 +222,25 @@ namespace MultikeysEditor
             EnableDisableMenuButtons();
         }
 
+        private void FileImportKeyboard_Click(object sender, EventArgs e)
+        {
+            // If there's no file to import into:
+            if (workingFileName == null)
+            {
+                MessageBox.Show(Properties.Strings.WarningNoLayout, Properties.Strings.Warning, MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Ask for the file where keyboard will be imported from
+            var openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var layout = new DomainFacade().LoadLayout(openFileDialog.FileName);
+                // give this layout to the current layout to add the keyboards there
+                layoutControl.AddKeyboards(layout);
+            }
+        }
+
         private void FileClose_Click(object sender, EventArgs e)
         {
             // If there's no file to close:
@@ -261,6 +280,7 @@ namespace MultikeysEditor
                 MenuFileSaveAs.IsEnabled = false;
                 MenuFileOpen.IsEnabled = true;
                 MenuFileClose.IsEnabled = false;
+                MenuImportKeyboard.IsEnabled = false;
             }
             // when there's an open layout, all options are enabled
             else
@@ -270,6 +290,7 @@ namespace MultikeysEditor
                 MenuFileSaveAs.IsEnabled = true;
                 MenuFileOpen.IsEnabled = true;
                 MenuFileClose.IsEnabled = true;
+                MenuImportKeyboard.IsEnabled = true;
             }
         }
 

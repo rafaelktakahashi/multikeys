@@ -158,6 +158,14 @@ namespace MultikeysEditor.View.Controls
             Refresh();
         }
 
+        /// <summary>
+        ///  Tells the control to render the specified text as the key's label.
+        /// </summary>
+        public void SetLabel(string text)
+        {
+            BottomLabel.Text = text;
+        }
+
         private void SetOutlineColor(Brush color)
         {
             // Change the stroke brush of every rectangle in KeyContainerGrid

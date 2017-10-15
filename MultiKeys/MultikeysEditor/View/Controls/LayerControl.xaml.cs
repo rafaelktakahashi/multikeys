@@ -48,6 +48,12 @@ namespace MultikeysEditor.View.Controls
             KeyControls = new Dictionary<Scancode, KeyControl>(200, new ScancodeComparer());
 
             CurrentKey = new Tuple<Scancode, IKeystrokeCommand>(null, null);
+
+            // Empty labels; initialization happens by setting the property.
+            Labels = new Dictionary<Scancode, string>(0);
+
+            // Test initializetion
+            Labels = LogicalLayoutFactory.GetLogicalLayout(LogicalLayout.US);
         }
 
 
@@ -70,6 +76,12 @@ namespace MultikeysEditor.View.Controls
         /// Private dictionary for all KeyControls.
         /// </summary>
         private IDictionary<Scancode, KeyControl> KeyControls { get; set; }
+
+        /// <summary>
+        /// Set this property in order to determine the labels that will be printed on each key.
+        /// If this property is not set, no labels will be printed on screen.
+        /// </summary>
+        public IDictionary<Scancode, string> Labels { get; set; }
 
 
         /// <summary>
@@ -111,6 +123,7 @@ namespace MultikeysEditor.View.Controls
                 KeyControls.Add(newKey.Scancode, newKey);
             }
         }
+        
 
         /// <summary>
         /// Refreshes every key in this view according to the commands in specified layout and modifiers.<para/>
@@ -128,10 +141,18 @@ namespace MultikeysEditor.View.Controls
             // This algorithm doesn't look as fast as it could be.
             foreach (var controlPair in KeyControls)
             {
+                // Render the key's name (from the logical layout) on the key.
+                // If the logical layout contains no label for that key render nothing (an empty string) instead.
+                if (Labels.ContainsKey(controlPair.Key))
+                { KeyControls[controlPair.Key].SetLabel(Labels[controlPair.Key]); }
+                else
+                { KeyControls[controlPair.Key].SetLabel(""); }
+
                 // check if it's a modifier; if so, set it
                 if (Modifiers.Keys.Any(mod => mod.Scancodes.Contains(controlPair.Key)))
                 {
                     KeyControls[controlPair.Key].SetModifier(Modifiers.Keys.First(mod => mod.Scancodes.Contains(controlPair.Key)));
+                    
                 }
                 // get its corresponding command
                 else if (Layout.ContainsKey(controlPair.Key))

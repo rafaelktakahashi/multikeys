@@ -73,7 +73,7 @@ e0:5c Win
 e0:5d Menu
 e0:1d Ctrl
 e0:37 PrtSc
-46 ScrollLk
+46 ScLk
 e1:1d Pause
 e0:52 Insert
 e0:47 Home
@@ -85,7 +85,7 @@ e0:48 Up
 e0:4b Left
 e0:50 Down
 e0:4d Right
-45 NumLk
+45 NmLk
 e0:35 /
 37 *
 4a -

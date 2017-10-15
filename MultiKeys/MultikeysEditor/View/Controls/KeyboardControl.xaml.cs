@@ -548,7 +548,7 @@ namespace MultikeysEditor.View.Controls
                 // Prepare the layer control with the new information, then tell it to rerender.
                 Layer.Labels = LogicalLayoutFactory.GetLogicalLayout(logicalLayout);
                 Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(physicalStandard, useBigReturn));
-                Layer.RefreshView();
+                Layer.RefreshView(_activeLayer.Commands, ModifiersControl.Modifiers);
             }
         }
 

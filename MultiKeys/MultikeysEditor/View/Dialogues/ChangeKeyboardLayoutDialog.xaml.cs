@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace MultikeysEditor.View.Dialogues
 {
@@ -20,6 +21,23 @@ namespace MultikeysEditor.View.Dialogues
     /// </summary>
     public partial class ChangePhysicalLayoutDialog : Window
     {
+
+        private class LogicalLayoutFile
+        {
+            /// <summary>
+            /// User-friendly name of this layout
+            /// </summary>
+            public string Name { get; set; }
+            /// <summary>
+            /// Name of the file that contains this layout, without path or extension
+            /// </summary>
+            public string File { get; set; }
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
+
         public ChangePhysicalLayoutDialog()
         {
             InitializeComponent();
@@ -30,15 +48,32 @@ namespace MultikeysEditor.View.Dialogues
             ComboBoxPhysicalStandards.Items.Add("JIS");
             ComboBoxPhysicalStandards.Items.Add("Dubeolsik");
 
-            ComboBoxLogicalLayouts.Items.Add("ANSI US - English");
-            ComboBoxLogicalLayouts.Items.Add("ISO UK - English");
-            ComboBoxLogicalLayouts.Items.Add("ISO DE - Deutsch");
-            ComboBoxLogicalLayouts.Items.Add("ISO FR - Français");
-            ComboBoxLogicalLayouts.Items.Add("ISO ES - Español");
-            ComboBoxLogicalLayouts.Items.Add("ABNT-2 - Português Brasileiro");
-            ComboBoxLogicalLayouts.Items.Add("JIS - 日本語");
-            ComboBoxLogicalLayouts.Items.Add("Dubeolsik - 한국어");
+
+            // Read index of logical layouts (which indexes names and the files where they're located)
+            string pathToIndex =
+                System.IO.Path
+                .GetDirectoryName(
+                    System.Reflection.Assembly
+                    .GetEntryAssembly()
+                    .Location
+                    )
+                    + @"\Resources\Layouts\index.xml";
+
+            XDocument xml = XDocument.Load(pathToIndex);
+            var query = from layout in xml.Root.Elements("layout")
+                        select new LogicalLayoutFile
+                        { Name = layout.Element("name").Value, File = layout.Element("file").Value };
+            LogicalLayoutFiles = query.ToList();
+
+            // Setup the combobox
+            ComboBoxLogicalLayouts.DataContext = this;
+            ComboBoxLogicalLayouts.ItemsSource = LogicalLayoutFiles;
+            ComboBoxLogicalLayouts.SelectedValuePath = "File";
         }
+
+
+        private List<LogicalLayoutFile> LogicalLayoutFiles { get; set; }
+
 
         /// <summary>
         /// This property should only be accessed if this dialog returns true on ShowDialog().
@@ -87,36 +122,7 @@ namespace MultikeysEditor.View.Dialogues
                 }
                 UseBigReturn = CheckBoxBigEnter.IsChecked ?? false;
 
-                value = ComboBoxLogicalLayouts.SelectedValue as string;
-                switch (value)
-                {
-                    case "ANSI US - English":
-                        LogicalLayout = "US";
-                        break;
-                    case "ISO UK - English":
-                        LogicalLayout = "UK";
-                        break;
-                    case "ISO DE - Deutsch":
-                        LogicalLayout = "DE";
-                        break;
-                    case "ISO FR - Français":
-                        LogicalLayout = "FR";
-                        break;
-                    case "ISO ES - Español":
-                        LogicalLayout = "ES";
-                        break;
-                    case "ABNT-2 - Português Brasileiro":
-                        LogicalLayout = "ABNT_2";
-                        break;
-                    case "JIS - 日本語":
-                        LogicalLayout = "JIS";
-                        break;
-                    case "Dubeolsik - 한국어":
-                        LogicalLayout = "Dubeolsik";
-                        break;
-
-                    default: LogicalLayout = "US"; break;
-                }
+                LogicalLayout = ComboBoxLogicalLayouts.SelectedValue as string;
 
                 DialogResult = true;    // will close this window
             }

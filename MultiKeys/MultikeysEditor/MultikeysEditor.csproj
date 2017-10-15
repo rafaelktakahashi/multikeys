@@ -207,6 +207,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="Resources\Layouts\index.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Layouts\US.layout">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

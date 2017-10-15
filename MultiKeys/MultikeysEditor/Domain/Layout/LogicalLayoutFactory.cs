@@ -11,12 +11,18 @@ namespace MultikeysEditor.Domain.Layout
 {
     public static class LogicalLayoutFactory
     {
-        public static IDictionary<Scancode, string> GetLogicalLayout(LogicalLayout logicalLayout)
+
+        /// <summary>
+        /// Retrieves a dictionary from scancodes to their labels, according to a logical keyboard layout.
+        /// </summary>
+        /// <param name="logicalLayoutName">
+        /// Name of the keyboard; a file by this name must exist in the Resources\Layouts folder;
+        /// do not pass the file extension in this parameter.
+        /// </param>
+        public static IDictionary<Scancode, string> GetLogicalLayout(string logicalLayoutName)
         {
             var layout = new Dictionary<Scancode, string>();
 
-            // Load a sample layout for now
-            // In the future, this should be configurable
             string pathToLayout =
                 System.IO.Path
                 .GetDirectoryName(
@@ -24,7 +30,13 @@ namespace MultikeysEditor.Domain.Layout
                     .GetEntryAssembly()
                     .Location
                     )
-                    + @"\Resources\Layouts\US.layout";
+                    + $@"\Resources\Layouts\{logicalLayoutName}.layout";
+
+            if (!File.Exists(pathToLayout))
+            {
+                // Fallback
+                return new Dictionary<Scancode, string>();
+            }
 
             // hold each line
             var lines = new List<string>();

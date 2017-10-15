@@ -52,8 +52,8 @@ namespace MultikeysEditor.View.Controls
             // Empty labels; initialization happens by setting the property.
             Labels = new Dictionary<Scancode, string>(0);
 
-            // Test initializetion
-            Labels = LogicalLayoutFactory.GetLogicalLayout(LogicalLayout.US);
+            // Default initializetion
+            Labels = LogicalLayoutFactory.GetLogicalLayout("US");
         }
 
 

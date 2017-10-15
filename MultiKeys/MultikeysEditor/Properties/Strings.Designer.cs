@@ -160,6 +160,15 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change labels.
+        /// </summary>
+        public static string KeyboardControlChangeLogicalLayout {
+            get {
+                return ResourceManager.GetString("KeyboardControlChangeLogicalLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change layout.
         /// </summary>
         public static string KeyboardControlChangePhysicalLayout {

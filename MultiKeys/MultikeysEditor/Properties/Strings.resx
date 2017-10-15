@@ -376,4 +376,7 @@
   <data name="PromptPhysicalLayoutUseBigEnter" xml:space="preserve">
     <value>Use big return key</value>
   </data>
+  <data name="KeyboardControlChangeLogicalLayout" xml:space="preserve">
+    <value>Change labels</value>
+  </data>
 </root>

@@ -71,7 +71,6 @@
     <Compile Include="Domain\BackgroundRunner\MultikeysCoreRunner.cs" />
     <Compile Include="Domain\DomainFacade.cs" />
     <Compile Include="Domain\IDomainFacade.cs" />
-    <Compile Include="Domain\Layout\LogicalLayout.cs" />
     <Compile Include="Domain\Layout\LogicalLayoutFactory.cs" />
     <Compile Include="Domain\Layout\PhysicalKey.cs" />
     <Compile Include="Domain\Layout\IPhysicalLayout.cs" />
@@ -209,6 +208,24 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Content Include="Resources\Layouts\US.layout">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Layouts\ABNT_2.layout">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Layouts\DE.layout">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Layouts\Dubeolsik.layout">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Layouts\JIS.layout">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Layouts\SP.layout">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Layouts\FR.layout">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

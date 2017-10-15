@@ -1,11 +1,11 @@
-prefix=F:/Programming/libs/xercesc_64_release
-exec_prefix=F:/Programming/libs/xercesc_64_release
-libdir=F:/Programming/libs/xercesc_64_release/lib
-includedir=F:/Programming/libs/xercesc_64_release/include
+prefix=F:/Programming/libs/xercesc-64_release
+exec_prefix=F:/Programming/libs/xercesc-64_release
+libdir=F:/Programming/libs/xercesc-64_release/lib
+includedir=F:/Programming/libs/xercesc-64_release/include
 
 Name: Xerces-C++
 Description: Validating XML parser library for C++
 Version: 
-Libs: -LF:/Programming/libs/xercesc_64_release/lib -lxerces-c
+Libs: -LF:/Programming/libs/xercesc-64_release/lib -lxerces-c
 Libs.private: 
-Cflags: -IF:/Programming/libs/xercesc_64_release/include
+Cflags: -IF:/Programming/libs/xercesc-64_release/include

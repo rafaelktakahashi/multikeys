@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MultikeysCore", "MultikeysC
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeyboardHookDLL", "KeyboardHook\KeyboardHook.vcxproj", "{906018C9-41BF-4658-9A3F-55CA9954AD30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultikeysGUI", "MultikeysGUI\MultikeysGUI.csproj", "{235BD1C5-E71C-4087-B550-877D5966BC06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultikeysEditor", "MultikeysEditor\MultikeysEditor.csproj", "{235BD1C5-E71C-4087-B550-877D5966BC06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultikeysGUITests", "MultikeysGUITests\MultikeysGUITests.csproj", "{BF85D20D-146C-4488-8C1A-3AE3CDF789F2}"
 EndProject

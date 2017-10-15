@@ -364,19 +364,22 @@
   <data name="KeyboardControlChangePhysicalLayout" xml:space="preserve">
     <value>Change layout</value>
   </data>
-  <data name="WindowTitleChangePhysicalLayout" xml:space="preserve">
+  <data name="WindowTitleChangeLayout" xml:space="preserve">
     <value>Change keyboard layout</value>
   </data>
-  <data name="PromptPhysicalLayoutChoose" xml:space="preserve">
+  <data name="PromptChangeLayoutChoosePhysicalLayout" xml:space="preserve">
     <value>Choose the physical layout:</value>
   </data>
-  <data name="PromptPhysicalLayoutConfirm" xml:space="preserve">
+  <data name="PromptChangeLayoutConfirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
-  <data name="PromptPhysicalLayoutUseBigEnter" xml:space="preserve">
+  <data name="PromptChangeLayoutUseBigEnter" xml:space="preserve">
     <value>Use big return key</value>
   </data>
   <data name="KeyboardControlChangeLogicalLayout" xml:space="preserve">
     <value>Change labels</value>
+  </data>
+  <data name="PromptChangeLayoutChooseLogicalLayout" xml:space="preserve">
+    <value>Choose which layout to print on the keys:</value>
   </data>
 </root>

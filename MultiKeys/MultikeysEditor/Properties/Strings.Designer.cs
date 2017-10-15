@@ -457,6 +457,42 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose which layout to print on the keys:.
+        /// </summary>
+        public static string PromptChangeLayoutChooseLogicalLayout {
+            get {
+                return ResourceManager.GetString("PromptChangeLayoutChooseLogicalLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose the physical layout:.
+        /// </summary>
+        public static string PromptChangeLayoutChoosePhysicalLayout {
+            get {
+                return ResourceManager.GetString("PromptChangeLayoutChoosePhysicalLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirm.
+        /// </summary>
+        public static string PromptChangeLayoutConfirm {
+            get {
+                return ResourceManager.GetString("PromptChangeLayoutConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use big return key.
+        /// </summary>
+        public static string PromptChangeLayoutUseBigEnter {
+            get {
+                return ResourceManager.GetString("PromptChangeLayoutUseBigEnter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name already exists..
         /// </summary>
         public static string PromptChangeModifierNameAlreadyExists {
@@ -516,33 +552,6 @@ namespace MultikeysEditor.Properties {
         public static string PromptModifierNewModfier {
             get {
                 return ResourceManager.GetString("PromptModifierNewModfier", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Choose the physical layout:.
-        /// </summary>
-        public static string PromptPhysicalLayoutChoose {
-            get {
-                return ResourceManager.GetString("PromptPhysicalLayoutChoose", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Confirm.
-        /// </summary>
-        public static string PromptPhysicalLayoutConfirm {
-            get {
-                return ResourceManager.GetString("PromptPhysicalLayoutConfirm", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use big return key.
-        /// </summary>
-        public static string PromptPhysicalLayoutUseBigEnter {
-            get {
-                return ResourceManager.GetString("PromptPhysicalLayoutUseBigEnter", resourceCulture);
             }
         }
         
@@ -736,20 +745,20 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change keyboard layout.
+        /// </summary>
+        public static string WindowTitleChangeLayout {
+            get {
+                return ResourceManager.GetString("WindowTitleChangeLayout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change modifier name.
         /// </summary>
         public static string WindowTitleChangeModifierName {
             get {
                 return ResourceManager.GetString("WindowTitleChangeModifierName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Change keyboard layout.
-        /// </summary>
-        public static string WindowTitleChangePhysicalLayout {
-            get {
-                return ResourceManager.GetString("WindowTitleChangePhysicalLayout", resourceCulture);
             }
         }
         

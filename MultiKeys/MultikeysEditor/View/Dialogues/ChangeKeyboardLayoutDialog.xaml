@@ -6,22 +6,28 @@
         xmlns:p="clr-namespace:MultikeysEditor.Properties"
         xmlns:local="clr-namespace:MultikeysEditor.View.Dialogues"
         mc:Ignorable="d"
-        Title="{x:Static p:Strings.WindowTitleChangePhysicalLayout}" Height="215.195" Width="313.992"
+        Title="{x:Static p:Strings.WindowTitleChangeLayout}" Height="256.195" Width="313.992"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
     <Grid Margin="20">
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="{x:Static p:Strings.PromptPhysicalLayoutChoose}"/>
-            <ComboBox x:Name="ComboBoxStandards"
+            <TextBlock Text="{x:Static p:Strings.PromptChangeLayoutChoosePhysicalLayout}"/>
+            <ComboBox x:Name="ComboBoxPhysicalStandards"
                       Width="Auto" MinWidth="80"
                       HorizontalAlignment="Left" Margin="5"/>
-            <CheckBox x:Name="CheckBoxBigEnter" Content="{x:Static p:Strings.PromptPhysicalLayoutUseBigEnter}"/>
-            <Button x:Name="ButtonConfirm"
-                Content="{x:Static p:Strings.PromptPhysicalLayoutConfirm}"
+            <CheckBox x:Name="CheckBoxBigEnter" Content="{x:Static p:Strings.PromptChangeLayoutUseBigEnter}"/>
+
+            <TextBlock Text="{x:Static p:Strings.PromptChangeLayoutChooseLogicalLayout}" Margin="0, 20, 0, 0"/>
+            <ComboBox x:Name="ComboBoxLogicalLayouts"
+                      Width="Auto" MinWidth="80"
+                      HorizontalAlignment="Left" Margin="5"/>
+        </StackPanel>
+        
+        <Button x:Name="ButtonConfirm" Margin="10"
+                Content="{x:Static p:Strings.PromptChangeLayoutConfirm}"
                 Height="23" Width="Auto" MinWidth="80"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Bottom"
                 Click="ButtonConfirm_Click"/>
-        </StackPanel>
     </Grid>
 </Window>

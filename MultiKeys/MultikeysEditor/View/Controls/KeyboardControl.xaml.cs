@@ -540,10 +540,15 @@ namespace MultikeysEditor.View.Controls
             var layoutDialog = new ChangePhysicalLayoutDialog();
             if (layoutDialog.ShowDialog() == true)
             {
-                var newStandard = layoutDialog.Standard;
-                var useBigReturn = layoutDialog.UseBigReturn;
-                Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(newStandard, useBigReturn));
-                Layer.RefreshView(_activeLayer.Commands, ModifiersControl.Modifiers);
+                // Retrieve information from the dialog
+                PhysicalLayoutStandard physicalStandard = layoutDialog.PhysicalLayout;
+                bool useBigReturn = layoutDialog.UseBigReturn;
+                string logicalLayout = layoutDialog.LogicalLayout;
+
+                // Prepare the layer control with the new information, then tell it to rerender.
+                Layer.Labels = LogicalLayoutFactory.GetLogicalLayout(logicalLayout);
+                Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(physicalStandard, useBigReturn));
+                Layer.RefreshView();
             }
         }
 

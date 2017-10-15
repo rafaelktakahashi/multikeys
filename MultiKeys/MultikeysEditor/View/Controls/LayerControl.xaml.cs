@@ -123,21 +123,13 @@ namespace MultikeysEditor.View.Controls
                 KeyControls.Add(newKey.Scancode, newKey);
             }
         }
-        
+
 
         /// <summary>
-        /// Refreshes every key in this view according to the commands in specified layout and modifiers.<para/>
+        /// Refreshes every key in this view using the current layout and modifiers.
         /// </summary>
-        public void RefreshView(IDictionary<Scancode, IKeystrokeCommand> commands,
-            ICollection<Modifier> modifiers)
+        public void RefreshView()
         {
-            // When setting the new commands, we must specify the custom comparer:
-            Layout = new Dictionary<Scancode, IKeystrokeCommand>(commands, new ScancodeComparer());
-
-            Modifiers = new Dictionary<Modifier, bool>();
-            foreach (var mod in modifiers)
-                Modifiers.Add(mod, false);
-
             // This algorithm doesn't look as fast as it could be.
             foreach (var controlPair in KeyControls)
             {
@@ -152,7 +144,7 @@ namespace MultikeysEditor.View.Controls
                 if (Modifiers.Keys.Any(mod => mod.Scancodes.Contains(controlPair.Key)))
                 {
                     KeyControls[controlPair.Key].SetModifier(Modifiers.Keys.First(mod => mod.Scancodes.Contains(controlPair.Key)));
-                    
+
                 }
                 // get its corresponding command
                 else if (Layout.ContainsKey(controlPair.Key))
@@ -164,6 +156,23 @@ namespace MultikeysEditor.View.Controls
                     KeyControls[controlPair.Key].SetCommand(null);
                 }
             }
+        }
+        
+
+        /// <summary>
+        /// Refreshes every key in this view according to the commands in the specified layout and modifiers.<para/>
+        /// </summary>
+        public void RefreshView(IDictionary<Scancode, IKeystrokeCommand> commands,
+            ICollection<Modifier> modifiers)
+        {
+            // When setting the new commands, we must specify the custom comparer:
+            Layout = new Dictionary<Scancode, IKeystrokeCommand>(commands, new ScancodeComparer());
+
+            Modifiers = new Dictionary<Modifier, bool>();
+            foreach (var mod in modifiers)
+                Modifiers.Add(mod, false);
+
+            RefreshView();
         }
 
         /// <summary>

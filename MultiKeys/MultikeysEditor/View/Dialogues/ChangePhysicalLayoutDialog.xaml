@@ -12,7 +12,9 @@
     <Grid Margin="20">
         <StackPanel Orientation="Vertical">
             <TextBlock Text="{x:Static p:Strings.PromptPhysicalLayoutChoose}"/>
-            <StackPanel x:Name="StackPanelOptions" Orientation="Vertical"/>
+            <ComboBox x:Name="ComboBoxStandards"
+                      Width="Auto" MinWidth="80"
+                      HorizontalAlignment="Left" Margin="5"/>
             <CheckBox x:Name="CheckBoxBigEnter" Content="{x:Static p:Strings.PromptPhysicalLayoutUseBigEnter}"/>
             <Button x:Name="ButtonConfirm"
                 Content="{x:Static p:Strings.PromptPhysicalLayoutConfirm}"

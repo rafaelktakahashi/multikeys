@@ -24,41 +24,11 @@ namespace MultikeysEditor.View.Dialogues
         {
             InitializeComponent();
 
-            StackPanelOptions.Children.Add(
-                new RadioButton()
-                {
-                    Content = "ANSI",
-                    GroupName = "L",
-                }
-                );
-            StackPanelOptions.Children.Add(
-                new RadioButton()
-                {
-                    Content = "ISO",
-                    GroupName = "L",
-                }
-                );
-            StackPanelOptions.Children.Add(
-                new RadioButton()
-                {
-                    Content = "ABNT-2",
-                    GroupName = "L",
-                }
-                );
-            StackPanelOptions.Children.Add(
-                new RadioButton()
-                {
-                    Content = "JIS",
-                    GroupName = "L",
-                }
-                );
-            StackPanelOptions.Children.Add(
-                new RadioButton()
-                {
-                    Content = "Dubeolsik",
-                    GroupName = "L",
-                }
-                );
+            ComboBoxStandards.Items.Add("ANSI");
+            ComboBoxStandards.Items.Add("ISO");
+            ComboBoxStandards.Items.Add("ABNT-2");
+            ComboBoxStandards.Items.Add("JIS");
+            ComboBoxStandards.Items.Add("Dubeolsik");
         }
 
         /// <summary>
@@ -75,37 +45,34 @@ namespace MultikeysEditor.View.Dialogues
 
         private void ButtonConfirm_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var child in StackPanelOptions.Children)
+            if (ComboBoxStandards.SelectedValue != null)
             {
-                if (child is RadioButton && (child as RadioButton).IsChecked == true)
+                string value = ComboBoxStandards.SelectedValue as string;
+                switch (value)
                 {
-                    switch ((child as RadioButton).Content)
-                    {
-                        case "ANSI":
-                            Standard = PhysicalLayoutStandard.ANSI;
-                            break;
-                        case "ISO":
-                            Standard = PhysicalLayoutStandard.ISO;
-                            break;
-                        case "ABNT-2":
-                            Standard = PhysicalLayoutStandard.ABNT_2;
-                            break;
-                        case "JIS":
-                            Standard = PhysicalLayoutStandard.JIS;
-                            break;
-                        case "Dubeolsik":
-                            Standard = PhysicalLayoutStandard.DUBEOLSIK;
-                            break;
-                        default:
-                            Standard = PhysicalLayoutStandard.ISO;
-                            break;
-                    }
-                    UseBigReturn = CheckBoxBigEnter.IsChecked ?? false;
-                    DialogResult = true;    // will close this window
+                    case "ANSI":
+                        Standard = PhysicalLayoutStandard.ANSI;
+                        break;
+                    case "ISO":
+                        Standard = PhysicalLayoutStandard.ISO;
+                        break;
+                    case "ABNT-2":
+                        Standard = PhysicalLayoutStandard.ABNT_2;
+                        break;
+                    case "JIS":
+                        Standard = PhysicalLayoutStandard.JIS;
+                        break;
+                    case "Dubeolsik":
+                        Standard = PhysicalLayoutStandard.DUBEOLSIK;
+                        break;
+                    default:
+                        Standard = PhysicalLayoutStandard.ISO;
+                        break;
                 }
+                UseBigReturn = CheckBoxBigEnter.IsChecked ?? false;
+                DialogResult = true;    // will close this window
             }
-            // If no checked item was found:
-            return;
+            
         }
 
     }

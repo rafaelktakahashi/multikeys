@@ -71,6 +71,8 @@
     <Compile Include="Domain\BackgroundRunner\MultikeysCoreRunner.cs" />
     <Compile Include="Domain\DomainFacade.cs" />
     <Compile Include="Domain\IDomainFacade.cs" />
+    <Compile Include="Domain\Layout\LogicalLayout.cs" />
+    <Compile Include="Domain\Layout\LogicalLayoutFactory.cs" />
     <Compile Include="Domain\Layout\PhysicalKey.cs" />
     <Compile Include="Domain\Layout\IPhysicalLayout.cs" />
     <Compile Include="Domain\Layout\PhysicalKeyShape.cs" />
@@ -206,6 +208,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="Resources\Layouts\US.layout">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -243,5 +248,6 @@
     <Resource Include="Resources\Multikeys_Logo.png" />
     <Resource Include="Resources\Multikeys_Logo.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

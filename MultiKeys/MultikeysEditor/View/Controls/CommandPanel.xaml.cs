@@ -59,7 +59,6 @@ namespace MultikeysEditor.View.Controls
         /// This will also update this control's contents.
         /// This method accepts null, representing a key that is not remapped.
         /// </summary>
-        /// <param name="newCommand"></param>
         public void UpdateCommand(IKeystrokeCommand newCommand)
         {
             StackPanelData.Children.Clear();

@@ -26,9 +26,9 @@ namespace MultikeysEditor.Domain
             XmlPersistence.Save(model, path);
         }
 
-        public IPhysicalLayout GetPhysicalLayout(PhysicalLayoutStandard standard, bool useBigReturn = false)
+        public IPhysicalLayout GetPhysicalLayout(PhysicalLayoutStandard standard)
         {
-            return PhysicalLayoutFactory.FromStandard(standard, useBigReturn);
+            return PhysicalLayoutFactory.FromStandard(standard);
         }
 
         async public Task<string> DetectKeyboardUniqueName()

@@ -14,27 +14,8 @@ namespace MultikeysEditor.Domain.Layout
         /// <param name="standard">Physical keyboard standard that determines the shape and existence of certains keys.</param>
         /// <param name="useBigReturn">If set to true, the return key will be replaced by a large return key. Has no effect on JIS layout.</param>
         /// <returns></returns>
-        public static IPhysicalLayout FromStandard(PhysicalLayoutStandard standard, bool useBigReturn)
+        public static IPhysicalLayout FromStandard(PhysicalLayoutStandard standard)
         {
-            if (useBigReturn)
-            {
-                switch (standard)
-                {
-                    case PhysicalLayoutStandard.ANSI:
-                        return new BigReturnANSIPhysicalLayout();
-                    case PhysicalLayoutStandard.ISO:
-                        return new BigReturnISOPhysicalLayout();
-                    case PhysicalLayoutStandard.ABNT_2:
-                        return new BigReturnABNTPhysicalLayout();
-                    case PhysicalLayoutStandard.JIS:
-                        return new JISPhysicalLayout();
-                    case PhysicalLayoutStandard.DUBEOLSIK:
-                        return new BigReturnDubeolsikPhysicalLayout();
-                    default:
-                        throw new Exception("Unsupported keyboard layout.");
-                }
-            }
-
             switch (standard)
             {
                 case PhysicalLayoutStandard.ANSI:
@@ -47,6 +28,14 @@ namespace MultikeysEditor.Domain.Layout
                     return new JISPhysicalLayout();
                 case PhysicalLayoutStandard.DUBEOLSIK:
                     return new DubeolsikPhysicalLayout();
+                case PhysicalLayoutStandard.ANSI_BIGRETURN:
+                    return new BigReturnANSIPhysicalLayout();
+                case PhysicalLayoutStandard.ISO_BIGRETURN:
+                    return new BigReturnISOPhysicalLayout();
+                case PhysicalLayoutStandard.ABNT_2_BIGRETURN:
+                    return new BigReturnABNTPhysicalLayout();
+                case PhysicalLayoutStandard.DUBEOLSIK_BIGRETURN:
+                    return new BigReturnDubeolsikPhysicalLayout();
                 default:
                     throw new Exception("Unsupported keyboard layout.");
             }

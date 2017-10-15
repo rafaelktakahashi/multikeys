@@ -34,7 +34,7 @@ namespace MultikeysEditor.View.Controls
 
             foreach (var keyboard in layout.Keyboards)
             {                                                                       // TODO: Solve the physical layout
-                var kbControl = new KeyboardControl(keyboard, applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ISO, useBigReturn: false))
+                var kbControl = new KeyboardControl(keyboard, PhysicalLayoutStandard.ISO)
                 {
                     Width = double.NaN,     // NaN means Auto
                     Height = double.NaN,
@@ -91,7 +91,7 @@ namespace MultikeysEditor.View.Controls
 
             foreach (var keyboard in layout.Keyboards)
             {                                                                       // TODO: Solve the physical layout
-                var kbControl = new KeyboardControl(keyboard, applicationFacade.GetPhysicalLayout(PhysicalLayoutStandard.ISO, useBigReturn: false))
+                var kbControl = new KeyboardControl(keyboard, PhysicalLayoutStandard.ISO)
                 {
                     Width = double.NaN,     // NaN means Auto
                     Height = double.NaN,
@@ -112,7 +112,7 @@ namespace MultikeysEditor.View.Controls
         /// </summary>
         private void ButtonAddNewKeyboard_Click(object sender, RoutedEventArgs e)
         {                                                                               // solve the thing with the physical layouts
-            var kbControl = new KeyboardControl(new Model.Keyboard(), new DomainFacade().GetPhysicalLayout(PhysicalLayoutStandard.ISO, useBigReturn: false))
+            var kbControl = new KeyboardControl(new Model.Keyboard(), PhysicalLayoutStandard.ISO)
             {                                   // the keyboard contructor initializes all of the object's contents.
                 Width = double.NaN,     // NaN means Auto
                 Height = double.NaN,

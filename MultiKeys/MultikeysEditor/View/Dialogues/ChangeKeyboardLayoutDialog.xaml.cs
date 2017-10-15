@@ -87,19 +87,34 @@ namespace MultikeysEditor.View.Dialogues
         /// </summary>
         public string LogicalLayout { get; private set; }
 
-        /// <summary>
-        /// This property should only be accessed if this dialog returns true on ShowDialog().
-        /// It will be true if the user chose to use a big return key in the layout.
-        /// </summary>
-        public bool UseBigReturn { get; private set; }
-
         private void ButtonConfirm_Click(object sender, RoutedEventArgs e)
         {
             if (ComboBoxPhysicalStandards.SelectedItem != null
                 && ComboBoxLogicalLayouts.SelectedItem != null)
             {
                 string value = ComboBoxPhysicalStandards.SelectedValue as string;
-                switch (value)
+                if (CheckBoxBigEnter.IsChecked ?? false) switch (value)
+                    {
+                        case "ANSI":
+                            PhysicalLayout = PhysicalLayoutStandard.ANSI_BIGRETURN;
+                            break;
+                        case "ISO":
+                            PhysicalLayout = PhysicalLayoutStandard.ISO_BIGRETURN;
+                            break;
+                        case "ABNT-2":
+                            PhysicalLayout = PhysicalLayoutStandard.ABNT_2_BIGRETURN;
+                            break;
+                        case "JIS":
+                            PhysicalLayout = PhysicalLayoutStandard.JIS;
+                            break;
+                        case "Dubeolsik":
+                            PhysicalLayout = PhysicalLayoutStandard.DUBEOLSIK_BIGRETURN;
+                            break;
+                        default:
+                            PhysicalLayout = PhysicalLayoutStandard.ISO_BIGRETURN;
+                            break;
+                    }
+                else switch (value)
                 {
                     case "ANSI":
                         PhysicalLayout = PhysicalLayoutStandard.ANSI;
@@ -120,7 +135,6 @@ namespace MultikeysEditor.View.Dialogues
                         PhysicalLayout = PhysicalLayoutStandard.ISO;
                         break;
                 }
-                UseBigReturn = CheckBoxBigEnter.IsChecked ?? false;
 
                 LogicalLayout = ComboBoxLogicalLayouts.SelectedValue as string;
 

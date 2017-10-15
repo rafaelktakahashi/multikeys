@@ -56,10 +56,9 @@ namespace MultikeysEditor.View.Controls
     /// </summary>
     public partial class KeyboardControl : UserControl
     {
-        public KeyboardControl() : this(kb: null, physLayout: null)
-        { }
+        // No default constructor
 
-        public KeyboardControl(Keyboard kb, IPhysicalLayout physLayout)
+        public KeyboardControl(Keyboard kb, PhysicalLayoutStandard physStandard)
         {
             InitializeComponent();
 
@@ -84,7 +83,7 @@ namespace MultikeysEditor.View.Controls
             ModifiersControl.InitializeModifiers(kb.Modifiers);
 
             // Setup the layer to the default one (no modifiers)
-            Layer.SetLayoutToRender(physLayout);
+            Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(physStandard));
             Layer.RefreshView(kb.Layers[0].Commands, ModifiersControl.Modifiers);
             _activeLayer = kb.Layers[0];            // TODO: Using Layers[0] doesn't cut it.
 
@@ -542,12 +541,11 @@ namespace MultikeysEditor.View.Controls
             {
                 // Retrieve information from the dialog
                 PhysicalLayoutStandard physicalStandard = layoutDialog.PhysicalLayout;
-                bool useBigReturn = layoutDialog.UseBigReturn;
                 string logicalLayout = layoutDialog.LogicalLayout;
 
                 // Prepare the layer control with the new information, then tell it to rerender.
                 Layer.Labels = LogicalLayoutFactory.GetLogicalLayout(logicalLayout);
-                Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(physicalStandard, useBigReturn));
+                Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(physicalStandard));
                 Layer.RefreshView(_activeLayer.Commands, ModifiersControl.Modifiers);
             }
         }

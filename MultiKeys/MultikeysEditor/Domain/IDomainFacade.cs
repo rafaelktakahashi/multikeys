@@ -32,9 +32,8 @@ namespace MultikeysEditor.Domain
         /// Get an instance that represents a collection of physical keys according to a standard.
         /// </summary>
         /// <param name="standard">Physical layout standard to be used when creating the physical layout</param>
-        /// <param name="useBigReturn">If set to true, the return key will be replaced by a large return key. Has no effect on JIS layout.</param>
         /// <returns>An object representing the scancode, size and position of each key in a physical layout</returns>
-        IPhysicalLayout GetPhysicalLayout(PhysicalLayoutStandard standard, bool useBigReturn);
+        IPhysicalLayout GetPhysicalLayout(PhysicalLayoutStandard standard);
 
         /// <summary>
         /// Prompt the user to press any key on a keyboard, then returns the unique name of that keyboard.

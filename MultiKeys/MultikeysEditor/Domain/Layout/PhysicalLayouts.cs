@@ -258,4 +258,59 @@ namespace MultikeysEditor.Domain.Layout
         }
     }
 
+    public class BigReturnISOPhysicalLayout : BasePhysicalLayout
+    {
+        public BigReturnISOPhysicalLayout() : base()
+        {
+            _layout.Add(new PhysicalKey("0e", 1, 1, 14, 1.5));       // 1-wide backspace
+            _layout.Add(new PhysicalKey("2b", 1, 1, 13, 1.5));     // 1-wide 2b key
+            _layout.Add(new PhysicalKey("1c", 2.25, 2, 12.75, 2.5,   // Big return
+                PhysicalKeyShape.BigReturn));
+            _layout.Add(new PhysicalKey("2a", 1.25, 1, 0, 4.5));     // 1.25-wide left shift
+            _layout.Add(new PhysicalKey("56", 1, 1, 1.25, 4.5));        // 1x1 key to the right of left shift
+            _layout.Add(new PhysicalKey("36", 2.75, 1, 12.25, 4.5)); // 2.75-wide right shift
+            _layout.Add(new PhysicalKey("39", 6.25, 1, 3.75, 5.5));  // full-width (6.25) space bar
+            _layout.Add(new PhysicalKey("4e", 1, 2, 22, 2.5));       // 2-tall plus symbol
+        }
+    }
+
+    public class BigReturnABNTPhysicalLayout : BasePhysicalLayout
+    {
+        public BigReturnABNTPhysicalLayout() : base()
+        {
+            _layout.Add(new PhysicalKey("0e", 1, 1, 14, 1.5));       // 1-wide backspace
+            _layout.Add(new PhysicalKey("2b", 1, 1, 13, 1.5));     // 1-wide 2b key
+            _layout.Add(new PhysicalKey("1c", 2.25, 2, 12.75, 2.5,   // Big return
+                PhysicalKeyShape.BigReturn));
+            _layout.Add(new PhysicalKey("2a", 1.25, 1, 0, 4.5));     // 1.25-wide left shift
+            _layout.Add(new PhysicalKey("56", 1, 1, 1.25, 4.5));     // 1x1 key to the right of left shift (backslash)
+            _layout.Add(new PhysicalKey("73", 1, 1, 12.25, 4.5));    // 1x1 key to the left of right shift (slash)
+            _layout.Add(new PhysicalKey("36", 1.75, 1, 13.25, 4.5)); // 1.75-wide right shift
+            _layout.Add(new PhysicalKey("39", 6.25, 1, 3.75, 5.5));  // full-width (6.25) space bar
+            _layout.Add(new PhysicalKey("4e", 1, 1, 22, 2.5));       // 1-tall plus symbol
+            _layout.Add(new PhysicalKey("7e", 1, 1, 22, 3.5));       // Numpad thousands separator (dot)
+        }
+    }
+
+    // No support for big return JIS layout
+
+    public class BigReturnDubeolsikPhysicalLayout : BasePhysicalLayout
+    {
+        public BigReturnDubeolsikPhysicalLayout() : base()
+        {
+            _layout.Add(new PhysicalKey("0e", 1, 1, 14, 1.5));       // 1-wide backspace
+            _layout.Add(new PhysicalKey("2b", 1, 1, 13, 1.5));     // 1-wide 2b key
+            _layout.Add(new PhysicalKey("1c", 2.25, 2, 12.75, 2.5,   // Big return
+                PhysicalKeyShape.BigReturn));
+            _layout.Add(new PhysicalKey("2a", 1.25, 1, 0, 4.5));     // 1.25-wide left shift
+            _layout.Add(new PhysicalKey("56", 1, 1, 1.25, 4.5));     // 1x1 key to the right of left shift
+            _layout.Add(new PhysicalKey("36", 2.75, 1, 12.25, 4.5)); // 2.75-wide right shift
+            _layout.Add(new PhysicalKey("f1", 1, 1, 3.75, 5.5));     // Hanja key to the left of space bar
+            _layout.Add(new PhysicalKey("39", 4.25, 1, 4.75, 5.5));  // reduced-width (4.25) space bar
+            _layout.Add(new PhysicalKey("f2", 1, 1, 9, 5.5));        // Han/yeong key to the right of space bar
+            _layout.Add(new PhysicalKey("4e", 1, 2, 22, 2.5));       // 2-tall plus symbol
+        }
+    }
+
+
 }

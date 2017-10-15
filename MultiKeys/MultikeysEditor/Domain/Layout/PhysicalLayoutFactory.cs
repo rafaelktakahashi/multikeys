@@ -18,8 +18,21 @@ namespace MultikeysEditor.Domain.Layout
         {
             if (useBigReturn)
             {
-                // TODO: Put a switch in here
-                return new BigReturnANSIPhysicalLayout();
+                switch (standard)
+                {
+                    case PhysicalLayoutStandard.ANSI:
+                        return new BigReturnANSIPhysicalLayout();
+                    case PhysicalLayoutStandard.ISO:
+                        return new BigReturnISOPhysicalLayout();
+                    case PhysicalLayoutStandard.ABNT_2:
+                        return new BigReturnABNTPhysicalLayout();
+                    case PhysicalLayoutStandard.JIS:
+                        return new JISPhysicalLayout();
+                    case PhysicalLayoutStandard.DUBEOLSIK:
+                        return new BigReturnDubeolsikPhysicalLayout();
+                    default:
+                        throw new Exception("Unsupported keyboard layout.");
+                }
             }
 
             switch (standard)

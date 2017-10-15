@@ -1,4 +1,4 @@
-# Introduction 
+# Introduction and Motivation
 Custom keyboard layouts are an option to those who want to expand the functionality of their keyboards, whether to type uncommon symbols or to define custom macros.  
 Many applications for creating custom layouts exist, such as [AutoHotKey][AutoHotKey] and [Microsoft's Keyboard Layout Creator][MSKLC], with varying capabilities and learning curves. However, they are not capable of remapping more than one keyboard simultaneously.  
 On the other hand, the software [LuaMacros][LuaMacros], by Petr Medek, allows for using multiple keyboards in Windows, but does not offer custom layout functionality. It is instead focused on executing macros written in the Lua language.
@@ -13,11 +13,14 @@ The RawInput API, on the other hand, does provide low-level information that inc
 
 This application aims at providing such a solution: to allow the user to create and use multiple keyboard layouts at once in the Windows Operating System.
 
+
+The user interface for this program is a Layout Editor, written in C# (with WPF), targeting the .NET framework version 4.5. Its goal is to make it easy to create and use any number of custom layouts for any purpose.
+
 # Getting Started
-This app is developed in Visual Studio 2017 targeting Windows 7 or higher. The core project in Visual C++ interacts with the Windows API to intercept and substitute keystrokes according to a configuration file in XML. The Layout Editor is written in C# WPF, and is used to create the configuration file that contains the layouts for the different registered keyboards; it writes the XML configuration files and controls the lifetime of the core application.  
+This app is developed in Visual Studio 2017 targeting Windows 7 or higher. The core project in Visual C++ interacts with the Windows API to intercept and substitute keystrokes according to a configuration file in XML. The Layout Editor is written in C# WPF, and is used to edit configuration files that contain the layouts for the different registered keyboards; it also writes the XML configuration files and controls the lifetime of the core application.  
 
 # Build and Run
-Buiding the solution should be simple. One important detail, however, is that the Layout Editor points to the Release folders of the C++ projects; as such, it's necessary to build at least the C++ projects in Release mode before building and running the Layout Editor.
+Buiding the solution should be simple. One important detail, however, is that the Layout Editor points to the Release folders of the C++ projects; as such, it's necessary to build at least the C++ projects in Release mode before building and running the Layout Editor.  
 
 
 [AutoHotKey]: https://autohotkey.com/

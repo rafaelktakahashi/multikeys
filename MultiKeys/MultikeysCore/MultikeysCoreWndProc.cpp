@@ -38,6 +38,9 @@ WCHAR * keyboardNameBuffer = new WCHAR[keyboardNameBufferSize];
 // Structure to contain a Raw Input pointer
 RAWINPUT * raw;
 
+// Structure used in the function ResetKey.
+INPUT * input;
+
 // Remapper
 Multikeys::PRemapper remapper;	// PRemapper is a pointer type
 								// Must be initialized
@@ -119,6 +122,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// return of CommandLineToArgvW is a contiguous memory of pointers
 	LocalFree(szArgList);
+
+	// Initialize the work INPUT structure for use in the ResetKey function
+	input = new INPUT;
+	input->type = INPUT_KEYBOARD;
+	input->ki.dwExtraInfo = 0;
+	input->ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP;
+	input->ki.wScan = 0;
+	input->ki.time = 0;
 
 
 									// Main message loop:
@@ -211,49 +222,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
-// Utility function that resets modifiers
-BOOL ResetModifiers() {
-	return TRUE;
-	// Reset both sides of Control and Alt keys, as well as send their up keystrokes
-	// TODO: Instead of sending all of these six modifiers each time, it might be better
-	// to figure out what signal exactly needs to be sent. Also, move this INPUT structure
-	// somewhere else instead of allocating space every time this is called.
-
-	/*
-	BYTE kbState[256];
-	GetKeyboardState((PBYTE)&kbState);
-
-	kbState[VK_LCONTROL] &= ~0x80;
-	kbState[VK_RCONTROL] &= ~0x80;
-	kbState[VK_CONTROL] &= ~0x80;
-	kbState[VK_LMENU] &= ~0x80;
-	kbState[VK_RMENU] &= ~0x80;
-	kbState[VK_MENU] &= ~0x80;
-	*/
-
-	INPUT* inputs = new INPUT[6];
-	for (short i = 0; i < 6; i++)
-	{
-		inputs[i].type = INPUT_KEYBOARD;
-		inputs[i].ki.dwExtraInfo = 0;
-		// send scancode e0 00, which this interceptor ignores.
-		inputs[i].ki.dwFlags = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP;
-		inputs[i].ki.wScan = 0;
-		inputs[i].ki.time = 0;
-	}
-	inputs[0].ki.wVk = VK_LCONTROL;
-	inputs[1].ki.wVk = VK_RCONTROL;
-	inputs[2].ki.wVk = VK_CONTROL;
-	inputs[3].ki.wVk = VK_LMENU;
-	inputs[4].ki.wVk = VK_RMENU;
-	inputs[5].ki.wVk = VK_MENU;
-	SendInput(6, inputs, sizeof(INPUT));
-
-	delete[] inputs;
-
-	// return SetKeyboardState((PBYTE)&kbState);
-	return TRUE;
+// Simulates an up keystroke of the specified key.
+// Mostly useful for resetting the alt key.
+BOOL ResetKey(SHORT vKey)
+{
+	// input is already initialized for sending a release keystroke.
+	input->ki.wVk = vKey;
+	return SendInput(1, input, sizeof(INPUT));
 }
+
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -403,15 +380,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		* If the received key was either a Left Alt or a Right Alt that was blocked, then the state of the keyboard
 		* must be reset. This prevents subsequent simulated keystrokes to be sent with the Alt modifier.
 		* */
-		if ((raw->data.keyboard.VKey == VK_MENU && DoBlock)
-			|| (raw->data.keyboard.VKey == VK_RMENU && DoBlock)
-			|| (raw->data.keyboard.VKey == VK_LMENU && DoBlock))
+		if ((raw->data.keyboard.MakeCode == SCANCODE_ALT && DoBlock))
 		{
 			if (DEBUG)
 				OutputDebugString(L"Raw Input: Got a blocked Alt; resetting keyboard state.\n");
-			ResetModifiers();
+			if (raw->data.keyboard.Flags & RI_KEY_E0)	// <- if it's RAlt
+				ResetKey(VK_RMENU);
+			else
+				ResetKey(VK_LMENU);
 		}
-
 
 		return 0;	// exit Wndproc
 

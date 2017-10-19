@@ -532,9 +532,10 @@ namespace MultikeysEditor.View.Controls
 
 
         /// <summary>
-        /// Called when the user wants to change the physical layout that is used to display this keyboard.
+        /// Called when the user wants to change the physical and logical layouts that determine the
+        /// appearance of the control.
         /// </summary>
-        private void ButtonChangePhysicalLayout_Click(object sender, RoutedEventArgs e)
+        private void ButtonChangeLayout_Click(object sender, RoutedEventArgs e)
         {
             var layoutDialog = new ChangePhysicalLayoutDialog();
             if (layoutDialog.ShowDialog() == true)

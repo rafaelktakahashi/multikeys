@@ -33,7 +33,7 @@
                         Width="Auto" MinWidth="80"
                         Height="23"
                         Grid.Column="1"
-                        Click="ButtonChangePhysicalLayout_Click"/>
+                        Click="ButtonChangeLayout_Click"/>
                 <Button x:Name="ButtonDeleteKeyboard" Content="{x:Static p:Strings.KeyboardControlDeleteKeyboard}"
                         HorizontalAlignment="Right" Margin="0, 0, 10, 0"
                         Width="Auto" MinWidth="80"

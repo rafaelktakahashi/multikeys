@@ -37,6 +37,10 @@ However, don't forget to include the new file in the VS project, set its build a
         <file>JIS</file>
     </layout>
     <layout>
+        <name>JIS - 日本語（かな）</name>
+        <file>JIS_Kana</file>
+    </layout>
+    <layout>
         <name>Dubeolsik - 한국어</name>
         <file>Dubeolsik</file>
     </layout>

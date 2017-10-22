@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MultikeysEditor.Domain.Layout;
+﻿using MultikeysEditor.Domain.Layout;
 using MultikeysEditor.Model;
 using MultikeysEditor.Persistence;
+using System.Threading.Tasks;
 
 namespace MultikeysEditor.Domain
 {

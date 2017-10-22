@@ -1,21 +1,12 @@
-﻿using System;
+﻿using MultikeysEditor.Domain;
+using MultikeysEditor.Domain.Layout;
+using MultikeysEditor.Model;
+using MultikeysEditor.View.Dialogues;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using MultikeysEditor.Model;
-using MultikeysEditor.Domain.Layout;
-using MultikeysEditor.View.Dialogues;
-using MultikeysEditor.Domain;
 
 namespace MultikeysEditor.View.Controls
 {

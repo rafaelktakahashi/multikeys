@@ -1,21 +1,12 @@
-﻿using System;
+﻿using MultikeysEditor.Domain;
+using MultikeysEditor.Domain.Layout;
+using MultikeysEditor.Model;
+using MultikeysEditor.View.Dialogues;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using MultikeysEditor.Model;
-using MultikeysEditor.Domain.Layout;
-using MultikeysEditor.View.Dialogues;
-using MultikeysEditor.Domain;
 
 namespace MultikeysEditor.View.Controls
 {
@@ -532,9 +523,10 @@ namespace MultikeysEditor.View.Controls
 
 
         /// <summary>
-        /// Called when the user wants to change the physical layout that is used to display this keyboard.
+        /// Called when the user wants to change the physical and logical layouts that determine the
+        /// appearance of the control.
         /// </summary>
-        private void ButtonChangePhysicalLayout_Click(object sender, RoutedEventArgs e)
+        private void ButtonChangeLayout_Click(object sender, RoutedEventArgs e)
         {
             var layoutDialog = new ChangePhysicalLayoutDialog();
             if (layoutDialog.ShowDialog() == true)

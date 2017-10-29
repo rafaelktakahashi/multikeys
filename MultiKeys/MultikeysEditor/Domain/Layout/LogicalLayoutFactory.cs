@@ -1,11 +1,7 @@
 ﻿using MultikeysEditor.Model;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace MultikeysEditor.Domain.Layout
 {
@@ -56,14 +52,28 @@ namespace MultikeysEditor.Domain.Layout
 
             foreach (string line in lines)
             {
-                // Apparently, compiling a regex results in execution that is a little bit faster,
-                // but is orders of magniture slower to construct. Benchmarking is welcome, but I do
-                // not believe it's necessary to worry too much about this.
-                var both = Regex.Replace(line, "(?=.*)\\s(?=.*)", "!").Split('!');
-                string scancode = both[0];
-                // name might be empty, in which case an empty string should be used
-                string name = (both.Length <= 1 ? "" : both[1]);
-                layout.Add(Scancode.FromString(scancode), name);
+                // The old algorithm did not allow for spaces in the text after the scancode.
+
+                //// Apparently, compiling a regex results in execution that is a little bit faster,
+                //// but is orders of magniture slower to construct. Benchmarking is welcome, but I do
+                //// not believe it's necessary to worry too much about this.
+                //var both = Regex.Replace(line, "(?=.*)\\s(?=.*)", "!").Split('!');
+                //string scancode = both[0];
+                //// name might be empty, in which case an empty string should be used
+                //string name = (both.Length <= 1 ? "" : both[1]);
+                //layout.Add(Scancode.FromString(scancode), name);
+
+                // Line is in format:
+                // e0:37 PrtSc
+                // first whitespace separates scancode from text.
+
+                // first, split by whitespace (string.Split uses whitespace when passed null)
+                // also, limit the split by 2, so that only the first encountered 
+                string[] words = line.Split(null as char[], 2);
+                // remove any line that didn't have whitespace at all.
+                if (words.Length <= 1) continue;
+                // scancode is the first word, text is the second word
+                layout.Add(Scancode.FromString(words[0]), words[1]);
             }
 
             return layout;

@@ -273,11 +273,15 @@ bool ParseModifier(const PXmlElement modElement, OUT ModifierStateMap**const pMo
 		// get name
 		std::wstring modifierName = xmlch_to_wstring(thisElement->getAttribute(u"Name"));
 		// get value
-		std::wstring modifierValue = xmlch_to_wstring(thisElement->getTextContent());
+		std::wstring modifierScancode = xmlch_to_wstring(thisElement->getTextContent());
 		unsigned int iModifierValue = 0;
 		try
 		{
-			iModifierValue = std::stoi(modifierValue, 0, 16);
+			// Some modifiers have E0 flags; in that case, there will be a ':' complicating things,
+			// so we must remove it to get a number like e038.
+			modifierScancode.erase(std::remove(modifierScancode.begin(), modifierScancode.end(), L':'), modifierScancode.end());
+			// Place the value (without the colon) into an integer
+			iModifierValue = std::stoi(modifierScancode, 0, 16);
 		}
 		catch (std::exception e)
 		{

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MultikeysEditor.Domain.BackgroundRunner
 {
@@ -79,7 +75,7 @@ namespace MultikeysEditor.Domain.BackgroundRunner
             {
                 throw new ArgumentException("The specified layout file was not found.");
             }
-            mkCoreProcess.StartInfo.Arguments = pathToLayout;
+            mkCoreProcess.StartInfo.Arguments = '"' + pathToLayout + '"';
             mkCoreProcess.Start();
             State = MultikeysCoreState.Running;
         }

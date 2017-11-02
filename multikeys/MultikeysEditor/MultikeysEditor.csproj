@@ -202,7 +202,6 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -270,8 +269,6 @@
     </Resource>
     <Resource Include="Resources\Multikeys_Logo_32.ico" />
     <Resource Include="Resources\Multikeys_Logo_32.png" />
-    <Resource Include="Multikeys_Logo_32.ico" />
-    <Resource Include="Multikeys_Logo.ico" />
     <Resource Include="Resources\Multikeys_Logo.png" />
     <Resource Include="Resources\Multikeys_Logo.ico" />
   </ItemGroup>

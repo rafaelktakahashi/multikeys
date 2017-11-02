@@ -219,9 +219,6 @@
     <value>None</value>
     <comment>For displaying the name of a nameless keyboard</comment>
   </data>
-  <data name="PromptUnicodeConfirm" xml:space="preserve">
-    <value>Assign command</value>
-  </data>
   <data name="PromptUnicodePromptInput" xml:space="preserve">
     <value>Insert one or more Unicode characters:</value>
   </data>
@@ -381,5 +378,24 @@
   </data>
   <data name="PromptChangeLayoutChooseLogicalLayout" xml:space="preserve">
     <value>Choose which layout to print on the keys:</value>
+  </data>
+  <data name="ChooseFile" xml:space="preserve">
+    <value>Choose...</value>
+    <comment>For placement in a button or link</comment>
+  </data>
+  <data name="ChooseFileToAssignToThisKey" xml:space="preserve">
+    <value>Choose file to assign to this key</value>
+  </data>
+  <data name="PromptExecutableArguments" xml:space="preserve">
+    <value>Arguments to pass to file:</value>
+  </data>
+  <data name="PromptExecutableFilename" xml:space="preserve">
+    <value>Select the file to open:</value>
+  </data>
+  <data name="PromptNewCommandAssignCommand" xml:space="preserve">
+    <value>Assign Command</value>
+  </data>
+  <data name="WarningNoFileSelected" xml:space="preserve">
+    <value>An executable file must be selected.</value>
   </data>
 </root>

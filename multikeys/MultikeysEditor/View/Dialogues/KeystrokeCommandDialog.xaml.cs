@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Unicode;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 
 namespace MultikeysEditor.View.Dialogues
 {
@@ -72,7 +73,7 @@ namespace MultikeysEditor.View.Dialogues
         }
 
 
-        #region Unicode
+        /*--- Unicode ---*/
         
         public class UnicodeCharacterItem : INotifyPropertyChanged
         {
@@ -178,9 +179,53 @@ namespace MultikeysEditor.View.Dialogues
                 new UnicodeCommand(PromptUnicodeTriggerOnRepeat.IsChecked ?? false, UnicodeTextInput.Text);
             DialogResult = true;    // This closes the window
         }
+        
 
-        #endregion
+        /*--- Executable ---*/
 
+        private string FileToExecute { get; set; }
 
+        private void ProptExecutableChooseFilename_Click(object sender, RoutedEventArgs e)
+        {
+            var fileDialog = new OpenFileDialog
+            {
+                Title = Properties.Strings.ChooseFileToAssignToThisKey,
+                Filter = "Executable files|*.exe",
+                Multiselect = false,
+                CheckPathExists = true,
+            };
+
+            if (fileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                FileToExecute = fileDialog.FileName;
+                PromptExecutableFilename.Text = fileDialog.FileName;
+            }
+        }
+
+        private void PromptExecutableArgumentsExpander_Expanded(object sender, RoutedEventArgs e)
+        {
+            PromptExecutableArguments.Height = 23 * 5;
+        }
+
+        private void PromptExecutableArgumentsExpander_Collapsed(object sender, RoutedEventArgs e)
+        {
+            PromptExecutableArguments.Height = 23;
+        }
+
+        private void PromptExecutableConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(FileToExecute))
+            {
+                System.Windows.MessageBox.Show(Properties.Strings.WarningNoFileSelected, Properties.Strings.Warning);
+                return;
+            }
+            Command =
+                new ExecutableCommand
+                {
+                    Command = FileToExecute,
+                    Arguments = PromptExecutableArguments.Text
+                };
+            DialogResult = true;
+        }
     }
 }

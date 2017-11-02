@@ -93,21 +93,38 @@
                               VerticalAlignment="Top" RenderTransformOrigin="1.056,0.6"/>
 
                     <Button x:Name="PromptUnicodeConfirm"
-                             Content="{x:Static p:Strings.PromptUnicodeConfirm}"
+                             Content="{x:Static p:Strings.PromptNewCommandAssignCommand}"
                              HorizontalAlignment="Right" Margin="0,494,22,0"
                              VerticalAlignment="Top" Width="Auto"
                              FontWeight="DemiBold"
                              FontSize="16"
                              Click="PromptUnicodeConfirm_Click" Background="#FFCCEECC"/>
 
-
-
                 </Grid>
             </TabItem>
 
             <TabItem Header="{x:Static p:Strings.ReadableNameExecutablekey}">
                 <Grid>
-
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="10">
+                            <TextBlock Text="{x:Static p:Strings.PromptExecutableFilename}"/>
+                            <TextBox x:Name="PromptExecutableFilename" Width="180" IsEnabled="true" IsReadOnly="True" Margin="10,0,10,0" />
+                            <Button x:Name="ProptExecutableChooseFilename" Content="{x:Static p:Strings.ChooseFile}" Click="ProptExecutableChooseFilename_Click"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="10">
+                            <TextBlock Text="{x:Static p:Strings.PromptExecutableArguments}"/>
+                            <TextBox x:Name="PromptExecutableArguments" Width="200" Margin="10, 0, 10, 0"/>
+                            <Expander x:Name="PromptExecutableArgumentsExpander" Expanded="PromptExecutableArgumentsExpander_Expanded" Collapsed="PromptExecutableArgumentsExpander_Collapsed"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+                            <Button x:Name="PromptExecutableConfirm"
+                             Content="{x:Static p:Strings.PromptNewCommandAssignCommand}"
+                             HorizontalAlignment="Right"
+                             FontWeight="DemiBold"
+                             FontSize="16"
+                             Click="PromptExecutableConfirm_Click" Background="#FFCCEECC"/>
+                        </StackPanel>
+                    </StackPanel>
                 </Grid>
             </TabItem>
 

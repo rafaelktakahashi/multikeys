@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MultikeysEditor.Properties
-{
-
-
+namespace MultikeysEditor.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -57,6 +57,24 @@ namespace MultikeysEditor.Properties
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose....
+        /// </summary>
+        public static string ChooseFile {
+            get {
+                return ResourceManager.GetString("ChooseFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose file to assign to this key.
+        /// </summary>
+        public static string ChooseFileToAssignToThisKey {
+            get {
+                return ResourceManager.GetString("ChooseFileToAssignToThisKey", resourceCulture);
             }
         }
         
@@ -529,6 +547,24 @@ namespace MultikeysEditor.Properties
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Arguments to pass to file:.
+        /// </summary>
+        public static string PromptExecutableArguments {
+            get {
+                return ResourceManager.GetString("PromptExecutableArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the file to open:.
+        /// </summary>
+        public static string PromptExecutableFilename {
+            get {
+                return ResourceManager.GetString("PromptExecutableFilename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add to existing modifier:.
         /// </summary>
         public static string PromptModifierAddToExistingModifier {
@@ -556,11 +592,11 @@ namespace MultikeysEditor.Properties
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Assign command.
+        ///   Looks up a localized string similar to Assign Command.
         /// </summary>
-        public static string PromptUnicodeConfirm {
+        public static string PromptNewCommandAssignCommand {
             get {
-                return ResourceManager.GetString("PromptUnicodeConfirm", resourceCulture);
+                return ResourceManager.GetString("PromptNewCommandAssignCommand", resourceCulture);
             }
         }
         
@@ -696,6 +732,15 @@ namespace MultikeysEditor.Properties
         public static string WarningModifierOverridesCommands {
             get {
                 return ResourceManager.GetString("WarningModifierOverridesCommands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An executable file must be selected..
+        /// </summary>
+        public static string WarningNoFileSelected {
+            get {
+                return ResourceManager.GetString("WarningNoFileSelected", resourceCulture);
             }
         }
         

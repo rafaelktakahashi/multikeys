@@ -83,10 +83,10 @@ e0:49 PgUp
 e0:53 Delete
 e0:4f End
 e0:51 PgDn
-e0:48 Up
-e0:4b Left
-e0:50 Down
-e0:4d Right
+e0:48 ↑
+e0:4b ←
+e0:50 ↓
+e0:4d →
 45 NmLk
 e0:35 /
 37 *

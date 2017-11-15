@@ -565,6 +565,69 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a new keystroke.
+        /// </summary>
+        public static string PromptMacroAddKeystroke {
+            get {
+                return ResourceManager.GetString("PromptMacroAddKeystroke", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        public static string PromptMacroAddKeystrokeConfirm {
+            get {
+                return ResourceManager.GetString("PromptMacroAddKeystrokeConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code.
+        /// </summary>
+        public static string PromptMacroColumnHeaderCode {
+            get {
+                return ResourceManager.GetString("PromptMacroColumnHeaderCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Key down.
+        /// </summary>
+        public static string PromptMacroColumnHeaderDown {
+            get {
+                return ResourceManager.GetString("PromptMacroColumnHeaderDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string PromptMacroColumnHeaderName {
+            get {
+                return ResourceManager.GetString("PromptMacroColumnHeaderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Down.
+        /// </summary>
+        public static string PromptMacroKeystrokeDown {
+            get {
+                return ResourceManager.GetString("PromptMacroKeystrokeDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Up.
+        /// </summary>
+        public static string PromptMacroKeystrokeUp {
+            get {
+                return ResourceManager.GetString("PromptMacroKeystrokeUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add to existing modifier:.
         /// </summary>
         public static string PromptModifierAddToExistingModifier {

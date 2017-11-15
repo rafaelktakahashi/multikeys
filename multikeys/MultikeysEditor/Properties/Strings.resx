@@ -398,4 +398,25 @@
   <data name="WarningNoFileSelected" xml:space="preserve">
     <value>An executable file must be selected.</value>
   </data>
+  <data name="PromptMacroAddKeystroke" xml:space="preserve">
+    <value>Add a new keystroke</value>
+  </data>
+  <data name="PromptMacroAddKeystrokeConfirm" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="PromptMacroKeystrokeDown" xml:space="preserve">
+    <value>Down</value>
+  </data>
+  <data name="PromptMacroKeystrokeUp" xml:space="preserve">
+    <value>Up</value>
+  </data>
+  <data name="PromptMacroColumnHeaderCode" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="PromptMacroColumnHeaderDown" xml:space="preserve">
+    <value>Key down</value>
+  </data>
+  <data name="PromptMacroColumnHeaderName" xml:space="preserve">
+    <value>Name</value>
+  </data>
 </root>

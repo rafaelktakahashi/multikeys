@@ -136,7 +136,39 @@
 
             <TabItem Header="{x:Static p:Strings.ReadableNameMacroKey}">
                 <Grid>
+                    <StackPanel Orientation="Vertical">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
+                            <GroupBox Grid.ColumnSpan="2" Header="Add keypress">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <ComboBox x:Name="PromptMacrosAddMacroName" Grid.Column="0" Margin="5"/>
+                                    <ComboBox x:Name="PromptMacrosAddMacroUpDown" Grid.Column="1" Margin="5"/>
+                                    <Button x:Name="PromptMacrosAddMacroButtonAdd" Grid.Column="2" Margin="5" Click="PromptMacrosAddMacroButtonAdd_Click"
+                                            Content="{x:Static p:Strings.PromptMacroAddKeystrokeConfirm}" MinWidth="70"/>
+                                </Grid>
+                            </GroupBox>
+
+                            <DataGrid x:Name="PromptMacrosMainTable" Grid.Row="1" Height="200" Margin="15" Width="300"
+                                      HeadersVisibility="Column" IsReadOnly="True"
+                                      CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
+                                      AutoGenerateColumns="False"/>
+                            
+                        </Grid>
+                    </StackPanel>
                 </Grid>
             </TabItem>
 

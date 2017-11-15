@@ -1,4 +1,5 @@
 ﻿using MultikeysEditor.Model;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Unicode;
@@ -39,6 +40,74 @@ namespace MultikeysEditor.View.Dialogues
             UnicodeUpdateList();
             // focus on the input
             UnicodeTextInput.Focus();
+
+            /* Macros */
+
+            // Initialize the macros dropdown
+            // containing options for the user
+            // values range from 0x00 to 0xff,
+            // not all of them are valid choices, but leave them in anyway.
+            KeysConverter kc = new KeysConverter();
+            for (int code = 0x00; code <= 0xff; code++)
+            {
+                // b is virtual key code
+                // 1. cast byte to Keys enumeration, the underlying values should match
+                // 2. Use the KeysConverter to convert it to string
+                // 3. Make a new instance of MacroItem and add it to the dropdown box
+                string keyChar = kc.ConvertToString((Keys)code);
+                PromptMacrosAddMacroName.Items.Add(new MacroItem { Code = (byte)(code % 0x100), Name = keyChar, DownKeystroke = true });
+            }
+            PromptMacrosAddMacroName.DisplayMemberPath = "DisplayText";
+            PromptMacrosAddMacroName.SelectedValuePath = "Code";
+            // It would be interesting to get these values from somewhere else, as a lot of byte values are not valid keystrokes,
+            // and some of the names aren't very nice to look at.
+
+            // Populate the other dropdown box
+            PromptMacrosAddMacroUpDown.Items.Add(
+                new ComboBoxItem()
+                {
+                    Content = Properties.Strings.PromptMacroKeystrokeDown,
+                    Tag = true,
+                }
+                );
+            PromptMacrosAddMacroUpDown.Items.Add(
+                new ComboBoxItem()
+                {
+                    Content = Properties.Strings.PromptMacroKeystrokeUp,
+                    Tag = false,
+                }
+                );
+            // Also initialize the collection
+            MacroKeystrokesSource = new ObservableCollection<MacroItem>();
+            // And initialize the table
+            PromptMacrosMainTable.DataContext = this;
+            PromptMacrosMainTable.ItemsSource = MacroKeystrokesSource;
+            // Generate columns
+            PromptMacrosMainTable.Columns.Add(
+                new DataGridTextColumn
+                {
+                    Header = Properties.Strings.PromptMacroColumnHeaderCode,
+                    Binding = new System.Windows.Data.Binding("Code"),
+                    Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+                }
+                );
+
+            PromptMacrosMainTable.Columns.Add(
+                new DataGridTextColumn
+                {
+                    Header = Properties.Strings.PromptMacroColumnHeaderName,
+                    Binding = new System.Windows.Data.Binding("Name"),
+                    Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+                }
+                );
+
+            PromptMacrosMainTable.Columns.Add(
+                new DataGridCheckBoxColumn
+                {
+                    Header = Properties.Strings.PromptMacroColumnHeaderDown,
+                    Binding = new System.Windows.Data.Binding("DownKeystroke"),
+                }
+                );
         }
 
 
@@ -226,6 +295,66 @@ namespace MultikeysEditor.View.Dialogues
                     Arguments = PromptExecutableArguments.Text
                 };
             DialogResult = true;
+        }
+
+        /*--- Macros ---*/
+
+        // This class is meant to be used both in the dropdown for choosing a new keystroke,
+        // and in the table of keystrokes to be written to the new command.
+        // In the first case, the downkeystroke property is unused.
+        public class MacroItem : INotifyPropertyChanged
+        {
+            private byte _code;
+            public byte Code
+            {
+                get { return _code; }
+                set { _code = value; NotifyPropertyChanged("Code"); }
+            }
+            private string _name;
+            public string Name
+            {
+                get { return _name; }
+                set { _name = value; NotifyPropertyChanged("Name"); }
+            }
+            private bool _downKeystroke;
+            public bool DownKeystroke
+            {
+                get { return _downKeystroke; }
+                set { _downKeystroke = value; NotifyPropertyChanged("DownKeystroke"); }
+            }
+            // readonly for displaying a user-readable name for an instance of this class.
+            public string DisplayText
+            {
+                get { return string.Format("{0:X2} - {1}", _code, _name); }
+            }
+            public event PropertyChangedEventHandler PropertyChanged;
+            private void NotifyPropertyChanged(string propertyName)
+            { PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); }
+
+            public MacroItem Copy()
+            {
+                return new MacroItem
+                {
+                    Code = _code,
+                    Name = _name,
+                    DownKeystroke = _downKeystroke,
+                };
+            }
+        }
+
+        // This collection holds the keystrokes to be added to the command
+        // and to be displayed on the main list of this tab.
+        public ObservableCollection<MacroItem> MacroKeystrokesSource { get; set; }
+
+        // Adds a new keystroke to the list of keystrokes
+        private void PromptMacrosAddMacroButtonAdd_Click(object sender, RoutedEventArgs e)
+        {
+            MacroItem toAdd = (PromptMacrosAddMacroName.SelectedItem as MacroItem)?.Copy();
+            if (toAdd == null) return;
+
+            bool? isDown = PromptMacrosAddMacroUpDown.SelectedValue as bool?;
+            toAdd.DownKeystroke = isDown == true;
+            MacroKeystrokesSource.Add(toAdd);
         }
     }
 }

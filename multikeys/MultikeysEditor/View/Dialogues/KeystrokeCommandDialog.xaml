@@ -156,7 +156,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <ComboBox x:Name="PromptMacrosAddMacroName" Grid.Column="0" Margin="5"/>
-                                    <ComboBox x:Name="PromptMacrosAddMacroUpDown" Grid.Column="1" Margin="5"/>
+                                    <ComboBox x:Name="PromptMacrosAddMacroUpDown" Width="75" Grid.Column="1" Margin="5"/>
                                     <Button x:Name="PromptMacrosAddMacroButtonAdd" Grid.Column="2" Margin="5" Click="PromptMacrosAddMacroButtonAdd_Click"
                                             Content="{x:Static p:Strings.PromptMacroAddKeystrokeConfirm}" MinWidth="70"/>
                                 </Grid>
@@ -166,7 +166,9 @@
                                       HeadersVisibility="Column" IsReadOnly="True"
                                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
                                       AutoGenerateColumns="False"/>
-                            
+                            <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1">
+                                <Button Margin="5" Content="Something"/>
+                            </StackPanel>
                         </Grid>
                     </StackPanel>
                 </Grid>

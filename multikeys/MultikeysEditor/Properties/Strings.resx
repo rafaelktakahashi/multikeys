@@ -419,4 +419,13 @@
   <data name="PromptMacroColumnHeaderName" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="PromptMacroButtonAddAfterSelected" xml:space="preserve">
+    <value>Add after selected</value>
+  </data>
+  <data name="PromptMacroButtonAddAtEnd" xml:space="preserve">
+    <value>Add at end</value>
+  </data>
+  <data name="PromptMacroButtonDeleteSelected" xml:space="preserve">
+    <value>Delete selected</value>
+  </data>
 </root>

@@ -583,6 +583,33 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add after selected.
+        /// </summary>
+        public static string PromptMacroButtonAddAfterSelected {
+            get {
+                return ResourceManager.GetString("PromptMacroButtonAddAfterSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add at end.
+        /// </summary>
+        public static string PromptMacroButtonAddAtEnd {
+            get {
+                return ResourceManager.GetString("PromptMacroButtonAddAtEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete selected.
+        /// </summary>
+        public static string PromptMacroButtonDeleteSelected {
+            get {
+                return ResourceManager.GetString("PromptMacroButtonDeleteSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code.
         /// </summary>
         public static string PromptMacroColumnHeaderCode {

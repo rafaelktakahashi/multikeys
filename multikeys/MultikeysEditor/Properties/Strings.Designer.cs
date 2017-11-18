@@ -547,6 +547,78 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Independent value.
+        /// </summary>
+        public static string PromptDeadkeyIndependentHeader {
+            get {
+                return ResourceManager.GetString("PromptDeadkeyIndependentHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert one or more Unicode characters:.
+        /// </summary>
+        public static string PromptDeadkeyIndependentInsertText {
+            get {
+                return ResourceManager.GetString("PromptDeadkeyIndependentInsertText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add replacement.
+        /// </summary>
+        public static string PromptDeadkeyReplacementsAdd {
+            get {
+                return ResourceManager.GetString("PromptDeadkeyReplacementsAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit replacement.
+        /// </summary>
+        public static string PromptDeadkeyReplacementsEdit {
+            get {
+                return ResourceManager.GetString("PromptDeadkeyReplacementsEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From:.
+        /// </summary>
+        public static string PromptDeadkeyReplacementsFrom {
+            get {
+                return ResourceManager.GetString("PromptDeadkeyReplacementsFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Replacements.
+        /// </summary>
+        public static string PromptDeadkeyReplacementsHeader {
+            get {
+                return ResourceManager.GetString("PromptDeadkeyReplacementsHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove replacement.
+        /// </summary>
+        public static string PromptDeadkeyReplacementsRemove {
+            get {
+                return ResourceManager.GetString("PromptDeadkeyReplacementsRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To:.
+        /// </summary>
+        public static string PromptDeadkeyReplacementsTo {
+            get {
+                return ResourceManager.GetString("PromptDeadkeyReplacementsTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Arguments to pass to file:.
         /// </summary>
         public static string PromptExecutableArguments {

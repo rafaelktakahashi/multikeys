@@ -130,7 +130,42 @@
 
             <TabItem Header="{x:Static p:Strings.ReadableNameDeadkey}">
                 <Grid>
-
+                    <StackPanel Orientation="Vertical">
+                        <GroupBox Header="{x:Static p:Strings.PromptDeadkeyIndependentHeader}" Width="Auto" HorizontalAlignment="Left">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" Margin="10">
+                                    <TextBlock Text="{x:Static p:Strings.PromptDeadkeyIndependentInsertText}" Margin="0, 0, 10, 0"/>
+                                    <TextBox x:Name="PromptDeadkeyTextboxIndependent" Width="150"/>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="{x:Static p:Strings.PromptDeadkeyReplacementsHeader}" Width="Auto" HorizontalAlignment="Left">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="10">
+                                    <TextBlock Text="{x:Static p:Strings.DeadKeyReplacementFrom}" Margin="0, 0, 10, 0"/>
+                                    <TextBox x:Name="PromptDeadkeyTextboxFrom" Width="150"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="10, 0, 10, 10">
+                                    <TextBlock Text="{x:Static p:Strings.DeadKeyReplacementTo}" Margin="0, 0, 10, 0"/>
+                                    <TextBox x:Name="PromptDeadkeyTextboxTo" Width="150"/>
+                                </StackPanel>
+                                <Button x:Name="PromptDeadkeyButtonAddReplacement" HorizontalAlignment="Right" Margin="5"
+                                        Click="PromptDeadkeyButtonAddReplacement_Click" MinWidth="70"
+                                        Content="{x:Static p:Strings.PromptDeadkeyReplacementsAdd}"/>
+                            </StackPanel>
+                        </GroupBox>
+                        <DataGrid x:Name="PromptDeadkeyMainTable" Height="200" Margin="20, 10, 20, 0"
+                                  HeadersVisibility="Column" IsReadOnly="True"
+                                      CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
+                                      AutoGenerateColumns="False"/>
+                    </StackPanel>
+                    <Button x:Name="PromptDeadkeyButtonConfirm"
+                         Content="{x:Static p:Strings.PromptNewCommandAssignCommand}"
+                         HorizontalAlignment="Right" Margin="0, 0, 10, 10"
+                         VerticalAlignment="Bottom" Width="Auto"
+                         FontWeight="DemiBold"
+                         FontSize="16"
+                         Click="PromptDeadkeyButtonConfirm_Click" Background="#FFCCEECC"/>
                 </Grid>
             </TabItem>
 

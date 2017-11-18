@@ -313,6 +313,39 @@ namespace MultikeysEditor.Model
     /// </summary>
     public class DeadKeyCommand : UnicodeCommand
     {
+
+        public DeadKeyCommand() : base() { }
+
+        public DeadKeyCommand(string text, IDictionary<string,string> replacements, bool triggerOnRepeat)
+            : base(triggerOnRepeat, text)
+        {
+            Replacements = new Dictionary<IList<UInt32>,IList<UInt32>>();
+            foreach (string from in replacements.Keys)
+            {
+                string to = replacements[from];
+                
+                var codepointsFrom = new List<UInt32>();
+                var codepointsTo = new List<UInt32>();
+
+                // Make a function that will turn a string into codepoints
+                Func<string, List<UInt32>> codepointify = (s) =>
+                {
+                    var result = new List<UInt32>();
+                    for (int i = 0; i < s.Length; i++)
+                    {
+                        int codepoint = char.ConvertToUtf32(s, i);
+                        if (codepoint > 0xffff)
+                        { i++; }
+                        result.Add((UInt32)codepoint);
+                    }
+                    return result;
+                };
+
+                // Use this function on both strings, then put them into the list
+                Replacements.Add(codepointify(from), codepointify(to));
+            }
+        }
+
         /// <summary>
         /// List of replacements contained in this dead key.<para/>
         /// The command pressed after this key is compared to the first element in this dictionary.<para/>

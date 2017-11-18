@@ -428,4 +428,28 @@
   <data name="PromptMacroButtonDeleteSelected" xml:space="preserve">
     <value>Delete selected</value>
   </data>
+  <data name="PromptDeadkeyIndependentHeader" xml:space="preserve">
+    <value>Independent value</value>
+  </data>
+  <data name="PromptDeadkeyIndependentInsertText" xml:space="preserve">
+    <value>Insert one or more Unicode characters:</value>
+  </data>
+  <data name="PromptDeadkeyReplacementsAdd" xml:space="preserve">
+    <value>Add replacement</value>
+  </data>
+  <data name="PromptDeadkeyReplacementsEdit" xml:space="preserve">
+    <value>Edit replacement</value>
+  </data>
+  <data name="PromptDeadkeyReplacementsFrom" xml:space="preserve">
+    <value>From:</value>
+  </data>
+  <data name="PromptDeadkeyReplacementsHeader" xml:space="preserve">
+    <value>Replacements</value>
+  </data>
+  <data name="PromptDeadkeyReplacementsRemove" xml:space="preserve">
+    <value>Remove replacement</value>
+  </data>
+  <data name="PromptDeadkeyReplacementsTo" xml:space="preserve">
+    <value>To:</value>
+  </data>
 </root>

@@ -103,6 +103,28 @@ namespace MultikeysEditor.View.Dialogues
                     Binding = new System.Windows.Data.Binding("DownKeystroke"),
                 }
                 );
+
+            DeadkeyReplacements = new ObservableCollection<DkReplacement>();
+            PromptDeadkeyMainTable.DataContext = this;
+            PromptDeadkeyMainTable.ItemsSource = DeadkeyReplacements;
+            PromptDeadkeyMainTable.Columns.Add(
+                new DataGridTextColumn
+                {
+                    Header = Properties.Strings.DeadKeyReplacementFrom,
+                    Binding = new System.Windows.Data.Binding("From"),
+                    Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+                }
+                );
+            PromptDeadkeyMainTable.Columns.Add(
+                new DataGridTextColumn
+                {
+                    Header = Properties.Strings.DeadKeyReplacementTo,
+                    Binding = new System.Windows.Data.Binding("To"),
+                    Width = new DataGridLength(1, DataGridLengthUnitType.Star),
+                }
+                );
+            PromptDeadkeyMainTable.DisplayMemberPath = "Value";
+            PromptDeadkeyMainTable.SelectedValuePath = "Key";
         }
 
 
@@ -406,5 +428,60 @@ namespace MultikeysEditor.View.Dialogues
             
         }
 
+
+        /*--- Dead key ---*/
+
+        public class DkReplacement : INotifyPropertyChanged
+        {
+            private string _from;
+            public string From
+            {
+                get { return _from; }
+                set { _from = value; NotifyPropertyChanged("From"); }
+            }
+
+            private string _to;
+            public string To
+            {
+                get { return _to; }
+                set { _to = value; NotifyPropertyChanged("To"); }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            private void NotifyPropertyChanged(string propertyName)
+            { PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)); }
+        }
+
+        public ObservableCollection<DkReplacement> DeadkeyReplacements { get; set; }        
+
+        private void PromptDeadkeyButtonAddReplacement_Click(object sender, RoutedEventArgs e)
+        {
+            string from = PromptDeadkeyTextboxFrom.Text;
+            string to = PromptDeadkeyTextboxTo.Text;
+            if (string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to))
+            { return; }
+
+            // Do not permit duplicate entries
+            // TODO: include an error message for the user
+            foreach (var item in DeadkeyReplacements)
+            {
+                if (item.From == from)
+                    return;
+            }
+
+            DeadkeyReplacements.Add(new DkReplacement() { From = from, To = to });
+        }
+
+        private void PromptDeadkeyButtonConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            var replacementsDictionary = new Dictionary<string, string>();
+            foreach (var item in DeadkeyReplacements)
+            {
+                replacementsDictionary.Add(item.From, item.To);
+            }
+            Command =
+                new DeadKeyCommand(PromptDeadkeyTextboxIndependent.Text, replacementsDictionary, true);
+            DialogResult = true; // <- closes dialog successfully
+        }
     }
 }

@@ -120,18 +120,30 @@ namespace MultikeysEditor.View.Controls
                 IsHitTestVisible = false,       // <- user cannot interact
                 HeadersVisibility = DataGridHeadersVisibility.None,
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
-                ColumnWidth = new DataGridLength(1, DataGridLengthUnitType.Star),
-                HorizontalContentAlignment = HorizontalAlignment.Center,
+                AutoGenerateColumns = false,
+                Width = 200,
                 CellStyle = new Style(typeof(DataGridCell))
                 {
                     Setters = { new Setter(TextBlock.TextAlignmentProperty, TextAlignment.Center) }
                 },
                 Margin = new Thickness { Left = 10, Top = 5, Right = 10, Bottom = 0 }
             };
+            dg.Columns.Add(new DataGridTextColumn
+            {
+                Width = new DataGridLength(100, DataGridLengthUnitType.Pixel),
+                Binding = new System.Windows.Data.Binding("From"),
+                // no header
+            });
+            dg.Columns.Add(new DataGridTextColumn
+            {
+                Width = new DataGridLength(100, DataGridLengthUnitType.Pixel),
+                Binding = new System.Windows.Data.Binding("To"),
+            });
             IEnumerable<ReplacementPair> pairs =
                 from pair in newCommand.Replacements
                 select new ReplacementPair(pair.Key, pair.Value);
             dg.ItemsSource = pairs;
+            
             StackPanelData.Children.Add(dg);
 
         }

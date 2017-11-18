@@ -158,7 +158,7 @@
                                     <ComboBox x:Name="PromptMacrosAddMacroName" Grid.Column="0" Margin="5"/>
                                     <ComboBox x:Name="PromptMacrosAddMacroUpDown" Width="75" Grid.Column="1" Margin="5"/>
                                     <Button x:Name="PromptMacrosAddMacroButtonAdd" Grid.Column="2" Margin="5" Click="PromptMacrosAddMacroButtonAdd_Click"
-                                            Content="{x:Static p:Strings.PromptMacroAddKeystrokeConfirm}" MinWidth="70"/>
+                                            Content="{x:Static p:Strings.PromptMacroButtonAddAtEnd}" MinWidth="70"/>
                                 </Grid>
                             </GroupBox>
 
@@ -167,10 +167,20 @@
                                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="False"
                                       AutoGenerateColumns="False"/>
                             <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1">
-                                <Button Margin="5" Content="Something"/>
+                                <Button x:Name="PromptMacrosButtonAddAfterSelected" Margin="5"
+                                        Content="{x:Static p:Strings.PromptMacroButtonAddAfterSelected}" Click="PromptMacrosButtonAddAfterSelected_Click"/>
+                                <Button x:Name="PromptMacrosButtonDeleteSelected" Margin="5"
+                                        Content="{x:Static p:Strings.PromptMacroButtonDeleteSelected}" Click="PromptMacrosButtonDeleteSelected_Click"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
+                    <Button x:Name="PromptMacroButtonConfirm"
+                             Content="{x:Static p:Strings.PromptNewCommandAssignCommand}"
+                             HorizontalAlignment="Right" Margin="0, 0, 10, 10"
+                             VerticalAlignment="Bottom" Width="Auto"
+                             FontWeight="DemiBold"
+                             FontSize="16"
+                             Click="PromptMacroButtonConfirm_Click" Background="#FFCCEECC"/>
                 </Grid>
             </TabItem>
 

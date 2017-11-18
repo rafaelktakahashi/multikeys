@@ -63,20 +63,15 @@ namespace MultikeysEditor.View.Dialogues
             // and some of the names aren't very nice to look at.
 
             // Populate the other dropdown box
-            PromptMacrosAddMacroUpDown.Items.Add(
-                new ComboBoxItem()
-                {
-                    Content = Properties.Strings.PromptMacroKeystrokeDown,
-                    Tag = true,
-                }
-                );
-            PromptMacrosAddMacroUpDown.Items.Add(
-                new ComboBoxItem()
-                {
-                    Content = Properties.Strings.PromptMacroKeystrokeUp,
-                    Tag = false,
-                }
-                );
+            KeyValuePair<bool, string>[] updown =
+            {
+                new KeyValuePair<bool, string>(true, Properties.Strings.PromptMacroKeystrokeDown),
+                new KeyValuePair<bool, string>(false, Properties.Strings.PromptMacroKeystrokeUp),
+            };
+            PromptMacrosAddMacroUpDown.ItemsSource = updown;
+            PromptMacrosAddMacroUpDown.SelectedValuePath = "Key";
+            PromptMacrosAddMacroUpDown.DisplayMemberPath = "Value";
+
             // Also initialize the collection
             MacroKeystrokesSource = new ObservableCollection<MacroItem>();
             // And initialize the table
@@ -346,15 +341,70 @@ namespace MultikeysEditor.View.Dialogues
         // and to be displayed on the main list of this tab.
         public ObservableCollection<MacroItem> MacroKeystrokesSource { get; set; }
 
-        // Adds a new keystroke to the list of keystrokes
+        // Adds a new keystroke to the list of keystrokes at the end of the list
         private void PromptMacrosAddMacroButtonAdd_Click(object sender, RoutedEventArgs e)
         {
+            // Get item from main drowpdown
             MacroItem toAdd = (PromptMacrosAddMacroName.SelectedItem as MacroItem)?.Copy();
             if (toAdd == null) return;
 
+            // Get down/up from secondary dropdown
             bool? isDown = PromptMacrosAddMacroUpDown.SelectedValue as bool?;
-            toAdd.DownKeystroke = isDown == true;
+            toAdd.DownKeystroke = isDown ?? true;
             MacroKeystrokesSource.Add(toAdd);
         }
+
+        // Adds a new keystroke to the list after the selected item. Do not add if there is no
+        // item selected
+        private void PromptMacrosButtonAddAfterSelected_Click(object sender, RoutedEventArgs e)
+        {
+            if (PromptMacrosMainTable.SelectedItem != null)
+            {
+                MacroItem toAdd = (PromptMacrosAddMacroName.SelectedItem as MacroItem)?.Copy();
+                if (toAdd == null) return;
+
+                bool? isDown = PromptMacrosAddMacroUpDown.SelectedValue as bool?;
+                toAdd.DownKeystroke = isDown ?? true;
+
+                // Find out the index of the selected item
+                int index = PromptMacrosMainTable.SelectedIndex;
+                // Then add the new item right after it
+                MacroKeystrokesSource.Insert(index: index + 1, item: toAdd);
+            }
+        }
+
+        // Remove the selected item, if there is a selected item
+        private void PromptMacrosButtonDeleteSelected_Click(object sender, RoutedEventArgs e)
+        {
+            if (PromptMacrosMainTable.SelectedIndex == -1) return;
+            MacroKeystrokesSource.Remove(PromptMacrosMainTable.SelectedItem as MacroItem);
+        }
+
+        private void PromptMacroButtonConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            // Create a new command, then exit successfully.
+            var listOfKeystrokes = new List<VirtualKeystroke>();
+
+            foreach (var item in MacroKeystrokesSource)
+                listOfKeystrokes.Add(
+                    new VirtualKeystroke()
+                    {
+                        VirtualKeyCode = item.Code,
+                        KeyDown = item.DownKeystroke,
+                    }
+                    );
+
+            Command =
+                new MacroCommand()
+                {
+                    TriggerOnRepeat = false,
+                    VKeyCodes = listOfKeystrokes,
+                };
+
+            // Exits successfully
+            DialogResult = true;
+            
+        }
+
     }
 }

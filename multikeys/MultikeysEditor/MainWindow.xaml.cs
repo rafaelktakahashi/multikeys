@@ -257,6 +257,32 @@ namespace MultikeysEditor
         }
 
 
+        private void ChangeLanguage(string locale)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo(locale);
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(locale);
+            // FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(
+                // System.Windows.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
+        }
+
+        private void ChangeLanguage_EnUS_Click(object sender, EventArgs e)
+        {
+            ChangeLanguage("en-US");
+        }
+
+        private void ChangeLanguage_PtBR_Click(object sender, EventArgs e)
+        {
+            ChangeLanguage("pt-BR");
+            var frame = new System.Windows.Threading.DispatcherFrame();
+            var dispatcherOperationCallback = new System.Windows.Threading.DispatcherOperationCallback(delegate
+            {
+                frame.Continue = false;
+                return null;
+            });
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Render, dispatcherOperationCallback, null);
+            System.Windows.Threading.Dispatcher.PushFrame(frame);
+        }
+
         /// <summary>
         /// Although the menu items event handlers have validation in them, it's useful to disable actions that the user
         /// should not do, such as closing the current layout when there is no open layout.

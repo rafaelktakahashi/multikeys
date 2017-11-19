@@ -25,6 +25,12 @@
                 <Separator/>
                 <MenuItem x:Name="MenuFileClose" Header="{x:Static p:Strings.MenuFileClose}" Click="FileClose_Click"/>
             </MenuItem>
+            <MenuItem Header="{x:Static p:Strings.Options}">
+                <MenuItem x:Name="MenuChangeLanguage" Header="{x:Static p:Strings.ChangeLanguage}">
+                    <MenuItem x:Name="MenuChangeLanguageEnUS" Header="English (US)" Click="ChangeLanguage_EnUS_Click"/>
+                    <MenuItem x:Name="MenuChangeLanguagePtBR" Header="Português (BR)" Click="ChangeLanguage_PtBR_Click"/>
+                </MenuItem>
+            </MenuItem>
         </Menu>
         <DockPanel x:Name="DockPanelLayout" Grid.Row="1"/>
         <Grid Grid.Row="2">

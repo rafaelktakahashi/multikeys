@@ -118,344 +118,333 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DeadKeyReplacementFrom" xml:space="preserve">
-    <value>From</value>
+    <value>De</value>
   </data>
   <data name="DeadKeyReplacements" xml:space="preserve">
-    <value>Replacements</value>
+    <value>Substituições</value>
   </data>
   <data name="DeadKeyReplacementTo" xml:space="preserve">
-    <value>To</value>
+    <value>Para</value>
   </data>
   <data name="ExecutableKeyArguments" xml:space="preserve">
-    <value>Arguments</value>
-  </data>
-  <data name="ExecutableKeyCommand" xml:space="preserve">
-    <value>Command</value>
+    <value>Argumentos</value>
   </data>
   <data name="KeyPress" xml:space="preserve">
-    <value>Key press</value>
+    <value>Pressão de tecla</value>
   </data>
   <data name="KeyRelease" xml:space="preserve">
-    <value>Key release</value>
+    <value>Soltura de tecla</value>
   </data>
   <data name="MacroSequence" xml:space="preserve">
-    <value>Sequence</value>
+    <value>Sequência</value>
   </data>
   <data name="Modifiers" xml:space="preserve">
-    <value>Modifiers</value>
+    <value>Modificadores</value>
   </data>
   <data name="ReadableNameDeadkey" xml:space="preserve">
-    <value>Dead key</value>
+    <value>Tecla de acentuação</value>
   </data>
   <data name="ReadableNameExecutablekey" xml:space="preserve">
-    <value>Command key</value>
+    <value>Tecla de comando</value>
   </data>
   <data name="ReadableNameMacroKey" xml:space="preserve">
-    <value>Macro key</value>
+    <value>Tecla de macro</value>
   </data>
   <data name="ReadableNameUnicodeKey" xml:space="preserve">
-    <value>Text key</value>
+    <value>Tecla de texto</value>
   </data>
   <data name="ThisKeyIsNotRemapped" xml:space="preserve">
-    <value>This key is not remapped.</value>
+    <value>Esta tecla não está remapeada.</value>
   </data>
   <data name="VirtualKeyCode" xml:space="preserve">
-    <value>Virtual key code</value>
+    <value>Código de tecla virtual</value>
   </data>
   <data name="KeyOptionsAssignCommand" xml:space="preserve">
-    <value>Assign command</value>
+    <value>Atribuir comando</value>
   </data>
   <data name="KeyOptionsEditCommand" xml:space="preserve">
-    <value>Edit command</value>
+    <value>Editar comando</value>
   </data>
   <data name="KeyOptionsRegisterModifier" xml:space="preserve">
-    <value>Register as modifier</value>
+    <value>Registrar como modificador</value>
   </data>
   <data name="KeyOptionsRemoveCommand" xml:space="preserve">
-    <value>Remove command</value>
+    <value>Remover comando</value>
   </data>
   <data name="KeyOptionsUnregisterModifier" xml:space="preserve">
-    <value>Unregister as modifier</value>
+    <value>Remover dos modificadores</value>
   </data>
   <data name="ReadableNameModifier" xml:space="preserve">
-    <value>Modifier key</value>
+    <value>Tecla modificadora</value>
   </data>
   <data name="WindowTitleEditCommandDialog" xml:space="preserve">
-    <value>Edit command</value>
+    <value>Editar comando</value>
   </data>
   <data name="WindowTitleNewCommandDialog" xml:space="preserve">
-    <value>New command</value>
+    <value>Novo comando</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>Error</value>
+    <value>Erro</value>
   </data>
   <data name="KeyboardName" xml:space="preserve">
-    <value>Unique id: </value>
-    <comment>For displaying the name of a keyboard</comment>
+    <value>Identificador único:</value>
   </data>
   <data name="MenuFile" xml:space="preserve">
-    <value>File</value>
+    <value>Arquivo</value>
   </data>
   <data name="MenuFileClose" xml:space="preserve">
-    <value>Close</value>
+    <value>Fechar</value>
   </data>
   <data name="MenuFileNew" xml:space="preserve">
-    <value>New</value>
+    <value>Novo</value>
   </data>
   <data name="MenuFileOpen" xml:space="preserve">
-    <value>Open...</value>
+    <value>Abrir...</value>
   </data>
   <data name="MenuFileSave" xml:space="preserve">
-    <value>Save</value>
+    <value>Salvar</value>
   </data>
   <data name="MenuFileSaveAs" xml:space="preserve">
-    <value>Save as...</value>
+    <value>Salvar como...</value>
   </data>
   <data name="No" xml:space="preserve">
-    <value>No</value>
-    <comment>Generic "no"</comment>
+    <value>Não</value>
   </data>
   <data name="None" xml:space="preserve">
-    <value>None</value>
-    <comment>For displaying the name of a nameless keyboard</comment>
+    <value>Nenhum</value>
   </data>
   <data name="PromptUnicodePromptInput" xml:space="preserve">
-    <value>Insert one or more Unicode characters:</value>
+    <value>Insira um ou mais caracteres Unicode:</value>
   </data>
   <data name="PromptUnicodeSelectedCharacterBlock" xml:space="preserve">
-    <value>Block: </value>
+    <value>Bloco:</value>
   </data>
   <data name="PromptUnicodeSelectedCharacterCategory" xml:space="preserve">
-    <value>Category: </value>
+    <value>Categoria:</value>
   </data>
   <data name="PromptUnicodeSelectedCharacterCodepoint" xml:space="preserve">
-    <value>Codepoint: </value>
+    <value>Ponto de código:</value>
   </data>
   <data name="PromptUnicodeSelectedCharacterName" xml:space="preserve">
-    <value>Name: </value>
+    <value>Nome:</value>
   </data>
   <data name="PromptUnicodeTriggerOnRepeat" xml:space="preserve">
-    <value>Trigger repeatedly when key is pressed down</value>
+    <value>Ativar repetidamente ao segurar a tecla:</value>
   </data>
   <data name="Warning" xml:space="preserve">
-    <value>Warning</value>
+    <value>Aviso</value>
   </data>
   <data name="WarningNoLayout" xml:space="preserve">
-    <value>No layout is currently open.</value>
+    <value>Nenhum layout está aberto.</value>
   </data>
   <data name="WarningWillOverwriteWorkingLayout" xml:space="preserve">
-    <value>Unsaved changes will be lost. Proceed?</value>
+    <value>Mudanças não salvas serão perdidas. Continuar?</value>
   </data>
   <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
-    <comment>Generic "yes"</comment>
+    <value>Sim</value>
   </data>
   <data name="KeyboardAlias" xml:space="preserve">
-    <value>Name: </value>
-    <comment>User-given name for a device</comment>
+    <value>Nome:</value>
   </data>
   <data name="KeyboardNameDialogAnyKeyboard" xml:space="preserve">
-    <value>(Any keyboard)</value>
+    <value>(Qualquer teclado)</value>
   </data>
   <data name="KeyboardNameDialogFinish" xml:space="preserve">
-    <value>Finish</value>
+    <value>Finalizar</value>
   </data>
   <data name="KeyboardNameDialogListenForInput" xml:space="preserve">
-    <value>Detect keyboard</value>
-    <comment>Wait for the user to press a key</comment>
+    <value>Detectar teclado</value>
   </data>
   <data name="KeyboardNameDialogPressAnyKey" xml:space="preserve">
-    <value>Press a key on the keyboard you wish to detect.</value>
+    <value>Pressione qualquer tecla no teclado a ser detectado.</value>
   </data>
   <data name="KeyboardNameDialogUseAnyKeyboard" xml:space="preserve">
-    <value>Use any keyboard</value>
+    <value>Usar qualquer teclado</value>
   </data>
   <data name="KeyboardNameEdit" xml:space="preserve">
-    <value>Edit</value>
+    <value>Editar</value>
   </data>
   <data name="WindowTitleKeyboardAliasDialog" xml:space="preserve">
-    <value>Edit keyboard's name</value>
+    <value>Editar nome do teclado</value>
   </data>
   <data name="WindowTitleKeyboardNameDialog" xml:space="preserve">
-    <value>Edit keyboard's unique id</value>
+    <value>Editar o identificador único do teclado</value>
   </data>
   <data name="WindowTitleMainWindow" xml:space="preserve">
-    <value>Multikeys - Main Window</value>
+    <value>Multikeys - Janela inicial</value>
   </data>
   <data name="WarningSaveLayoutToStart" xml:space="preserve">
-    <value>You must save the layout in order to use it. Save it now?</value>
+    <value>É necessário salvar o layout para usá-lo. Salvar agora?</value>
   </data>
   <data name="CoreStatePaused" xml:space="preserve">
-    <value>Current state: Paused</value>
+    <value>Estado atual: Pausado</value>
   </data>
   <data name="CoreStateRunning" xml:space="preserve">
-    <value>Current state: Running</value>
+    <value>Estado atual: Ativo</value>
   </data>
   <data name="CoreStateStopped" xml:space="preserve">
-    <value>Current state: Stopped</value>
+    <value>Estado atual: Parado</value>
   </data>
   <data name="Confirmation" xml:space="preserve">
-    <value>Confirmation</value>
-    <comment>Generic "confirmation"</comment>
+    <value>Confirmação</value>
   </data>
   <data name="WarningRemoveCommand" xml:space="preserve">
-    <value>Remove this command?</value>
+    <value>Remover este comando?</value>
   </data>
   <data name="PromptModifierAddToExistingModifier" xml:space="preserve">
-    <value>Add to existing modifier:</value>
+    <value>Adicionar a um modificador existente:</value>
   </data>
   <data name="PromptModifierNewModfier" xml:space="preserve">
-    <value>New modifier:</value>
+    <value>Novo modificador:</value>
   </data>
   <data name="PromptModifierConfirm" xml:space="preserve">
-    <value>Register modifier</value>
+    <value>Registrar modificador</value>
   </data>
   <data name="WindowTitleNewModifierDialog" xml:space="preserve">
-    <value>Register key as modifier</value>
+    <value>Registrar tecla como modificadora</value>
   </data>
   <data name="WarningRemoveModifier" xml:space="preserve">
-    <value>Unregister this modifier?</value>
+    <value>Deixar de usar esta tecla como modificadora?</value>
   </data>
   <data name="WarningModifierOverridesCommands" xml:space="preserve">
-    <value>Warning: This key is remapped in other layers. Setting this key as modifier will take precedence over those remaps. Proceed?</value>
+    <value>Aviso: Esta tecla está remapeada em outras camadas. Registrá-la como modificadora terá precedência sobre os outros remapeamentos. Continuar?</value>
   </data>
   <data name="KeyOptionsChangeModifierName" xml:space="preserve">
-    <value>Change modifier name</value>
+    <value>Mudar nome do modificador</value>
   </data>
   <data name="PromptChangeModifierNameConfirm" xml:space="preserve">
-    <value>Confirm</value>
+    <value>Confirmar</value>
   </data>
   <data name="PromptChangeModifierNameText" xml:space="preserve">
-    <value>Choose a new name for the modifier:</value>
+    <value>Escolha um novo nome para o modificador:</value>
   </data>
   <data name="WindowTitleChangeModifierName" xml:space="preserve">
-    <value>Change modifier name</value>
+    <value>Mudar nome do modificador:</value>
   </data>
   <data name="PromptChangeModifierNameAlreadyExists" xml:space="preserve">
-    <value>Name already exists.</value>
+    <value>Nome já existe.</value>
   </data>
   <data name="PromptChangeModifierNameInvalidText" xml:space="preserve">
-    <value>Please, input a valid name.</value>
+    <value>Por favor, use um nome válido.</value>
   </data>
   <data name="LogFailedToCreateLog" xml:space="preserve">
-    <value>There was an error during the program's execution. A log file could not be created. Error:</value>
-    <comment>To be followed by a space and the error message.</comment>
+    <value>Houve um erro durante a execução do programa. Um arquivo de log não pôde ser criado. Erro:</value>
   </data>
   <data name="LogFailedToWriteToLog" xml:space="preserve">
-    <value>There was an error during the program's execution. Could not write to log file. Error:</value>
-    <comment>To be followed by a space and the error message.</comment>
+    <value>Houve um erro durante a execução do programa. Não foi possível escrever no arquivo de log. Erro:</value>
   </data>
   <data name="LogSeeLog" xml:space="preserve">
-    <value>There was an error during the program's execution. For details, see the log file at</value>
-    <comment>To be followed by a space and the log file's name</comment>
+    <value>Houve um erro durante a execução do programa. Para detalhes, verifique o arquivo em:</value>
   </data>
   <data name="KeyboardControlDeleteKeyboard" xml:space="preserve">
-    <value>Delete keyboard</value>
+    <value>Remover teclado</value>
   </data>
   <data name="LayoutControlAddNewKeyboard" xml:space="preserve">
-    <value>Add new keyboard</value>
+    <value>Adicionar novo teclado</value>
   </data>
   <data name="MenuImportKeyboard" xml:space="preserve">
-    <value>Import...</value>
+    <value>Importar...</value>
   </data>
   <data name="KeyboardControlChangePhysicalLayout" xml:space="preserve">
-    <value>Change layout</value>
+    <value>Mudar layout</value>
   </data>
   <data name="WindowTitleChangeLayout" xml:space="preserve">
-    <value>Change keyboard layout</value>
+    <value>Mudar layout de teclado</value>
   </data>
   <data name="PromptChangeLayoutChoosePhysicalLayout" xml:space="preserve">
-    <value>Choose the physical layout:</value>
+    <value>Escolha o layout físico:</value>
   </data>
   <data name="PromptChangeLayoutConfirm" xml:space="preserve">
-    <value>Confirm</value>
+    <value>Confirmar</value>
   </data>
   <data name="PromptChangeLayoutUseBigEnter" xml:space="preserve">
-    <value>Use big return key</value>
+    <value>Usar tecla Enter maior</value>
   </data>
   <data name="KeyboardControlChangeLogicalLayout" xml:space="preserve">
-    <value>Change labels</value>
+    <value>Mudar letras</value>
   </data>
   <data name="PromptChangeLayoutChooseLogicalLayout" xml:space="preserve">
-    <value>Choose which layout to print on the keys:</value>
+    <value>Escolha qual layout mostrar nas teclas:</value>
   </data>
   <data name="ChooseFile" xml:space="preserve">
-    <value>Choose...</value>
-    <comment>For placement in a button or link</comment>
+    <value>Escolher...</value>
   </data>
   <data name="ChooseFileToAssignToThisKey" xml:space="preserve">
-    <value>Choose file to assign to this key</value>
+    <value>Escolha um arquivo para atribuir a esta tecla</value>
   </data>
   <data name="PromptExecutableArguments" xml:space="preserve">
-    <value>Arguments to pass to file:</value>
+    <value>Argumentos para passar ao arquivo:</value>
   </data>
   <data name="PromptExecutableFilename" xml:space="preserve">
-    <value>Select the file to open:</value>
+    <value>Escolha o arquivo a abrir:</value>
   </data>
   <data name="PromptNewCommandAssignCommand" xml:space="preserve">
-    <value>Assign Command</value>
+    <value>Atribuir comando:</value>
   </data>
   <data name="WarningNoFileSelected" xml:space="preserve">
-    <value>An executable file must be selected.</value>
+    <value>Um arquivo executável deve ser selecionado.</value>
   </data>
   <data name="PromptMacroAddKeystroke" xml:space="preserve">
-    <value>Add a new keystroke</value>
+    <value>Adicionar uma tecla</value>
   </data>
   <data name="PromptMacroAddKeystrokeConfirm" xml:space="preserve">
-    <value>Add</value>
+    <value>Adicionar</value>
   </data>
   <data name="PromptMacroKeystrokeDown" xml:space="preserve">
-    <value>Down</value>
+    <value>Pressão</value>
   </data>
   <data name="PromptMacroKeystrokeUp" xml:space="preserve">
-    <value>Up</value>
+    <value>Soltura</value>
   </data>
   <data name="PromptMacroColumnHeaderCode" xml:space="preserve">
-    <value>Code</value>
+    <value>Código</value>
   </data>
   <data name="PromptMacroColumnHeaderDown" xml:space="preserve">
-    <value>Key down</value>
+    <value>Tecla pressionada</value>
   </data>
   <data name="PromptMacroColumnHeaderName" xml:space="preserve">
-    <value>Name</value>
+    <value>Nome</value>
   </data>
   <data name="PromptMacroButtonAddAfterSelected" xml:space="preserve">
-    <value>Add after selected</value>
+    <value>Adicionar após selecionado</value>
   </data>
   <data name="PromptMacroButtonAddAtEnd" xml:space="preserve">
-    <value>Add at end</value>
+    <value>Adicionar no fim</value>
   </data>
   <data name="PromptMacroButtonDeleteSelected" xml:space="preserve">
-    <value>Delete selected</value>
+    <value>Remover selecionado</value>
   </data>
   <data name="PromptDeadkeyIndependentHeader" xml:space="preserve">
-    <value>Independent value</value>
+    <value>Valor próprio</value>
   </data>
   <data name="PromptDeadkeyIndependentInsertText" xml:space="preserve">
-    <value>Insert one or more Unicode characters:</value>
+    <value>Insira um ou mais caracteres Unicode:</value>
   </data>
   <data name="PromptDeadkeyReplacementsAdd" xml:space="preserve">
-    <value>Add replacement</value>
+    <value>Adicionar substituição</value>
   </data>
   <data name="PromptDeadkeyReplacementsEdit" xml:space="preserve">
-    <value>Edit replacement</value>
+    <value>Editar substituição</value>
   </data>
   <data name="PromptDeadkeyReplacementsFrom" xml:space="preserve">
-    <value>From:</value>
+    <value>De:</value>
   </data>
   <data name="PromptDeadkeyReplacementsHeader" xml:space="preserve">
-    <value>Replacements</value>
+    <value>Substituições</value>
   </data>
   <data name="PromptDeadkeyReplacementsRemove" xml:space="preserve">
-    <value>Remove replacement</value>
+    <value>Remover substituição</value>
   </data>
   <data name="PromptDeadkeyReplacementsTo" xml:space="preserve">
-    <value>To:</value>
+    <value>Para:</value>
+  </data>
+  <data name="ExecutableKeyCommand" xml:space="preserve">
+    <value>Comando</value>
   </data>
   <data name="ChangeLanguage" xml:space="preserve">
-    <value>Change language</value>
+    <value>Mudar idioma</value>
   </data>
   <data name="Options" xml:space="preserve">
-    <value>Options</value>
+    <value>Opções</value>
   </data>
 </root>

@@ -1,3 +1,5 @@
+This project is unmaintained. Feel free to clone and continue development as you see fit.
+
 # Introduction and Motivation
 Custom keyboard layouts are an option to those who want to expand the functionality of their keyboards, whether to type uncommon symbols or to define custom macros.  
 Many applications for creating custom layouts exist, such as [AutoHotKey][AutoHotKey] and [Microsoft's Keyboard Layout Creator][MSKLC], with varying capabilities and learning curves. However, they are not capable of remapping more than one keyboard simultaneously.  
@@ -21,6 +23,10 @@ This app is developed in Visual Studio 2017 targeting Windows 7 or higher. The c
 
 # Build and Run
 Buiding the solution should be simple. One important detail, however, is that the Layout Editor points to the Release folders of the C++ projects; as such, it's necessary to build at least the C++ projects in Release mode before building and running the Layout Editor.  
+Use the sample file at multikeys/XML/Sample.xml, either by calling the background executable with it as parameter, or by using the (unfinished) UI.
+
+# Note
+I consider the main code for the background executable to be complete, but I never got around to finishing the UI. Considering the limitation of only being able to recognize devices by port, I do not believe this project would add many features that aren't already possible to obtain with existing programs. Perhaps I'll go back to this another time, but presently I have no intentions of continuing development.
 
 
 [AutoHotKey]: https://autohotkey.com/

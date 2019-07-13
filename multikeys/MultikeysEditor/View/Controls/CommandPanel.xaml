@@ -6,11 +6,11 @@
              xmlns:local="clr-namespace:MultikeysEditor.View.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="382" d:DesignWidth="280"
-             MinHeight="200" MinWidth="200">
+             MinHeight="200" MaxWidth="280">
 
     <UserControl.Resources>
         <TextBlock x:Key="Title" x:Shared="false" Foreground="Blue" FontSize="18" FontWeight="Bold" Margin="10, 5, 10, 0" />
-        <TextBlock x:Key="Content" x:Shared="false" FontSize="16" Margin="10, 5, 10, 0" TextTrimming="CharacterEllipsis" />
+        <TextBlock x:Key="Content" x:Shared="false" FontSize="16" Margin="10, 5, 10, 0" TextTrimming="CharacterEllipsis" TextWrapping="WrapWithOverflow" />
     </UserControl.Resources>
 
     <Grid>

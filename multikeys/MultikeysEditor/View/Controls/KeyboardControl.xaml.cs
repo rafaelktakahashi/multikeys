@@ -334,6 +334,16 @@ namespace MultikeysEditor.View.Controls
                 SelectedKey.SetCommand(newCommand);
                 // Also update the current layer:
                 UpdateCurrentLayerWithNewCommand(SelectedKey.Scancode, newCommand);
+                // Update the buttons
+                UpdateButtonStates();
+                // And emit a new click event with the new information to update other components
+                KeyClicked?.Invoke(this, new KeyClickedEventArgs()
+                {
+                    Command = newCommand,
+                    KeyboardName = UniqueName,
+                    Modifier = SelectedKey.Modifier,
+                    Scancode = SelectedKey.Scancode,
+                });
             }
         }
 
@@ -356,6 +366,16 @@ namespace MultikeysEditor.View.Controls
                 var newCommand = dialog.Command;
                 SelectedKey.SetCommand(newCommand);
                 UpdateCurrentLayerWithNewCommand(SelectedKey.Scancode, newCommand);
+                // Update the buttons
+                UpdateButtonStates();
+                // And emit a new click event with the new information to update other components
+                KeyClicked?.Invoke(this, new KeyClickedEventArgs()
+                {
+                    Command = newCommand,
+                    KeyboardName = UniqueName,
+                    Modifier = SelectedKey.Modifier,
+                    Scancode = SelectedKey.Scancode,
+                });
             }
         }
 
@@ -381,6 +401,16 @@ namespace MultikeysEditor.View.Controls
             {
                 SelectedKey.SetCommand(null);
                 _activeLayer.Commands.Remove(SelectedKey.Scancode);
+                // Update the buttons
+                UpdateButtonStates();
+                // And emit a new clicked event with the new information to update other components
+                KeyClicked?.Invoke(this, new KeyClickedEventArgs()
+                {
+                    Command = null,
+                    KeyboardName = UniqueName,
+                    Modifier = SelectedKey.Modifier,
+                    Scancode = SelectedKey.Scancode,
+                });
             }
         }
 
@@ -420,6 +450,15 @@ namespace MultikeysEditor.View.Controls
 
                 var newModifier = ModifiersControl.RegisterModifier(scancode, newModifierName);
                 SelectedKey.SetModifier(newModifier);
+                // Update
+                UpdateButtonStates();
+                KeyClicked?.Invoke(this, new KeyClickedEventArgs()
+                {
+                    Command = SelectedKey.Command,
+                    KeyboardName = UniqueName,
+                    Modifier = newModifier,
+                    Scancode = SelectedKey.Scancode,
+                });
             }
         }
 
@@ -450,6 +489,14 @@ namespace MultikeysEditor.View.Controls
                     if (index != -1)
                         layer.ModifierCombination[index] = newName;
                 }
+                UpdateButtonStates();
+                KeyClicked?.Invoke(this, new KeyClickedEventArgs()
+                {
+                    Command = SelectedKey.Command,
+                    KeyboardName = UniqueName,
+                    Modifier = SelectedKey.Modifier,
+                    Scancode = SelectedKey.Scancode,
+                });
             }
         }
 
@@ -472,6 +519,14 @@ namespace MultikeysEditor.View.Controls
             {
                 SelectedKey.SetModifier(null);
                 ModifiersControl.RemoveModifier(SelectedKey.Scancode);
+                UpdateButtonStates();
+                KeyClicked?.Invoke(this, new KeyClickedEventArgs()
+                {
+                    Command = SelectedKey.Command,
+                    KeyboardName = UniqueName,
+                    Modifier = null,
+                    Scancode = SelectedKey.Scancode,
+                });
             }
         }
 

@@ -148,7 +148,7 @@
     <value>Dead key</value>
   </data>
   <data name="ReadableNameExecutablekey" xml:space="preserve">
-    <value>Command key</value>
+    <value>Executable command key</value>
   </data>
   <data name="ReadableNameMacroKey" xml:space="preserve">
     <value>Macro key</value>
@@ -381,5 +381,17 @@
   </data>
   <data name="PromptChangeLayoutChooseLogicalLayout" xml:space="preserve">
     <value>Choose which layout to print on the keys:</value>
+  </data>
+  <data name="ExecutableFileFilter" xml:space="preserve">
+    <value>exe files (*.txt)|*.exe|All files (*.*)|*.*</value>
+  </data>
+  <data name="PromptExecutableChooseFile" xml:space="preserve">
+    <value>Choose file...</value>
+  </data>
+  <data name="PromptExecutableTestCommand" xml:space="preserve">
+    <value>Test command</value>
+  </data>
+  <data name="PromptExecutableTestCommandFailed" xml:space="preserve">
+    <value>Command failed</value>
   </data>
 </root>

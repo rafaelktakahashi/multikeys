@@ -6,18 +6,18 @@
         xmlns:local="clr-namespace:MultikeysEditor.View.Dialogues"
         xmlns:p="clr-namespace:MultikeysEditor.Properties"
         mc:Ignorable="d"
-        Title="{x:Static p:Strings.WindowTitleNewCommandDialog}" Height="593" Width="562"
+        Title="{x:Static p:Strings.WindowTitleNewCommandDialog}" Height="598" Width="562"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner">
 
     <!-- Data context for this window is set in code behind -->
-    <Grid x:Name="RootGrid">
-        <TabControl x:Name="CommandTabControl">
+    <Grid x:Name="RootGrid" Margin="0,0,0,0">
+        <TabControl x:Name="CommandTabControl" Height="520" VerticalAlignment="Top">
 
             <TabItem Header="{x:Static p:Strings.ReadableNameUnicodeKey}">
-                <Grid>
+                <Grid Margin="0,0,0,0">
 
-                    <GroupBox Header="{x:Static p:Strings.PromptUnicodePromptInput}" Margin="10,10,10,368">
+                    <GroupBox Header="{x:Static p:Strings.PromptUnicodePromptInput}" Margin="10,10,10,327">
                         <TextBox x:Name="UnicodeTextInput"
                              HorizontalAlignment="Stretch"
                              VerticalAlignment="Top"
@@ -31,7 +31,7 @@
                     <!-- ItemSource for this ListBox are set in code-behind. -->
                     <ListBox x:Name="UnicodeCharactersList"
                              HorizontalAlignment="Left"
-                             Height="342"
+                             Height="301"
                              Margin="10,184,0,0"
                              VerticalAlignment="Top"
                              Width="172"
@@ -86,19 +86,11 @@
 
                         </Grid>
                     </StackPanel>
-                    
+
                     <CheckBox x:Name="PromptUnicodeTriggerOnRepeat"
                               Content="{x:Static p:Strings.PromptUnicodeTriggerOnRepeat}"
                               HorizontalAlignment="Right" Margin="0,474,22,0"
-                              VerticalAlignment="Top" RenderTransformOrigin="1.056,0.6"/>
-
-                    <Button x:Name="PromptUnicodeConfirm"
-                             Content="{x:Static p:Strings.PromptUnicodeConfirm}"
-                             HorizontalAlignment="Right" Margin="0,494,22,0"
-                             VerticalAlignment="Top" Width="Auto"
-                             FontWeight="DemiBold"
-                             FontSize="16"
-                             Click="PromptUnicodeConfirm_Click" Background="#FFCCEECC"/>
+                              VerticalAlignment="Top"/>
 
 
 
@@ -107,7 +99,17 @@
 
             <TabItem Header="{x:Static p:Strings.ReadableNameExecutablekey}">
                 <Grid>
-
+                    <Label Content="{x:Static p:Strings.ExecutableKeyCommand}" Margin="10,10,452,456" />
+                    <Button x:Name="ChooseExecutableFileButton" Content="{x:Static p:Strings.PromptExecutableChooseFile}" Margin="375,10,10,461" Click="ChooseExecutableFileButton_Click" />
+                    <TextBox x:Name="ExecutableCommandInput"
+                             Height="114"
+                             FontSize="16" Margin="10,36,10,342"
+                             TextWrapping="Wrap"/>
+                    <Label Content="{x:Static p:Strings.ExecutableKeyArguments}" Margin="10,166,452,300" />
+                    <TextBox x:Name="ExecutableArgumentsInput"
+                             Height="114"
+                             FontSize="16" Margin="10,192,10,186" />
+                    <Button x:Name="TestExecutableCommandButton" Margin="10,328,409,138" Content="{x:Static p:Strings.PromptExecutableTestCommand}" Click="TestExecutableCommandButton_Click" />
                 </Grid>
             </TabItem>
 
@@ -126,5 +128,11 @@
 
 
         </TabControl>
+        <Button x:Name="PromptUnicodeConfirm"
+                             Content="{x:Static p:Strings.PromptUnicodeConfirm}"
+                             HorizontalAlignment="Right" Margin="0,0,10,10" Width="197"
+                             FontWeight="DemiBold"
+                             FontSize="16"
+                             Click="PromptConfirm_Click" Background="#FFCCEECC" Height="25" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>

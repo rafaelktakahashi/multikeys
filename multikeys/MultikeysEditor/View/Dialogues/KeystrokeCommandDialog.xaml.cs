@@ -1,9 +1,11 @@
 ﻿using MultikeysEditor.Model;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Unicode;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 
 namespace MultikeysEditor.View.Dialogues
 {
@@ -23,10 +25,11 @@ namespace MultikeysEditor.View.Dialogues
             Command = null;
 
             /* Unicode */
-            // Setup the timer
+            // This timer doesn't run all the time; it's started when typing in the unicode
+            // textbox, and when it finishes the list of characters is updated.
             _unicodeDelay = new System.Timers.Timer
             {
-                Interval = 1000,        // One second
+                Interval = 800,         // Interval in ms
                 AutoReset = false,      // Call its event only once.
             };
             _unicodeDelay.Elapsed += (object sender, System.Timers.ElapsedEventArgs e) => UnicodeUpdateList();
@@ -43,7 +46,8 @@ namespace MultikeysEditor.View.Dialogues
 
         /// <summary>
         /// Contains the newly created command when this window closes correctly.
-        /// If this window closes incorrectly (DialogResult is false), then this property remains null.
+        /// This property is only set at the moment the dialog is confirmed; that means that
+        /// if this window closes incorrectly (DialogResult is false), then this property remains null.
         /// </summary>
         public IKeystrokeCommand Command { get; private set; }
         
@@ -68,7 +72,31 @@ namespace MultikeysEditor.View.Dialogues
                 UseExistingUnicodeCommand(command as UnicodeCommand);
                 CommandTabControl.SelectedIndex = 0;
             }
-            else return;
+            else if (command is ExecutableCommand)
+            {
+                UseExistingExecutableCommand(command as ExecutableCommand);
+                CommandTabControl.SelectedIndex = 1;
+            }
+        }
+
+        /// <summary>
+        /// Event listener for the main confirm button.
+        /// </summary>
+        private void PromptConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            // Call the correct method depending on which tab is currently active.
+            switch (CommandTabControl.SelectedIndex)
+            {
+                case 0:
+                    PromptUnicodeConfirm_Click(sender, e);
+                    break;
+                case 1:
+                    PromptExecutableConfirm_Click(sender, e);
+                    break;
+                default:
+                    // Missing cases 2 and 3
+                    return;
+            }
         }
 
 
@@ -178,6 +206,74 @@ namespace MultikeysEditor.View.Dialogues
                 new UnicodeCommand(PromptUnicodeTriggerOnRepeat.IsChecked ?? false, UnicodeTextInput.Text);
             DialogResult = true;    // This closes the window
         }
+
+        #endregion
+
+
+        #region ExecutableCommand
+
+        // The command and the arguments are stored in the textboxes and nowhere else.
+
+        private void UseExistingExecutableCommand(ExecutableCommand command)
+        {
+            ExecutableCommandInput.Text = command.Command;
+            ExecutableArgumentsInput.Text = command.Arguments;
+        }
+
+        private void ChooseExecutableFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog()
+            {
+                CheckFileExists = true,
+                CheckPathExists = true,
+                Filter = Properties.Strings.ExecutableFileFilter,
+                DereferenceLinks = true,
+                Multiselect = false,
+            };
+            var result = openFileDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                ExecutableCommandInput.Text = openFileDialog.FileName;
+            }
+        }
+
+        private void TestExecutableCommandButton_Click(object sender, RoutedEventArgs e)
+        {
+            string errorMessage = null; // we'll use null to mean there's no error (so, success)
+            var startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.FileName = ExecutableCommandInput.Text;
+            startInfo.Arguments = ExecutableArgumentsInput.Text;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
+            try
+            {
+                System.Diagnostics.Process.Start(startInfo);
+            } catch (Exception exception)
+            {
+                errorMessage = exception.Message;
+            }
+
+            if (errorMessage != null)
+            {
+                // Error
+                System.Windows.MessageBox.Show(this, errorMessage, Properties.Strings.PromptExecutableTestCommandFailed, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void PromptExecutableConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            Command =
+                new ExecutableCommand()
+                {
+                    Command = ExecutableCommandInput.Text,
+                    Arguments = ExecutableArgumentsInput.Text
+                };
+            DialogResult = true;
+        }
+
+
 
         #endregion
 

@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MultikeysEditor.Properties
-{
-
-
+namespace MultikeysEditor.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -19,7 +19,7 @@ namespace MultikeysEditor.Properties
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Strings {
@@ -129,6 +129,15 @@ namespace MultikeysEditor.Properties
         public static string Error {
             get {
                 return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to exe files (*.txt)|*.exe|All files (*.*)|*.*.
+        /// </summary>
+        public static string ExecutableFileFilter {
+            get {
+                return ResourceManager.GetString("ExecutableFileFilter", resourceCulture);
             }
         }
         
@@ -529,6 +538,33 @@ namespace MultikeysEditor.Properties
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose file....
+        /// </summary>
+        public static string PromptExecutableChooseFile {
+            get {
+                return ResourceManager.GetString("PromptExecutableChooseFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test command.
+        /// </summary>
+        public static string PromptExecutableTestCommand {
+            get {
+                return ResourceManager.GetString("PromptExecutableTestCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command failed.
+        /// </summary>
+        public static string PromptExecutableTestCommandFailed {
+            get {
+                return ResourceManager.GetString("PromptExecutableTestCommandFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add to existing modifier:.
         /// </summary>
         public static string PromptModifierAddToExistingModifier {
@@ -628,7 +664,7 @@ namespace MultikeysEditor.Properties
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Command key.
+        ///   Looks up a localized string similar to Executable command key.
         /// </summary>
         public static string ReadableNameExecutablekey {
             get {

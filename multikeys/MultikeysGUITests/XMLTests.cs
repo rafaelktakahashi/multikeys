@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 
-using MultikeysGUI.Model;
+using MultikeysEditor.Model;
 
 namespace MultikeysGUITests
 {
@@ -41,7 +41,7 @@ namespace MultikeysGUITests
         [TestMethod]
         public void ReadFile()
         {
-            var result = MultikeysGUI.Persistence.XmlPersistence.Load($@"{Path.GetTempPath()}\Sample.xml");
+            var result = MultikeysEditor.Persistence.XmlPersistence.Load($@"{Path.GetTempPath()}\Sample.xml");
             // Do not assert anything. This code is "asserted" by debugging.
             string res = result.Print();
             Assert.AreEqual("Debug to assert", "Debug to assert");
@@ -75,7 +75,7 @@ namespace MultikeysGUITests
                     Codepoints = new System.Collections.Generic.List<uint> { 0x1F642 }
                 }
                 );
-            MultikeysGUI.Persistence.XmlPersistence.Save(layout, $@"C:\Users\Rafael\Desktop\multikeys.xml");
+            MultikeysEditor.Persistence.XmlPersistence.Save(layout, $@"C:\Users\Rafael\Desktop\multikeys.xml");
 
         }
     }

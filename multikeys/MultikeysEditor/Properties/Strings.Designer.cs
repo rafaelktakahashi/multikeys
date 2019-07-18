@@ -538,6 +538,24 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Independent text.
+        /// </summary>
+        public static string PromptDeadKeyIndependentText {
+            get {
+                return ResourceManager.GetString("PromptDeadKeyIndependentText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click a selected cell again to edit it; use the delete key to remove items..
+        /// </summary>
+        public static string PromptDeadKeyTableInstructions {
+            get {
+                return ResourceManager.GetString("PromptDeadKeyTableInstructions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Choose file....
         /// </summary>
         public static string PromptExecutableChooseFile {

@@ -115,13 +115,69 @@
 
             <TabItem Header="{x:Static p:Strings.ReadableNameDeadkey}">
                 <Grid>
-
+                    <TextBox
+                        x:Name="NewDeadKeyReplacementFromInput"
+                        HorizontalAlignment="Left"
+                        Height="23"
+                        Margin="58,52,0,0"
+                        TextWrapping="Wrap"
+                        Text=""
+                        VerticalAlignment="Top"
+                        Width="120"
+                        />
+                    <Label Content="🡆" FontSize="20" Margin="183,44,332,408" />
+                    <TextBox
+                        x:Name="NewDeadKeyReplacementToInput"
+                        HorizontalAlignment="Left"
+                        Height="23"
+                        Margin="218,52,0,0"
+                        TextWrapping="Wrap"
+                        Text=""
+                        VerticalAlignment="Top"
+                        Width="120"
+                        />
+                    <DataGrid
+                        x:Name="DeadKeyReplacementsTable"
+                        Margin="57,86,57,178"
+                        CanUserAddRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeColumns="True"
+                        CanUserResizeRows="False"
+                        CanUserSortColumns="True"
+                        CanUserDeleteRows="True"
+                        IsManipulationEnabled="True"
+                        HeadersVisibility="Column"
+                        SelectionMode="Single"
+                        ColumnWidth="*"/>
+                    <Button Content="➕"
+                            FontWeight="UltraBold"
+                            HorizontalAlignment="Left"
+                            Margin="357,52,0,0"
+                            VerticalAlignment="Top"
+                            Width="75"
+                            Click="AddNewDeadKeyReplacement"/>
+                    <Label
+                        Content="{x:Static p:Strings.PromptDeadKeyIndependentText}"
+                        HorizontalContentAlignment="Right"
+                        Margin="107,16,291,448" />
+                    <TextBox
+                        x:Name="DeadKeyIndependentTextInput"
+                        HorizontalAlignment="Left"
+                        Height="23"
+                        Margin="264,20,0,0"
+                        TextWrapping="Wrap"
+                        Text=""
+                        VerticalAlignment="Top"
+                        Width="120"/>
+                    <Label
+                        Content="{x:Static p:Strings.PromptDeadKeyTableInstructions}"
+                        HorizontalContentAlignment="Left"
+                        Margin="57,319,57,145" />
                 </Grid>
             </TabItem>
 
             <TabItem Header="{x:Static p:Strings.ReadableNameMacroKey}">
                 <Grid>
-
                 </Grid>
             </TabItem>
 

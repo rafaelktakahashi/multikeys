@@ -6,6 +6,7 @@ using System.Unicode;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static MultikeysEditor.Model.DeadKeyCommand;
 
 namespace MultikeysEditor.View.Controls
 {
@@ -199,27 +200,6 @@ namespace MultikeysEditor.View.Controls
             // Title
             TextBlock titleLine = MakeNewTitle(Properties.Strings.ReadableNameModifier + ": " + mod.Name);
             StackPanelData.Children.Add(titleLine);
-        }
-
-        /// <summary>
-        /// For use in a table
-        /// </summary>
-        private class ReplacementPair
-        {
-            public ReplacementPair(IList<uint> from, IList<uint> to)
-            {
-                var sb = new StringBuilder();
-                foreach (uint codepoint in from)
-                    sb.Append(char.ConvertFromUtf32((int)codepoint));
-                From = sb.ToString();
-
-                sb.Clear();
-                foreach (uint codepoint in to)
-                    sb.Append(char.ConvertFromUtf32((int)codepoint));
-                To = sb.ToString();
-            }
-            public string From { get; set; }
-            public string To { get; set; }
         }
 
     }

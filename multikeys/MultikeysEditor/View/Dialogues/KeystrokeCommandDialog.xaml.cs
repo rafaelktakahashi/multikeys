@@ -1,11 +1,14 @@
 ﻿using MultikeysEditor.Model;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Unicode;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using static MultikeysEditor.Model.DeadKeyCommand;
 
 namespace MultikeysEditor.View.Dialogues
 {
@@ -39,8 +42,15 @@ namespace MultikeysEditor.View.Dialogues
             UnicodeCharactersList.ItemsSource = UnicodeCharactersSource;
             // update the list right away
             UnicodeUpdateList();
-            // focus on the input
-            UnicodeTextInput.Focus();
+
+            // setup the list of replacements
+            DeadKeyReplacementsSource = new ObservableCollection<DeadKeyReplacementItem>();
+            DeadKeyReplacementsTable.ItemsSource = DeadKeyReplacementsSource;
+            // Fix cell style
+            DeadKeyReplacementsTable.CellStyle = new Style(typeof(System.Windows.Controls.DataGridCell))
+            {
+                Setters = { new Setter(TextBlock.TextAlignmentProperty, TextAlignment.Center) }
+            };
         }
 
 
@@ -65,6 +75,7 @@ namespace MultikeysEditor.View.Dialogues
             // Call the correct private method depending on the command's type
             if (command is DeadKeyCommand)
             {
+                UseExistingDeadKeyCommand(command as DeadKeyCommand);
                 CommandTabControl.SelectedIndex = 2;
             }
             else if (command is UnicodeCommand)
@@ -76,6 +87,10 @@ namespace MultikeysEditor.View.Dialogues
             {
                 UseExistingExecutableCommand(command as ExecutableCommand);
                 CommandTabControl.SelectedIndex = 1;
+            } else if (command is MacroCommand)
+            {
+                // TODO: Call UseExistingMacroCommand(...) when it exists
+                CommandTabControl.SelectedIndex = 3;
             }
         }
 
@@ -92,6 +107,9 @@ namespace MultikeysEditor.View.Dialogues
                     break;
                 case 1:
                     PromptExecutableConfirm_Click(sender, e);
+                    break;
+                case 2:
+                    PromptDeadKeyConfirm_Click(sender, e);
                     break;
                 default:
                     // Missing cases 2 and 3
@@ -240,13 +258,15 @@ namespace MultikeysEditor.View.Dialogues
         private void TestExecutableCommandButton_Click(object sender, RoutedEventArgs e)
         {
             string errorMessage = null; // we'll use null to mean there's no error (so, success)
-            var startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.FileName = ExecutableCommandInput.Text;
-            startInfo.Arguments = ExecutableArgumentsInput.Text;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-            startInfo.UseShellExecute = false;
-            startInfo.CreateNoWindow = true;
+            var startInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = ExecutableCommandInput.Text,
+                Arguments = ExecutableArgumentsInput.Text,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
             try
             {
                 System.Diagnostics.Process.Start(startInfo);
@@ -273,10 +293,68 @@ namespace MultikeysEditor.View.Dialogues
             DialogResult = true;
         }
 
+        #endregion
 
+        #region DeadKey
+
+        public class DeadKeyReplacementItem : INotifyPropertyChanged
+        {
+            private string _from;
+            private string _to;
+
+            public string From
+            {
+                get { return _from; }
+                set { _from = value; NotifyPropertyChanged("From"); }
+            }
+            public string To
+            {
+                get { return _to; }
+                set { _to = value; NotifyPropertyChanged("To"); }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            private void NotifyPropertyChanged(string propertyName)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public ObservableCollection<DeadKeyReplacementItem> DeadKeyReplacementsSource { get; set; }
+
+        private void UseExistingDeadKeyCommand(DeadKeyCommand command)
+        {
+            // The list of replacements is expected to be initialized.
+            DeadKeyIndependentTextInput.Text = command.ContentAsText;
+            foreach (var replacementPair in command.ReplacementsAsList)
+            {
+                DeadKeyReplacementsSource.Add(new DeadKeyReplacementItem() { From = replacementPair.From, To = replacementPair.To });
+            }
+            return;
+        }
+
+        private void AddNewDeadKeyReplacement(object sender, RoutedEventArgs e)
+        {
+            DeadKeyReplacementsSource.Add(new DeadKeyReplacementItem()
+            {
+                From = NewDeadKeyReplacementFromInput.Text,
+                To = NewDeadKeyReplacementToInput.Text,
+            });
+            NewDeadKeyReplacementFromInput.Text = "";
+            NewDeadKeyReplacementToInput.Text = "";
+        }
+
+        private void PromptDeadKeyConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            Command =
+                new DeadKeyCommand(
+                    DeadKeyIndependentTextInput.Text,
+                    (from r in DeadKeyReplacementsSource select new ReplacementPair(r.From, r.To)).ToList());
+            DialogResult = true;
+        }
 
         #endregion
 
-
+        
     }
 }

@@ -394,4 +394,10 @@
   <data name="PromptExecutableTestCommandFailed" xml:space="preserve">
     <value>Command failed</value>
   </data>
+  <data name="PromptDeadKeyIndependentText" xml:space="preserve">
+    <value>Independent text</value>
+  </data>
+  <data name="PromptDeadKeyTableInstructions" xml:space="preserve">
+    <value>Click a selected cell again to edit it; use the delete key to remove items.</value>
+  </data>
 </root>

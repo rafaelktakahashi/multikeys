@@ -238,18 +238,35 @@ namespace MultikeysEditor.Model
     {
         // Default constructor
         public UnicodeCommand() : this(false, "") { }
+
         // Constructor from text
         public UnicodeCommand(bool triggerOnRepeat, string text)
         {
             TriggerOnRepeat = triggerOnRepeat;
-            Codepoints = new List<UInt32>();
-            for (int i = 0; i < text.Length; i++)
+            Codepoints = _stringToCodepoints(text);
+        }
+
+        protected IList<UInt32> _stringToCodepoints(string input)
+        {
+            var result = new List<UInt32>();
+            /*
+             * In C# (and in Windows in general), each Unicode char is a UTF-16 code unit,
+             * which is 16 bits in length. Each Unicode character is represented by either
+             * one or two code units (pairs of code units are called surrogate pairs).
+             * char.ConvertToUtf32(string s, int index) reads either one or two chars at
+             * the specified index and produces a 32-bit integer, the codepoint. If the
+             * codepoint is larger than 0xffff (half of a 32-bit integer's capacity), we
+             * know it was read from two UTF-16 code units (two chars), so we skip the next
+             * char.
+             */
+            for (int i = 0; i < input.Length; i++)
             {
-                int codepoint = char.ConvertToUtf32(text, i);
+                int codepoint = char.ConvertToUtf32(input, i);
                 if (codepoint > 0xffff)
                 { i++; }
-                Codepoints.Add((UInt32)codepoint);
+                result.Add((UInt32)codepoint);
             }
+            return result;
         }
 
         /// <summary>
@@ -313,12 +330,72 @@ namespace MultikeysEditor.Model
     /// </summary>
     public class DeadKeyCommand : UnicodeCommand
     {
+        public DeadKeyCommand() { }
+
+        public DeadKeyCommand(string text, IList<ReplacementPair> replacements) : base(false, text)
+        {
+            // Each item of replacements contains a 'from' string and a 'to' string, and both need
+            // to be converted to lists of 32-bit integers, because that's what the core understands.
+            Replacements = new Dictionary<IList<UInt32>, IList<UInt32>>();
+            foreach (var replacementPair in replacements)
+            {
+                Replacements.Add(_stringToCodepoints(replacementPair.From), _stringToCodepoints(replacementPair.To));
+            }
+        }
+        
+
         /// <summary>
-        /// List of replacements contained in this dead key.<para/>
-        /// The command pressed after this key is compared to the first element in this dictionary.<para/>
-        /// If it matches any key, its corresponding value will substitute the original command.
+        /// Map of replacements contained in this dead key, only works for substituting Unicode commands.<para/>
+        /// The command pressed after this key is compared to each key in the dictionary.<para/>
+        /// If it matches any key, its corresponding value will substitute the original command.<para/>
         /// </summary>
         public IDictionary<IList<UInt32>, IList<UInt32>> Replacements { get; set; }
+        /// <summary>
+        /// Keep in mind that these model classes generally represent text as lists of codepoints, because
+        /// that's how Multikeys core represents it. This returns the replacements as objects containing strings.
+        /// </summary>
+        public IList<ReplacementPair> ReplacementsAsList
+        {
+            get
+            {
+                var result = new List<ReplacementPair>();
+                foreach (var key in Replacements.Keys)
+                {
+                    IList<UInt32> from = key;
+                    IList<UInt32> to = Replacements[key];
+                    result.Add(new ReplacementPair(from, to));
+                }
+                return result;
+            }
+        }
+
+
+
+        /// <summary>
+        /// For easier display of text.
+        /// </summary>
+        public class ReplacementPair
+        {
+            public ReplacementPair(IList<UInt32> from, IList<UInt32> to)
+            {
+                var sb = new StringBuilder();
+                foreach (UInt32 codepoint in from)
+                    sb.Append(char.ConvertFromUtf32((int)codepoint));
+                From = sb.ToString();
+
+                sb.Clear();
+                foreach (UInt32 codepoint in to)
+                    sb.Append(char.ConvertFromUtf32((int)codepoint));
+                To = sb.ToString();
+            }
+            public ReplacementPair(string from, string to)
+            {
+                From = from;
+                To = to;
+            }
+            public string From { get; set; }
+            public string To { get; set; }
+        }
     }
     
 }

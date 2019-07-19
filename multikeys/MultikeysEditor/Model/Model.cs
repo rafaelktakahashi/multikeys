@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Input;
 
 namespace MultikeysEditor.Model
 {
@@ -106,6 +107,22 @@ namespace MultikeysEditor.Model
 
         public byte VirtualKeyCode { get; set; }
         public bool KeyDown { get; set; }
+
+        public string VirtualKeyName
+        {
+            get
+            {
+                return KeyInterop.KeyFromVirtualKey(VirtualKeyCode).ToString();
+            }
+        }
+
+        public string KeyDownName
+        {
+            get
+            {
+                return KeyDown ? Properties.Strings.MacroKeyDown : Properties.Strings.MacroKeyUp;
+            }
+        }
 
         public override string ToString()
         {

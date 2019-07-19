@@ -367,6 +367,24 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Press.
+        /// </summary>
+        public static string MacroKeyDown {
+            get {
+                return ResourceManager.GetString("MacroKeyDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Release.
+        /// </summary>
+        public static string MacroKeyUp {
+            get {
+                return ResourceManager.GetString("MacroKeyUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sequence.
         /// </summary>
         public static string MacroSequence {
@@ -579,6 +597,60 @@ namespace MultikeysEditor.Properties {
         public static string PromptExecutableTestCommandFailed {
             get {
                 return ResourceManager.GetString("PromptExecutableTestCommandFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move down.
+        /// </summary>
+        public static string PromptMacroMoveDown {
+            get {
+                return ResourceManager.GetString("PromptMacroMoveDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move up.
+        /// </summary>
+        public static string PromptMacroMoveUp {
+            get {
+                return ResourceManager.GetString("PromptMacroMoveUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove.
+        /// </summary>
+        public static string PromptMacroRemove {
+            get {
+                return ResourceManager.GetString("PromptMacroRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start recording.
+        /// </summary>
+        public static string PromptMacroStartRecording {
+            get {
+                return ResourceManager.GetString("PromptMacroStartRecording", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop recording.
+        /// </summary>
+        public static string PromptMacroStopRecording {
+            get {
+                return ResourceManager.GetString("PromptMacroStopRecording", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trigger repeatedly when key is pressed down.
+        /// </summary>
+        public static string PromptMacroTriggerOnRepeat {
+            get {
+                return ResourceManager.GetString("PromptMacroTriggerOnRepeat", resourceCulture);
             }
         }
         

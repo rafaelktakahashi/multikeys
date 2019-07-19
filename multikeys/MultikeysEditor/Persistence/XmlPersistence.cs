@@ -138,7 +138,7 @@ namespace MultikeysEditor.Persistence
 
         private static Tuple<Scancode, IKeystrokeCommand> ReadCommand(XElement el)
         {
-            IKeystrokeCommand second = null;
+            IKeystrokeCommand second;
             switch (el.Name.LocalName)
             {
                 case "unicode":

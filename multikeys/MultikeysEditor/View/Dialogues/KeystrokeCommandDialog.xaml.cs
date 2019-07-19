@@ -51,6 +51,21 @@ namespace MultikeysEditor.View.Dialogues
             {
                 Setters = { new Setter(TextBlock.TextAlignmentProperty, TextAlignment.Center) }
             };
+
+            // setup the list of macro keystrokes
+            MacroKeystrokes = new ObservableCollection<VirtualKeystroke>();
+            MacroList.ItemsSource = MacroKeystrokes;
+            // setup the virtual key combobox
+            var keystrokeSource = new List<VirtualKeystroke>();
+            for (byte i = 0; i < 255; i++)
+            {
+                var newKeystroke = new VirtualKeystroke() { VirtualKeyCode = i, KeyDown = true };
+                if (newKeystroke.VirtualKeyName != "None") {
+                    keystrokeSource.Add(newKeystroke);
+                }
+            }
+            MacroCombobox.ItemsSource = keystrokeSource;
+            MacroCombobox.DisplayMemberPath = "VirtualKeyName";
         }
 
 
@@ -89,7 +104,7 @@ namespace MultikeysEditor.View.Dialogues
                 CommandTabControl.SelectedIndex = 1;
             } else if (command is MacroCommand)
             {
-                // TODO: Call UseExistingMacroCommand(...) when it exists
+                UseExistingMacroCommand(command as MacroCommand);
                 CommandTabControl.SelectedIndex = 3;
             }
         }
@@ -111,8 +126,11 @@ namespace MultikeysEditor.View.Dialogues
                 case 2:
                     PromptDeadKeyConfirm_Click(sender, e);
                     break;
+                case 3:
+                    PromptMacroConfirm_Click(sender, e);
+                    break;
                 default:
-                    // Missing cases 2 and 3
+                    // 0 through 3 should be all possible cases.
                     return;
             }
         }
@@ -226,7 +244,6 @@ namespace MultikeysEditor.View.Dialogues
         }
 
         #endregion
-
 
         #region ExecutableCommand
 
@@ -350,6 +367,67 @@ namespace MultikeysEditor.View.Dialogues
                 new DeadKeyCommand(
                     DeadKeyIndependentTextInput.Text,
                     (from r in DeadKeyReplacementsSource select new ReplacementPair(r.From, r.To)).ToList());
+            DialogResult = true;
+        }
+
+
+        #endregion
+
+        #region Macro
+
+        // VirtualKeystrokes themselves don't implement INotifyPropertyChanged (as of now),
+        // but that should be okay because we don't expect them to change.
+        public ObservableCollection<VirtualKeystroke> MacroKeystrokes { get; set; }
+
+        private void UseExistingMacroCommand(MacroCommand command)
+        {
+            foreach (var keystroke in command.VKeyCodes)
+            {
+                MacroKeystrokes.Add(keystroke);
+            }
+            PromptMacroTriggerOnRepeat.IsChecked = command.TriggerOnRepeat;
+        }
+
+        private void AddMacroKeystrokeUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = MacroCombobox.SelectedItem as VirtualKeystroke;
+            MacroKeystrokes.Add(new VirtualKeystroke() { VirtualKeyCode = selectedItem.VirtualKeyCode, KeyDown = false });
+        }
+
+        private void AddMacroKeystrokeDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = MacroCombobox.SelectedItem as VirtualKeystroke;
+            MacroKeystrokes.Add(new VirtualKeystroke() { VirtualKeyCode = selectedItem.VirtualKeyCode, KeyDown = true });
+        }
+
+        private void MacroMoveUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            var currentIndex = MacroList.SelectedIndex;
+            if (currentIndex <= 0) { return; } // first item
+            MacroKeystrokes.Move(currentIndex, currentIndex - 1);
+        }
+
+        private void MacroMoveDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            var currentIndex = MacroList.SelectedIndex;
+            if (currentIndex == -1 || currentIndex + 1 >= MacroKeystrokes.Count) { return; } // last item
+            MacroKeystrokes.Move(currentIndex, currentIndex + 1);
+        }
+        private void MacroRemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            var currentIndex = MacroList.SelectedIndex;
+            if (currentIndex == -1) { return; }
+            MacroKeystrokes.RemoveAt(currentIndex);
+        }
+
+        private void PromptMacroConfirm_Click(object sender, RoutedEventArgs e)
+        {
+            Command =
+                new MacroCommand()
+                {
+                    TriggerOnRepeat = PromptMacroTriggerOnRepeat.IsChecked ?? false,
+                    VKeyCodes = MacroKeystrokes
+                };
             DialogResult = true;
         }
 

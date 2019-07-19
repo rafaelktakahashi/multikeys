@@ -92,8 +92,6 @@
                               HorizontalAlignment="Right" Margin="0,474,22,0"
                               VerticalAlignment="Top"/>
 
-
-
                 </Grid>
             </TabItem>
 
@@ -178,6 +176,74 @@
 
             <TabItem Header="{x:Static p:Strings.ReadableNameMacroKey}">
                 <Grid>
+                    <CheckBox x:Name="PromptMacroTriggerOnRepeat"
+                              Content="{x:Static p:Strings.PromptMacroTriggerOnRepeat}"
+                              HorizontalAlignment="Right" Margin="0,474,22,0"
+                              VerticalAlignment="Top"/>
+                    <!-- ItemSource for this ListBox are set in code-behind. -->
+                    <ListBox x:Name="MacroList"
+                             Height="301"
+                             Margin="85,64,0,0"
+                             VerticalAlignment="Top" HorizontalAlignment="Left" Width="380">
+                        <!-- Determine how each item should be shown: -->
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontFamily="Arial Unicode MS" FontSize="14" FontWeight="Thin" MinWidth="20"
+                                                   Text="{Binding Path=VirtualKeyCode,StringFormat={}0x{0:X2}}" Foreground="Gray" Grid.Column="0"/>
+                                    <TextBlock VerticalAlignment="Bottom" FontSize="16" FontWeight="SemiBold" Foreground="Black"
+                                                   Text="{Binding Path=VirtualKeyName}" Grid.Column="1" Margin="10, 0, 10, 0" />
+                                    <TextBlock VerticalAlignment="Bottom" FontSize="14" Foreground="Gray"
+                                                   Text="{Binding Path=KeyDownName}" Grid.Column="2" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <ComboBox
+                        x:Name="MacroCombobox"
+                        Margin="171,12,0,0"
+                        VerticalAlignment="Top" HorizontalAlignment="Left" Width="207"
+                        />
+                    <Button x:Name="AddMacroKeystrokeUpButton"
+                            Content="{x:Static p:Strings.MacroKeyUp}"
+                            HorizontalAlignment="Left"
+                            Margin="277,39,0,0"
+                            VerticalAlignment="Top"
+                            Width="101"
+                            Click="AddMacroKeystrokeUpButton_Click"/>
+                    <Button x:Name="AddMacroKeystrokeDownButton"
+                            Content="{x:Static p:Strings.MacroKeyDown}"
+                            HorizontalAlignment="Left"
+                            Margin="171,39,0,0"
+                            VerticalAlignment="Top"
+                            Width="101"
+                            Click="AddMacroKeystrokeDownButton_Click"/>
+                    <Button x:Name="MacroMoveUpButton"
+                        Content="{x:Static p:Strings.PromptMacroMoveUp}"
+                        HorizontalAlignment="Left"
+                        Margin="85,370,0,0"
+                        VerticalAlignment="Top"
+                        Width="157"
+                        Click="MacroMoveUpButton_Click"/>
+                    <Button x:Name="MacroMoveDownButton"
+                        Content="{x:Static p:Strings.PromptMacroMoveDown}"
+                        HorizontalAlignment="Left"
+                        Margin="85,395,0,0"
+                        VerticalAlignment="Top"
+                        Width="157"
+                        Click="MacroMoveDownButton_Click"/>
+                    <Button x:Name="MacroRemoveButton"
+                        Content="{x:Static p:Strings.PromptMacroRemove}"
+                        HorizontalAlignment="Left"
+                        Margin="340,370,0,0"
+                        VerticalAlignment="Top"
+                        Width="125"
+                        Click="MacroRemoveButton_Click"/>
                 </Grid>
             </TabItem>
 

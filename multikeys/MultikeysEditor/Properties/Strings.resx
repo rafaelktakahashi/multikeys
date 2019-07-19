@@ -400,4 +400,28 @@
   <data name="PromptDeadKeyTableInstructions" xml:space="preserve">
     <value>Click a selected cell again to edit it; use the delete key to remove items.</value>
   </data>
+  <data name="PromptMacroStartRecording" xml:space="preserve">
+    <value>Start recording</value>
+  </data>
+  <data name="PromptMacroStopRecording" xml:space="preserve">
+    <value>Stop recording</value>
+  </data>
+  <data name="PromptMacroTriggerOnRepeat" xml:space="preserve">
+    <value>Trigger repeatedly when key is pressed down</value>
+  </data>
+  <data name="MacroKeyDown" xml:space="preserve">
+    <value>Press</value>
+  </data>
+  <data name="MacroKeyUp" xml:space="preserve">
+    <value>Release</value>
+  </data>
+  <data name="PromptMacroMoveDown" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="PromptMacroMoveUp" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="PromptMacroRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
 </root>

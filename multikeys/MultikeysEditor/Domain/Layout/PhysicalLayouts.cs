@@ -13,7 +13,8 @@ namespace MultikeysEditor.Domain.Layout
     {
         public BasePhysicalLayout()
         {
-            // Initializing each physical key
+            // Initializing each physical key, but leaving out any key that should be rendered
+            // differently depending on the physical keyboard layout.
             //
             // Missing keys             Reason
             // Backspace                Extra 7d key in JIS layout
@@ -24,9 +25,10 @@ namespace MultikeysEditor.Domain.Layout
             // Space                    Multiple extra keys in JIS and Dubeolsik layouts
             // Plus symbol (numpad)     Extra 7e key in ABNT-2 layout
             //
-            // The inheriting class must add those keys to this list.
+            // The inheriting class must add those keys to this list, along with any extra keys
+            // they need.
             _layout = new List<PhysicalKey>()
-            {
+            { // Comments show the key in ANSI US labels.
                 // Topmost row: Escape key and function keys
                 new PhysicalKey("01", 1, 1, 0, 0),    // Esc
                 new PhysicalKey("3b", 1, 1, 2, 0),    // F1

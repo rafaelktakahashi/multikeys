@@ -157,6 +157,7 @@ namespace MultikeysEditor.View.Controls
                 int codePoint = char.ConvertToUtf32(text, i);
                 if (codePoint > 0xffff) i++;
                 TextBlock textLineInfo = MakeNewLine(UnicodeInfo.GetName(codePoint));
+                textLineInfo.FontSize = 14;
                 StackPanelData.Children.Add(textLineInfo);
             }
 
@@ -171,9 +172,11 @@ namespace MultikeysEditor.View.Controls
 
             // Text
             TextBlock textLine = MakeNewLine("");
-            string textLineContent = Properties.Strings.MacroSequence + ":\n";
+            string textLineContent = "";
             foreach (var vkey in newCommand.VKeyCodes)
-                textLineContent += vkey.ToString() + "\n";
+            {
+                textLineContent += $"(0x{vkey.VirtualKeyCode:X2}) {vkey.VirtualKeyName} {vkey.KeyDownName}\n";
+            }
             textLine.Text = textLineContent;
             StackPanelData.Children.Add(textLine);
         }

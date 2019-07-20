@@ -50,8 +50,10 @@ namespace MultikeysEditor.View.Controls
         /// Use this method to set this control's command.
         /// This will also update this control's contents.
         /// This method accepts null, representing a key that is not remapped.
+        /// A parameter for a KeyControl is also accepted; if provided, the control
+        /// is rendered in this summary panel.
         /// </summary>
-        public void UpdateCommand(IKeystrokeCommand newCommand)
+        public void UpdateCommand(IKeystrokeCommand newCommand, KeyControl displayKey = null)
         {
             StackPanelData.Children.Clear();
 
@@ -61,6 +63,11 @@ namespace MultikeysEditor.View.Controls
             }
             else
             {
+                if (displayKey != null)
+                {
+                    // Doesn't currently work
+                    // StackPanelData.Children.Add(displayKey);
+                }
                 if (newCommand is DeadKeyCommand) { WriteSummaryDeadKey(newCommand as DeadKeyCommand); return; }
                 if (newCommand is UnicodeCommand) { WriteSummaryUnicode(newCommand as UnicodeCommand); return; }
                 if (newCommand is MacroCommand) { WriteSummaryMacro(newCommand as MacroCommand); return; }
@@ -68,10 +75,15 @@ namespace MultikeysEditor.View.Controls
             }
         }
 
-        public void UpdateCommand(Modifier modifier)
+        public void UpdateCommand(Modifier modifier, KeyControl displayKey = null)
         {
             StackPanelData.Children.Clear();
 
+            if (displayKey != null)
+            {
+                // Doesn't currently work
+                // StackPanelData.Children.Add(displayKey);
+            }
             WriteSummaryModifier(modifier);
         }
 

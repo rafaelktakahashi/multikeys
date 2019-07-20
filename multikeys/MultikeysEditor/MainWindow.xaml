@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MultikeysEditor.View.Controls"
         xmlns:p="clr-namespace:MultikeysEditor.Properties"
         mc:Ignorable="d"
-        Title="{x:Static p:Strings.WindowTitleMainWindow}" Height="680" Width="1420">
+        Title="Multikeys Editor" Height="680" Width="1420">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

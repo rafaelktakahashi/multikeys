@@ -34,6 +34,10 @@ namespace MultikeysEditor.View.Controls
         /// This must be null if Command is non-null.
         /// </summary>
         public Modifier Modifier { get; set; }
+        /// <summary>
+        /// The key control that was clicked to generate this event.
+        /// </summary>
+        public KeyControl KeyControl { get; set; }
     }
 
     /// <summary>
@@ -172,6 +176,7 @@ namespace MultikeysEditor.View.Controls
                 Modifier = keyControl.Modifier,
                 KeyboardName = UniqueName,
                 Scancode = keyControl.Scancode,
+                KeyControl = keyControl.Copy(),
             });
         }
 

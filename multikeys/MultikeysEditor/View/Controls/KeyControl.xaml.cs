@@ -83,8 +83,6 @@ namespace MultikeysEditor.View.Controls
         /// </summary>
         public bool IsModifierSelected { get; set; }
 
-
-
         /// <summary>
         /// This converter is necessary for exposing a property of type Scancode that can be set from
         /// xaml as a string.
@@ -120,6 +118,19 @@ namespace MultikeysEditor.View.Controls
         /// </summary>
         [TypeConverter(typeof(ScancodeConverter))]
         public Scancode Scancode { get; set; }
+
+
+        public KeyControl Copy()
+        {
+            return new KeyControl()
+            {
+                Shape = this.Shape,
+                Command = this.Command,
+                Modifier = this.Modifier,
+                IsModifierSelected = this.IsModifierSelected,
+                Scancode = this.Scancode
+            };
+        }
 
 
         /// <summary>

@@ -211,10 +211,6 @@ namespace MultikeysEditor.View.Controls
         }
 
         
-
-
-        
-
         #region Events
 
         public event EventHandler KeyClicked;

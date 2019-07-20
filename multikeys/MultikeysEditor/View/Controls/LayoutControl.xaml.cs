@@ -63,9 +63,9 @@ namespace MultikeysEditor.View.Controls
         public void HandleKeyClicked(object sender, KeyClickedEventArgs e)
         {
             if (e.Modifier != null)
-                SummaryPanel.UpdateCommand(e.Modifier);
+                SummaryPanel.UpdateCommand(e.Modifier, e.KeyControl);
             else
-                SummaryPanel.UpdateCommand(e.Command);
+                SummaryPanel.UpdateCommand(e.Command, e.KeyControl);
         }
 
 

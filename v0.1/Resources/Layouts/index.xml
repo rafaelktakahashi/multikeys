@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This index is used by a dialog in order to present the available layouts to the user.
+The information in each file is then used by the LogicalLayoutFactory to build a dictionary of Scancode -> string.
+The filenames must not contain the extension, but the actual files must use a .layout extension.
+
+When adding a new layout file, place its name and file here and it will automatically appear as an option in the dialog.
+However, don't forget to include the new file in the VS project, set its build action to Content and set to copy if newer.
+-->
+<index>
+    <layout>
+        <name>ANSI US - English</name>
+        <file>US</file>
+    </layout>
+    <layout>
+        <name>ISO UK - English</name>
+        <file>UK</file>
+    </layout>
+    <layout>
+        <name>ISO DE - Deutsch</name>
+        <file>DE</file>
+    </layout>
+    <layout>
+        <name>ISO FR - Français</name>
+        <file>FR</file>
+    </layout>
+    <layout>
+        <name>ISO ES - Español</name>
+        <file>ES</file>
+    </layout>
+    <layout>
+        <name>ABNT-2 - Português Brasileiro</name>
+        <file>ABNT_2</file>
+    </layout>
+    <layout>
+        <name>JIS - 日本語</name>
+        <file>JIS</file>
+    </layout>
+    <layout>
+        <name>JIS - 日本語（かな）</name>
+        <file>JIS_Kana</file>
+    </layout>
+    <layout>
+        <name>Dubeolsik - 한국어</name>
+        <file>Dubeolsik</file>
+    </layout>
+</index>

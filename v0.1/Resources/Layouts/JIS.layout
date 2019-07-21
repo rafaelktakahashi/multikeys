@@ -1,0 +1,109 @@
+01 Esc
+3b F1
+3c F2
+3d F3
+3e F4
+3f F5
+40 F6
+41 F7
+42 F8
+43 F9
+44 F10
+57 F11
+58 F12
+29 漢字
+02 1 !
+03 2 "
+04 3 #
+05 4 $
+06 5 %
+07 6 &
+08 7 '
+09 8 (
+0a 9 )
+0b 0
+0c - =
+0d ^ ~
+7d ¥ |
+0e Bs
+0f Tab
+10 Q
+11 W
+12 E
+13 R
+14 T
+15 Y
+16 U
+17 I
+18 O
+19 P
+1a @ `
+1b [ {
+3a 英数
+1e A
+1f S
+20 D
+21 F
+22 G
+23 H
+24 J
+25 K
+26 L
+27 ; +
+28 : *
+2b ] }
+1c Return
+2a Shift
+2c Z
+2d X
+2e C
+2f V
+30 B
+31 N
+32 M
+33 , <
+34 . >
+35 / ?
+73 \ _
+36 Shift
+1d Ctrl
+e0:5b Win
+38 Alt
+7b 無変換
+39
+79 変換
+78 ローマ字
+e0:38 Alt
+e0:5c Win
+e0:5d Menu
+e0:1d Ctrl
+e0:37 PrtSc
+46 ScLk
+e1:1d Pause
+e0:52 Insert
+e0:47 Home
+e0:49 PgUp
+e0:53 Delete
+e0:4f End
+e0:51 PgDn
+e0:48 Up
+e0:4b Left
+e0:50 Down
+e0:4d Right
+45 NmLk
+e0:35 /
+37 *
+4a -
+47 7
+48 8
+49 9
+4e +
+4b 4
+4c 5
+4d 6
+4f 1
+50 2
+51 3
+52 0
+53 .
+e0:1c Enter

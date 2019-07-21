@@ -169,6 +169,33 @@ namespace MultikeysEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Done.
+        /// </summary>
+        public static string KeyboardAliasDoneEditing {
+            get {
+                return ResourceManager.GetString("KeyboardAliasDoneEditing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string KeyboardAliasEdit {
+            get {
+                return ResourceManager.GetString("KeyboardAliasEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        public static string KeyboardAliasLabel {
+            get {
+                return ResourceManager.GetString("KeyboardAliasLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change labels.
         /// </summary>
         public static string KeyboardControlChangeLogicalLayout {
@@ -462,6 +489,15 @@ namespace MultikeysEditor.Properties {
         public static string Modifiers {
             get {
                 return ResourceManager.GetString("Modifiers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Keyboard.
+        /// </summary>
+        public static string NewKeyboardAlias {
+            get {
+                return ResourceManager.GetString("NewKeyboardAlias", resourceCulture);
             }
         }
         

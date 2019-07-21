@@ -424,4 +424,16 @@
   <data name="PromptMacroRemove" xml:space="preserve">
     <value>Remove</value>
   </data>
+  <data name="KeyboardAliasDoneEditing" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="KeyboardAliasEdit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="KeyboardAliasLabel" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="NewKeyboardAlias" xml:space="preserve">
+    <value>New Keyboard</value>
+  </data>
 </root>

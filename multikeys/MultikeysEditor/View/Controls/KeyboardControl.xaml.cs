@@ -64,14 +64,14 @@ namespace MultikeysEditor.View.Controls
                 // being initialized from an existing keyboard
                 UniqueName = kb.UniqueName;
                 Alias = kb.Alias;
-                _layers = kb.Layers;
+                _Layers = kb.Layers;
             }
             else
             {
                 // being initialized as a brand new keyboard
                 UniqueName = string.Empty;
-                Alias = null;
-                _layers = new List<Layer>();
+                Alias = Properties.Strings.NewKeyboardAlias;
+                _Layers = new List<Layer>();
             }
 
             // Setup modifiers control
@@ -82,12 +82,16 @@ namespace MultikeysEditor.View.Controls
             Layer.RefreshView(kb.Layers[0].Commands, ModifiersControl.Modifiers);
             _activeLayer = kb.Layers[0];            // TODO: Using Layers[0] doesn't cut it.
 
-            // Setup the selected key to none
+            // Set the selected key to none
             SelectedKey = null;
 
-            // Show the keyboard's name
+            // Show the keyboard's name and alias
             LabelKeyboardName.Text = kb.UniqueName == "" ? Properties.Strings.KeyboardNameDialogAnyKeyboard : kb.UniqueName;
-            // TODO: Show the keyboard's alias somewhere
+            if (string.IsNullOrEmpty(kb.Alias))
+            {
+                kb.Alias = Properties.Strings.NewKeyboardAlias;
+            }
+            LabelKeyboardAlias.Text = kb.Alias;
 
             UpdateButtonStates();
         }
@@ -103,7 +107,7 @@ namespace MultikeysEditor.View.Controls
                 UniqueName = UniqueName,
                 Alias = Alias,
                 Modifiers = ModifiersControl.Modifiers,
-                Layers = _layers
+                Layers = _Layers
             };
         }
 
@@ -113,7 +117,7 @@ namespace MultikeysEditor.View.Controls
         public string Alias { get; set; }
         
         // modifiers are a responsibility of the ModifierControl
-        private IList<Layer> _layers;
+        private IList<Layer> _Layers;
 
         // A readonly empty dictionary with 0 capacity that represents an empty layer.
         private readonly IDictionary<Scancode, IKeystrokeCommand> EmptyLayerCommands
@@ -129,6 +133,8 @@ namespace MultikeysEditor.View.Controls
         /// Currently selected key, initialized as null.
         /// </summary>
         public KeyControl SelectedKey { get; private set; }
+
+        private bool _EditingAlias;
 
         #endregion
 
@@ -210,7 +216,7 @@ namespace MultikeysEditor.View.Controls
 
             bool layerFound = false;
             // Look for a layer that matches
-            foreach (Layer layer in _layers)
+            foreach (Layer layer in _Layers)
             {
                 // criteria for matching:
                 // 1. Each currently selected modifier must exist in the layer's list of modifiers
@@ -432,7 +438,7 @@ namespace MultikeysEditor.View.Controls
 
             // Loop through all exiting layers; if any of them include a command for this scancode,
             // warn the user that registering this key will override those commands.
-            foreach (var layer in _layers)
+            foreach (var layer in _Layers)
             {
                 if (layer.Commands.ContainsKey(SelectedKey.Scancode))
                 {
@@ -492,7 +498,7 @@ namespace MultikeysEditor.View.Controls
                 // 2. Update each key registered as that modifier, so that it's updated
                 Layer.RefreshView(SelectedKey.Modifier, SelectedKey.IsModifierSelected);
                 // 3. Go through each layer that references the old name and update it
-                foreach (var layer in _layers)
+                foreach (var layer in _Layers)
                 {
                     int index = layer.ModifierCombination.IndexOf(oldName);
                     if (index != -1)
@@ -559,7 +565,7 @@ namespace MultikeysEditor.View.Controls
                     ModifierCombination = ModifiersControl.SelectedModifiers.Select(it => it.Name).ToList()
                 };
 
-                _layers.Add(_activeLayer);
+                _Layers.Add(_activeLayer);
             }
 
 
@@ -618,6 +624,27 @@ namespace MultikeysEditor.View.Controls
             KeyboardDeletionRequest?.Invoke(this, new EventArgs());
         }
 
-        
+        private void ButtonKeyboardAliasEdit_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_EditingAlias)
+            {
+                // Start editing the alias
+                _EditingAlias = true;
+                LabelKeyboardAlias.Width = 0;
+                InputKeyboardAlias.Width = 200;
+                InputKeyboardAlias.Text = LabelKeyboardAlias.Text;
+                ButtonKeyboardAliasEdit.Content = Properties.Strings.KeyboardAliasDoneEditing;
+            }
+            else
+            {
+                // Stop editing the alias
+                _EditingAlias = false;
+                LabelKeyboardAlias.Width = double.NaN;
+                InputKeyboardAlias.Width = 0;
+                Alias = InputKeyboardAlias.Text;
+                LabelKeyboardAlias.Text = InputKeyboardAlias.Text;
+                ButtonKeyboardAliasEdit.Content = Properties.Strings.KeyboardAliasEdit;
+            }
+        } // TODO: A cancel button for editing the alias
     }
 }

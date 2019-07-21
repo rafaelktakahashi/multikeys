@@ -18,8 +18,18 @@
                         Width="Auto" MinWidth="60" Height="20" Margin="15,0,0,0"
                         Click="ButtonKeyboardNameEdit_Click"/>
             </StackPanel>
-            
-            <!-- TODO: Show the keyboard's alias here -->
+
+            <StackPanel Orientation="Horizontal">
+                <Label Content="{x:Static p:Strings.KeyboardAliasLabel}"
+                       FontWeight="Bold" FontSize="16"/>
+                <TextBlock x:Name="LabelKeyboardAlias" VerticalAlignment="Center"
+                           FontWeight="SemiBold" FontSize="16" Foreground="Blue"/>
+                <TextBox x:Name="InputKeyboardAlias" VerticalAlignment="Center"
+                           FontWeight="SemiBold" FontSize="16" Foreground="Blue" Width="0"/>
+                <Button Name="ButtonKeyboardAliasEdit" Content="{x:Static p:Strings.KeyboardAliasEdit}"
+                        Width="Auto" MinWidth="60" Height="20" Margin="15,0,0,0"
+                        Click="ButtonKeyboardAliasEdit_Click"/>
+            </StackPanel>
 
             <Grid>
                 <Grid.ColumnDefinitions>

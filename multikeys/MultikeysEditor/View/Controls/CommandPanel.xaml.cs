@@ -45,6 +45,11 @@ namespace MultikeysEditor.View.Controls
             return title;
         }
 
+        private void _FormatKey(KeyControl key)
+        {
+            key.HorizontalAlignment = HorizontalAlignment.Left;
+            key.Margin = new Thickness(5);
+        }
 
         /// <summary>
         /// Use this method to set this control's command.
@@ -56,6 +61,14 @@ namespace MultikeysEditor.View.Controls
         public void UpdateCommand(IKeystrokeCommand newCommand, KeyControl displayKey = null)
         {
             StackPanelData.Children.Clear();
+            
+
+            if (displayKey != null)
+            {
+                var keyCopy = displayKey.Copy();
+                _FormatKey(keyCopy);
+                StackPanelData.Children.Add(keyCopy);
+            }
 
             if (newCommand == null)
             {
@@ -63,11 +76,6 @@ namespace MultikeysEditor.View.Controls
             }
             else
             {
-                if (displayKey != null)
-                {
-                    // Doesn't currently work
-                    // StackPanelData.Children.Add(displayKey);
-                }
                 if (newCommand is DeadKeyCommand) { WriteSummaryDeadKey(newCommand as DeadKeyCommand); return; }
                 if (newCommand is UnicodeCommand) { WriteSummaryUnicode(newCommand as UnicodeCommand); return; }
                 if (newCommand is MacroCommand) { WriteSummaryMacro(newCommand as MacroCommand); return; }
@@ -81,9 +89,11 @@ namespace MultikeysEditor.View.Controls
 
             if (displayKey != null)
             {
-                // Doesn't currently work
-                // StackPanelData.Children.Add(displayKey);
+                var keyCopy = displayKey.Copy();
+                _FormatKey(keyCopy);
+                StackPanelData.Children.Add(keyCopy);
             }
+
             WriteSummaryModifier(modifier);
         }
 

@@ -156,7 +156,7 @@ namespace MultikeysEditor.View.Controls
         public void RefreshView(IDictionary<Scancode, IKeystrokeCommand> commands,
             ICollection<Modifier> modifiers)
         {
-            // When setting the new commands, we must specify the custom comparer:
+            // When setting the new commands, we must specify the custom comparator:
             Layout = new Dictionary<Scancode, IKeystrokeCommand>(commands, new ScancodeComparer());
 
             Modifiers = new Dictionary<Modifier, bool>();
@@ -209,7 +209,6 @@ namespace MultikeysEditor.View.Controls
                 Shape = key.Shape,
             };
         }
-
         
         #region Events
 

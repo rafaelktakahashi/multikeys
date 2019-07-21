@@ -176,7 +176,7 @@ namespace MultikeysEditor.View.Controls
                 Modifier = keyControl.Modifier,
                 KeyboardName = UniqueName,
                 Scancode = keyControl.Scancode,
-                KeyControl = keyControl.Copy(),
+                KeyControl = keyControl,
             });
         }
 
@@ -348,6 +348,7 @@ namespace MultikeysEditor.View.Controls
                     KeyboardName = UniqueName,
                     Modifier = SelectedKey.Modifier,
                     Scancode = SelectedKey.Scancode,
+                    KeyControl = SelectedKey,
                 });
             }
         }
@@ -380,6 +381,7 @@ namespace MultikeysEditor.View.Controls
                     KeyboardName = UniqueName,
                     Modifier = SelectedKey.Modifier,
                     Scancode = SelectedKey.Scancode,
+                    KeyControl = SelectedKey
                 });
             }
         }
@@ -415,6 +417,7 @@ namespace MultikeysEditor.View.Controls
                     KeyboardName = UniqueName,
                     Modifier = SelectedKey.Modifier,
                     Scancode = SelectedKey.Scancode,
+                    KeyControl = SelectedKey,
                 });
             }
         }
@@ -463,6 +466,7 @@ namespace MultikeysEditor.View.Controls
                     KeyboardName = UniqueName,
                     Modifier = newModifier,
                     Scancode = SelectedKey.Scancode,
+                    KeyControl = SelectedKey,
                 });
             }
         }
@@ -501,6 +505,7 @@ namespace MultikeysEditor.View.Controls
                     KeyboardName = UniqueName,
                     Modifier = SelectedKey.Modifier,
                     Scancode = SelectedKey.Scancode,
+                    KeyControl = SelectedKey,
                 });
             }
         }
@@ -531,6 +536,7 @@ namespace MultikeysEditor.View.Controls
                     KeyboardName = UniqueName,
                     Modifier = null,
                     Scancode = SelectedKey.Scancode,
+                    KeyControl = SelectedKey,
                 });
             }
         }

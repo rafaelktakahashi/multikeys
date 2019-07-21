@@ -120,6 +120,12 @@ namespace MultikeysEditor.View.Controls
         public Scancode Scancode { get; set; }
 
 
+        /// <summary>
+        /// Makes a copy of this key, keeping the same shape, command / modifier, scancode
+        /// and size. Does not keep margin (which is used to offset it on screen) or alignment.
+        /// The copy does not change with the original.
+        /// </summary>
+        /// <returns></returns>
         public KeyControl Copy()
         {
             return new KeyControl()
@@ -128,7 +134,13 @@ namespace MultikeysEditor.View.Controls
                 Command = this.Command,
                 Modifier = this.Modifier,
                 IsModifierSelected = this.IsModifierSelected,
-                Scancode = this.Scancode
+                Scancode = this.Scancode,
+                Height = this.Height,
+                Width = this.Width,
+                // Set by the layer control after construction
+                BottomLabelText = this.BottomLabelText,
+                Text = this.Text,
+                ForegroundBrush = this.ForegroundBrush
             };
         }
 
@@ -188,8 +200,6 @@ namespace MultikeysEditor.View.Controls
 
         /// <summary>
         /// Updates the displayed text on this control.
-        /// This is a separate method from UpdateCommand, mostly
-        /// so that it can be called in the constructor.
         /// </summary>
         private void Refresh()
         {

@@ -81,7 +81,7 @@
 
     </UserControl.Resources>
     
-    <Grid >
+    <Grid>
         <Grid x:Name="KeyContainerGrid" Margin="1"/>
 
         <TextBlock x:Name="MiddleLabel" Margin="0,0,0,8" TextAlignment="Center" VerticalAlignment="Center" FontSize="18" FontFamily="Arial Unicode" Panel.ZIndex="-2" />

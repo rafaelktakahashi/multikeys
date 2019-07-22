@@ -28,7 +28,10 @@ namespace MultikeysEditor.View.Controls
             }
         }
 
-        public LayerControl()
+        // This needs a default constructor to be usable in xaml
+        public LayerControl() : this(null) { }
+
+        public LayerControl(string logicalLayout)
         {
             InitializeComponent();
 
@@ -40,11 +43,8 @@ namespace MultikeysEditor.View.Controls
 
             CurrentKey = new Tuple<Scancode, IKeystrokeCommand>(null, null);
 
-            // Empty labels; initialization happens by setting the property.
-            Labels = new Dictionary<Scancode, string>(0);
-
-            // Default initializetion
-            Labels = LogicalLayoutFactory.GetLogicalLayout("US");
+            // Default logical layout
+            Labels = LogicalLayoutFactory.GetLogicalLayout(logicalLayout ?? "US");
         }
 
 

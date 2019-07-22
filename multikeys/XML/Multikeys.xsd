@@ -267,8 +267,37 @@
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
-            <xs:attribute name="Name" type="xs:string" use="required" />
-            <xs:attribute name="Alias" type="xs:string" use="optional" />
+            <xs:attribute name="Name" type="xs:string" use="required">
+              <xs:annotation>
+                <xs:documentation>
+                  Unique id of the port, used to identify the device. If empty, this remapping will be applied to all keyboards.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Alias" type="xs:string" use="optional">
+              <xs:annotation>
+                <xs:documentation>
+                  Readable name to use in Multikeys Editor. Not used in Multikeys Core.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="PhysicalLayout" type="xs:string" use="optional">
+              <xs:annotation>
+                <xs:documentation>
+                  Physical layout (key positioning) to use in Multikeys Editor. Not used in Multikeys Core.
+                  The value in this tag will be "ANSI", "ISO", "ABNT-2", "JIS" or "Dubeolsik".
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="LogicalLayout" type="xs:string" use="optional">
+              <xs:annotation>
+                <xs:documentation>
+                  Logical layout (key labels) to use in Multikeys Editor. Not used in Multikeys Core.
+                  Corresponds to filenames in the Editor project's `Layout` folder.
+                  responsible for choosing and correctly recognizing the precise values.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:attribute>
           </xs:complexType>
         </xs:element>
       </xs:sequence>

@@ -197,12 +197,29 @@ namespace MultikeysEditor.Persistence
 
         private static Keyboard ReadKeyboard(XElement el)
         {
+            var physicalLayoutEnumName = el.Attribute("PhysicalLayout")?.Value;
+            Domain.Layout.PhysicalLayoutStandard physicalLayoutEnumValue;
+            if (physicalLayoutEnumName != null)
+            {
+                try
+                {
+                    Enum.TryParse(physicalLayoutEnumName, out physicalLayoutEnumValue);
+                } catch (ArgumentException)
+                {
+                    physicalLayoutEnumValue = Domain.Layout.PhysicalLayoutStandard.ISO; // use this as default
+                }
+            } else
+            {
+                physicalLayoutEnumValue = Domain.Layout.PhysicalLayoutStandard.ISO;
+            }
             return new Keyboard
             {
                 UniqueName = el.Attribute("Name").Value,
                 Alias = el.Attribute("Alias")?.Value,   // may be null
                 Modifiers = ReadModifiers(el.Element("modifiers")),
-                Layers = el.Elements("layer").Select(it => ReadLayer(it)).ToList()
+                Layers = el.Elements("layer").Select(it => ReadLayer(it)).ToList(),
+                PhysicalLayout = physicalLayoutEnumValue,
+                LogicalLayout = el.Attribute("LogicalLayout")?.Value, // optional
             };
         }
 
@@ -373,6 +390,11 @@ namespace MultikeysEditor.Persistence
             foreach (var layer in entity.Layers)
             {
                 element.Add(WriteLayer(layer));
+            }
+            element.Add(new XAttribute("PhysicalLayout", Enum.GetName(typeof(Domain.Layout.PhysicalLayoutStandard), entity.PhysicalLayout)));
+            if (entity.LogicalLayout != null)
+            {
+                element.Add(new XAttribute("LogicalLayout", entity.LogicalLayout));
             }
             return element;
         }

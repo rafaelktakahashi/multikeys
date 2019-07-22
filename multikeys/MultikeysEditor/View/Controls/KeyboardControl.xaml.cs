@@ -53,7 +53,7 @@ namespace MultikeysEditor.View.Controls
     {
         // No default constructor
 
-        public KeyboardControl(Keyboard kb, PhysicalLayoutStandard physStandard)
+        public KeyboardControl(Keyboard kb)
         {
             InitializeComponent();
 
@@ -65,6 +65,8 @@ namespace MultikeysEditor.View.Controls
                 UniqueName = kb.UniqueName;
                 Alias = kb.Alias;
                 _Layers = kb.Layers;
+                PhysicalLayout = kb.PhysicalLayout;
+                LogicalLayout = kb.LogicalLayout ?? "US"; // use this as default
             }
             else
             {
@@ -72,13 +74,16 @@ namespace MultikeysEditor.View.Controls
                 UniqueName = string.Empty;
                 Alias = Properties.Strings.NewKeyboardAlias;
                 _Layers = new List<Layer>();
+                PhysicalLayout = PhysicalLayoutStandard.ISO; // use this as default
+                LogicalLayout = "US"; // use this as default, could be better to look at current layout
             }
 
             // Setup modifiers control
             ModifiersControl.InitializeModifiers(kb.Modifiers);
 
             // Setup the layer to the default one (no modifiers)
-            Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(physStandard));
+            Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(PhysicalLayout));
+            Layer.Labels = LogicalLayoutFactory.GetLogicalLayout(LogicalLayout);
             Layer.RefreshView(kb.Layers[0].Commands, ModifiersControl.Modifiers);
             _activeLayer = kb.Layers[0];            // TODO: Using Layers[0] doesn't cut it.
 
@@ -107,7 +112,9 @@ namespace MultikeysEditor.View.Controls
                 UniqueName = UniqueName,
                 Alias = Alias,
                 Modifiers = ModifiersControl.Modifiers,
-                Layers = _Layers
+                Layers = _Layers,
+                PhysicalLayout = PhysicalLayout,
+                LogicalLayout = LogicalLayout,
             };
         }
 
@@ -135,6 +142,17 @@ namespace MultikeysEditor.View.Controls
         public KeyControl SelectedKey { get; private set; }
 
         private bool _EditingAlias;
+
+        /// <summary>
+        /// Physical layout to display this keyboard with.
+        /// This is sent to the layout control, but it's kept here to be persisted.
+        /// </summary>
+        public PhysicalLayoutStandard PhysicalLayout { get; set; }
+        /// <summary>
+        /// Logical layout to display this keyboard with.
+        /// This is sent to the layout control, but it's kept here to be persisted.
+        /// </summary>
+        public string LogicalLayout { get; set; }
 
         #endregion
 
@@ -198,7 +216,7 @@ namespace MultikeysEditor.View.Controls
                 return obj.Name.GetHashCode();
             }
         }
-        private ModifierComparerByName modifierComparerByName = new ModifierComparerByName();
+        private readonly ModifierComparerByName modifierComparerByName = new ModifierComparerByName();
 
         /// <summary>
         /// Handler for the ModifierSelectionChanged event fired by the modifier control.
@@ -611,6 +629,9 @@ namespace MultikeysEditor.View.Controls
                 Layer.Labels = LogicalLayoutFactory.GetLogicalLayout(logicalLayout);
                 Layer.SetLayoutToRender(new DomainFacade().GetPhysicalLayout(physicalStandard));
                 Layer.RefreshView(_activeLayer.Commands, ModifiersControl.Modifiers);
+                // Then save that information in this keyboard, because it'll be persisted.
+                PhysicalLayout = physicalStandard;
+                LogicalLayout = logicalLayout;
             }
         }
 

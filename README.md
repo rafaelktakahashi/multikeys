@@ -38,7 +38,6 @@ I also never tested this program on games, which I think would be the use case f
 
 ### Features that would be nice to have but I never got around to actually implementing them, roughly in decreasing order of importance
 
-- Save the physical (key positioning) and logical (labels on keys) layouts (the xsd schema file would also have to be updated), as it currently resets to ANSI with US layout every time;
 - Add internationalization (all strings already come from a file, but there's only one of it);
 - Minimizing to system tray;
 - Delays in macro executions (instead of keypresses only), would need an implementation in the core;

@@ -153,8 +153,10 @@ namespace MultikeysEditor.Model
             UniqueName = string.Empty;
             Alias = null;
             Modifiers = new List<Modifier>();
-            Layers = new List<Layer>();
-            Layers.Add(new Layer());
+            Layers = new List<Layer>
+            {
+                new Layer()
+            };
         }
 
         /// <summary>
@@ -174,6 +176,14 @@ namespace MultikeysEditor.Model
         /// Layers registered on this keyboard; each is activated by a particular combination of modifiers.
         /// </summary>
         public IList<Layer> Layers { get; set; }
+        /// <summary>
+        /// Name of the physical layout that the user chose to display; not used in Multikeys Core.
+        /// </summary>
+        public Domain.Layout.PhysicalLayoutStandard PhysicalLayout { get; set; }
+        /// <summary>
+        /// Name of the logical layout that the user chose to display; not used in Multikeys Core.
+        /// </summary>
+        public string LogicalLayout { get; set; }
     }
 
     /// <summary>

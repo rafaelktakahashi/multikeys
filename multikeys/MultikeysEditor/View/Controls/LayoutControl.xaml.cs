@@ -22,8 +22,8 @@ namespace MultikeysEditor.View.Controls
             IDomainFacade applicationFacade = new DomainFacade();
 
             foreach (var keyboard in layout.Keyboards)
-            {                                                                       // TODO: Solve the physical layout
-                var kbControl = new KeyboardControl(keyboard, PhysicalLayoutStandard.ISO)
+            {
+                var kbControl = new KeyboardControl(keyboard)
                 {
                     Width = double.NaN,     // NaN means Auto
                     Height = double.NaN,
@@ -79,8 +79,8 @@ namespace MultikeysEditor.View.Controls
             IDomainFacade applicationFacade = new DomainFacade();
 
             foreach (var keyboard in layout.Keyboards)
-            {                                                                       // TODO: Solve the physical layout
-                var kbControl = new KeyboardControl(keyboard, PhysicalLayoutStandard.ISO)
+            {
+                var kbControl = new KeyboardControl(keyboard)
                 {
                     Width = double.NaN,     // NaN means Auto
                     Height = double.NaN,
@@ -100,9 +100,9 @@ namespace MultikeysEditor.View.Controls
         /// Adds a new keyboard control, properly initialized. It is placed at the end of the list.
         /// </summary>
         private void ButtonAddNewKeyboard_Click(object sender, RoutedEventArgs e)
-        {                                                                               // solve the thing with the physical layouts
-            var kbControl = new KeyboardControl(new Model.Keyboard(), PhysicalLayoutStandard.ISO)
-            {                                   // the keyboard contructor initializes all of the object's contents.
+        {
+            var kbControl = new KeyboardControl(new Keyboard())
+            {   // the keyboard contructor initializes all of the object's contents.
                 Width = double.NaN,     // NaN means Auto
                 Height = double.NaN,
                 Margin = new Thickness(5, 5, 5, 20),

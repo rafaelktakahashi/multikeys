@@ -618,7 +618,7 @@ namespace MultikeysEditor.View.Controls
         /// </summary>
         private void ButtonChangeLayout_Click(object sender, RoutedEventArgs e)
         {
-            var layoutDialog = new ChangePhysicalLayoutDialog();
+            var layoutDialog = new ChangePhysicalLayoutDialog(PhysicalLayout, LogicalLayout);
             if (layoutDialog.ShowDialog() == true)
             {
                 // Retrieve information from the dialog

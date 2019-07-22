@@ -28,7 +28,7 @@ namespace MultikeysEditor.View.Dialogues
             }
         }
 
-        public ChangePhysicalLayoutDialog()
+        public ChangePhysicalLayoutDialog(PhysicalLayoutStandard startingPhysicalLayout, string startingLogicalLayout)
         {
             InitializeComponent();
 
@@ -59,6 +59,37 @@ namespace MultikeysEditor.View.Dialogues
             ComboBoxLogicalLayouts.DataContext = this;
             ComboBoxLogicalLayouts.ItemsSource = LogicalLayoutFiles;
             ComboBoxLogicalLayouts.SelectedValuePath = "File";
+
+            // Try to set the selected item
+            switch (startingPhysicalLayout)
+            {
+                case PhysicalLayoutStandard.ABNT_2:
+                case PhysicalLayoutStandard.ABNT_2_BIGRETURN:
+                    ComboBoxPhysicalStandards.SelectedItem = "ABNT-2";
+                    break;
+                case PhysicalLayoutStandard.ANSI:
+                case PhysicalLayoutStandard.ANSI_BIGRETURN:
+                    ComboBoxPhysicalStandards.SelectedItem = "ANSI";
+                    break;
+                case PhysicalLayoutStandard.DUBEOLSIK:
+                case PhysicalLayoutStandard.DUBEOLSIK_BIGRETURN:
+                    ComboBoxPhysicalStandards.SelectedItem = "Dubeolsik";
+                    break;
+                case PhysicalLayoutStandard.ISO:
+                case PhysicalLayoutStandard.ISO_BIGRETURN:
+                    ComboBoxPhysicalStandards.SelectedItem = "ISO";
+                    break;
+                case PhysicalLayoutStandard.JIS:
+                    ComboBoxPhysicalStandards.SelectedItem = "JIS";
+                    break;
+                default: break; // Leave no selected item
+            }
+
+            var layoutFileIndex = LogicalLayoutFiles.FindIndex(it => it.File == startingLogicalLayout);
+            if (layoutFileIndex >= 0)
+            {
+                ComboBoxLogicalLayouts.SelectedIndex = layoutFileIndex;
+            }
         }
 
 

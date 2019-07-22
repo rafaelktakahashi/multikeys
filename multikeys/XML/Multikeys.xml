@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Multikeys>
-  <keyboard Name="\\?\HID#VID_04D9&amp;PID_A0F8&amp;MI_00#8&amp;695bdd8&amp;0&amp;0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}" Alias="Example" PhysicalLayout="ABNT_2_BIGRETURN" LogicalLayout="ABNT_2">
+  <keyboard Name="\\?\HID#VID_04D9&amp;PID_A0F8&amp;MI_00#8&amp;695bdd8&amp;0&amp;0000#{884b96c3-56ef-11d1-bc8c-00a0c91405dd}" Alias="Example" PhysicalLayout="ANSI" LogicalLayout="US">
     <modifiers>
       <modifier Name="Shift">2A</modifier>
       <modifier Name="Shift">36</modifier>
